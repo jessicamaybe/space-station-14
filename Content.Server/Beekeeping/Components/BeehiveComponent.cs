@@ -23,6 +23,6 @@ namespace Content.Server.Beekeeping.Components
 
         public bool BeingDrained;
 
-        public bool HasQueen = true;
+        public bool HasQueen;
     }
 }

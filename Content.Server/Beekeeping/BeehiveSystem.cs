@@ -12,6 +12,7 @@ using Content.Shared.Nutrition.Components;
 using Content.Shared.Verbs;
 using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Coordinates;
+using Robust.Shared.Containers;
 using Robust.Shared.Player;
 
 namespace Content.Server.Beekeeping
@@ -19,7 +20,6 @@ namespace Content.Server.Beekeeping
 
     public sealed class BeehiveSystem : EntitySystem
     {
-        [Dependency] private IMapManager _mapManager = default!;
         [Dependency] private readonly SolutionContainerSystem _solutionContainerSystem = default!;
         [Dependency] private readonly ItemSlotsSystem _itemSlotsSystem = default!;
         [Dependency] private readonly DoAfterSystem _doAfterSystem = default!;
@@ -34,9 +34,10 @@ namespace Content.Server.Beekeeping
             SubscribeLocalEvent<BeehiveComponent, ExaminedEvent>(OnExamined);
             SubscribeLocalEvent<BeehiveComponent, GetVerbsEvent<AlternativeVerb>>(AddHarvestVerb);
             SubscribeLocalEvent<BeehiveComponent, HarvestFinishedEvent>(OnHarvestFinished);
+            SubscribeLocalEvent<BeehiveComponent, EntInsertedIntoContainerMessage>(OnQueenInserted);
+            SubscribeLocalEvent<BeehiveComponent, EntRemovedFromContainerMessage>(OnQueenRemoved);
+            SubscribeLocalEvent<BeehiveComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
         }
-
-
 
         public override void Update(float frameTime)
         {
@@ -62,6 +63,30 @@ namespace Content.Server.Beekeeping
                 }
 
             }
+        }
+
+        private void OnQueenInserted(EntityUid uid, BeehiveComponent component, ContainerModifiedMessage args)
+        {
+            if (!component.Initialized)
+                return;
+            if (args.Container.ID != component.QueenSlot.ID)
+                return;
+
+            component.HasQueen = true;
+
+        }
+
+        private void OnQueenRemoved(EntityUid uid, BeehiveComponent component, ContainerModifiedMessage args)
+        {
+            if (args.Container.ID != component.QueenSlot.ID)
+                return;
+
+            component.HasQueen = false;
+        }
+
+        private void OnInsertAttempt(EntityUid uid, BeehiveComponent component, ContainerIsInsertingAttemptEvent args)
+        {
+            
         }
 
         private void AddHarvestVerb(EntityUid uid, BeehiveComponent component, GetVerbsEvent<AlternativeVerb> args)

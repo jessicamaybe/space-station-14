@@ -34,10 +34,11 @@
   - type: Beehive
     QueenSlot:
       whitelist:
-
+        tags:
+          - QueenBee
 
 - type: entity
-  name: QueenBee
+  name: Queen Bee
   parent: BaseItem
   id: QueenBee
   description: 'The Queen Bee!'
@@ -45,6 +46,9 @@
     - type: Sprite
       sprite: Objects/Fun/toys.rsi
       state: plushie_h
+    - type: Tag
+      tags:
+        - QueenBee
 
 - type: reagent
   id: Honey
