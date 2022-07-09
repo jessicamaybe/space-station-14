@@ -86,7 +86,7 @@ namespace Content.Server.Beekeeping
 
         private void OnInsertAttempt(EntityUid uid, BeehiveComponent component, ContainerIsInsertingAttemptEvent args)
         {
-            
+
         }
 
         private void AddHarvestVerb(EntityUid uid, BeehiveComponent component, GetVerbsEvent<AlternativeVerb> args)
@@ -103,7 +103,7 @@ namespace Content.Server.Beekeeping
                     AttemptHarvest(uid, args.User, args.Using.Value, component);
                 },
                 Text = "Harvest",
-                Priority = 2
+                Priority = 1
             };
             args.Verbs.Add(verb);
         }

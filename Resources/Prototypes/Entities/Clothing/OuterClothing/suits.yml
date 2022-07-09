@@ -150,3 +150,14 @@
   - type: ClothingSpeedModifier
     walkModifier: 0.7
     sprintModifier: 0.75
+
+- type: entity
+  parent: ClothingOuterBase
+  id: ClothingOuterSuitBeekeeper
+  name: Beekeeper Suit
+  description: A suit that looks like a primate.
+  components:
+    - type: Sprite
+      sprite: Clothing/OuterClothing/Suits/beekeeper.rsi
+    - type: Clothing
+      sprite: Clothing/OuterClothing/Suits/beekeeper.rsi

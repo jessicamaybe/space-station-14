@@ -123,3 +123,14 @@
     sprite: Clothing/Head/Hoods/rad.rsi
   - type: Clothing
     sprite: Clothing/Head/Hoods/rad.rsi
+
+- type: entity
+  parent: ClothingHeadBase
+  id: ClothingHeadHatHoodBeekeeper
+  name: beekeeper hood
+  description: A hood of the hazmat suit, designed for protection from high radioactivity.
+  components:
+    - type: Sprite
+      sprite: Clothing/Head/Hoods/beekeeper.rsi
+    - type: Clothing
+      sprite: Clothing/Head/Hoods/beekeeper.rsi
