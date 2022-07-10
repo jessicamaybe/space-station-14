@@ -1,18 +1,12 @@
-using Content.Server.Animals.Components;
 using Content.Server.Beekeeping.Components;
-using Content.Server.Botany.Components;
 using Content.Shared.Examine;
 using Content.Shared.Weapons.Melee;
-using Robust.Shared.Map;
 using Content.Server.Chemistry.Components.SolutionManager;
 using Content.Server.Chemistry.EntitySystems;
 using Content.Server.DoAfter;
-using Content.Server.Nutrition.Components;
 using Content.Server.Popups;
-using Content.Shared.Nutrition.Components;
 using Content.Shared.Verbs;
 using Content.Shared.Containers.ItemSlots;
-using Content.Shared.Coordinates;
 using Content.Shared.Tag;
 using Robust.Shared.Containers;
 using Robust.Shared.Player;
@@ -52,7 +46,6 @@ namespace Content.Server.Beekeeping
                 if (hive.HasQueen)
                 {
                     UpdatePlantCount(hive.Owner, hive);
-
                     hive.AccumulatedTime += frameTime;
 
                     while (hive.AccumulatedTime > hive.UpdateRate)
@@ -67,6 +60,12 @@ namespace Content.Server.Beekeeping
                             out var accepted);
 
                     }
+
+                    if (hive.BeeCount > 15)
+                    {
+                        hive.BeeCount = hive.BeeCount - 1;
+                        SpawnBees(hive, 1, false);
+                    }
                 }
             }
         }
@@ -79,10 +78,9 @@ namespace Content.Server.Beekeeping
         private void UpdatePlantCount(EntityUid uid, BeehiveComponent component)
         {
             component.PlantCount = 0;
-            var entity = _lookup.GetEntitiesInRange(uid, 4.0f);
-            foreach (var plants in entity)
+            foreach (var entity in _lookup.GetEntitiesInRange(uid, 4.0f))
             {
-                if (_tagSystem.HasTag(plants, "Plant"))
+                if (_tagSystem.HasTag(entity, "Plant"))
                 {
                     component.PlantCount = component.PlantCount + 1;
                 }
@@ -198,13 +196,13 @@ namespace Content.Server.Beekeeping
         private void OnAttacked(EntityUid uid, BeehiveComponent component, AttackedEvent args)
         {
             var count = component.BeeCount / 4;
-            SpawnBees(uid, component, count, true);
+            SpawnBees(component, count, true);
             component.BeeCount -= count;
 
 
         }
 
-        private void SpawnBees(EntityUid uid, BeehiveComponent component, int count, bool angry)
+        private void SpawnBees(BeehiveComponent component, int count, bool angry)
         {
             if (component.HasQueen)
             {
