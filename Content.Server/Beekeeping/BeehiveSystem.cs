@@ -1,12 +1,15 @@
 using Content.Server.Beekeeping.Components;
+using Content.Server.Botany.Components;
 using Content.Shared.Examine;
 using Content.Shared.Weapons.Melee;
 using Content.Server.Chemistry.Components.SolutionManager;
 using Content.Server.Chemistry.EntitySystems;
 using Content.Server.DoAfter;
 using Content.Server.Popups;
+using Content.Server.Stunnable;
 using Content.Shared.Verbs;
 using Content.Shared.Containers.ItemSlots;
+using Content.Shared.Electrocution;
 using Content.Shared.Tag;
 using Robust.Shared.Containers;
 using Robust.Shared.Player;
@@ -19,10 +22,9 @@ namespace Content.Server.Beekeeping
         [Dependency] private readonly SolutionContainerSystem _solutionContainerSystem = default!;
         [Dependency] private readonly ItemSlotsSystem _itemSlotsSystem = default!;
         [Dependency] private readonly DoAfterSystem _doAfterSystem = default!;
-        [Dependency] private readonly IEntityManager _entityManager = default!;
-        [Dependency] private readonly TagSystem _tagSystem = default!;
         [Dependency] private readonly EntityLookupSystem _lookup = default!;
         [Dependency] private readonly PopupSystem _popupSystem = default!;
+        [Dependency] private readonly StunSystem _stunSystem = default!;
 
         public override void Initialize()
         {
@@ -58,13 +60,6 @@ namespace Content.Server.Beekeeping
                         hive.BeeCount += 1;
                         _solutionContainerSystem.TryAddReagent(hive.Owner, solution, "Honey", hive.BeeCount * hive.PlantCount * 0.05,
                             out var accepted);
-
-                    }
-
-                    if (hive.BeeCount > 15)
-                    {
-                        hive.BeeCount = hive.BeeCount - 1;
-                        SpawnBees(hive, 1, false);
                     }
                 }
             }
@@ -72,7 +67,6 @@ namespace Content.Server.Beekeeping
         public void OnComponentInit(EntityUid uid, BeehiveComponent component, ComponentInit args)
         {
             _itemSlotsSystem.AddItemSlot(uid, "QueenSlot", component.QueenSlot);
-            UpdatePlantCount(uid, component);
         }
 
         private void UpdatePlantCount(EntityUid uid, BeehiveComponent component)
@@ -80,7 +74,8 @@ namespace Content.Server.Beekeeping
             component.PlantCount = 0;
             foreach (var entity in _lookup.GetEntitiesInRange(uid, 4.0f))
             {
-                if (_tagSystem.HasTag(entity, "Plant"))
+                if (!EntityManager.TryGetComponent(entity, out PlantHolderComponent? plant)) continue;
+                if (plant.Age > 1)
                 {
                     component.PlantCount = component.PlantCount + 1;
                 }
@@ -108,14 +103,20 @@ namespace Content.Server.Beekeeping
 
         private void OnRemoveAttempt(EntityUid uid, BeehiveComponent component, ContainerIsRemovingAttemptEvent args)
         {
+            EntityManager.DeleteEntity(uid);
 
+            if (EntityManager.HasComponent<InsulatedComponent>(args.EntityUid))
+                return;
+
+            _stunSystem.TryStun(args.Container.Owner, TimeSpan.FromSeconds(5f), true);
+            args.Cancel();
         }
 
         private void AddHarvestVerb(EntityUid uid, BeehiveComponent component, GetVerbsEvent<AlternativeVerb> args)
         {
             if (args.Using == null ||
                 !args.CanInteract ||
-                !_entityManager.HasComponent<RefillableSolutionComponent>(args.Using.Value))
+                !EntityManager.HasComponent<RefillableSolutionComponent>(args.Using.Value))
                 return;
 
             AlternativeVerb verb = new()
@@ -208,8 +209,8 @@ namespace Content.Server.Beekeeping
             {
                 while (count > 0)
                 {
-                    if (angry) _entityManager.SpawnEntity("MobAngryBee", Comp<TransformComponent>(component.Owner).Coordinates);
-                    if (!angry) _entityManager.SpawnEntity("MobBee", Comp<TransformComponent>(component.Owner).Coordinates);
+                    if (angry) EntityManager.SpawnEntity("MobAngryBee", Comp<TransformComponent>(component.Owner).Coordinates);
+                    if (!angry) EntityManager.SpawnEntity("MobBee", Comp<TransformComponent>(component.Owner).Coordinates);
                     count -= count;
                 }
             }
