@@ -1,24 +1,27 @@
 - type: entity
   name: beehive
   id: beehive
+  parent: BaseStructure
   description: A beehive. Don't get stung!
   components:
-  - type: Transform
-    noRot: true
-  - type: Fixtures
-    fixtures:
-    - shape:
-        !type:PhysShapeCircle
-        radius: 1
-      mass: 25
-  - type: Clickable
-  - type: Physics
-    bodyType: Static
-  - type: Anchorable
-  - type: Pullable
   - type: Sprite
     sprite: Structures/Hydroponics/beebox.rsi
     state: beebox
+  - type: Transform
+    noRot: true
+  - type: InteractionOutline
+  - type: Fixtures
+    fixtures:
+    - shape:
+        !type:PhysShapeAabb
+        bounds: "-0.15,-0.47,0.15,0.47"
+      mass: 30
+      layer:
+      - MidImpassable
+      - LowImpassable
+  - type: Clickable
+  - type: Anchorable
+  - type: Pullable
   - type: Destructible
     thresholds:
     - trigger:

@@ -342,6 +342,9 @@
   id: Pizza
 
 - type: Tag
+  id: Plant
+
+- type: Tag
   id: PlantAnalyzer
 
 - type: Tag

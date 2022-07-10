@@ -1,5 +1,6 @@
 using Content.Server.Animals.Components;
 using Content.Server.Beekeeping.Components;
+using Content.Server.Botany.Components;
 using Content.Shared.Examine;
 using Content.Shared.Weapons.Melee;
 using Robust.Shared.Map;
@@ -12,6 +13,7 @@ using Content.Shared.Nutrition.Components;
 using Content.Shared.Verbs;
 using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Coordinates;
+using Content.Shared.Tag;
 using Robust.Shared.Containers;
 using Robust.Shared.Player;
 
@@ -24,6 +26,8 @@ namespace Content.Server.Beekeeping
         [Dependency] private readonly ItemSlotsSystem _itemSlotsSystem = default!;
         [Dependency] private readonly DoAfterSystem _doAfterSystem = default!;
         [Dependency] private readonly IEntityManager _entityManager = default!;
+        [Dependency] private readonly TagSystem _tagSystem = default!;
+        [Dependency] private readonly EntityLookupSystem _lookup = default!;
         [Dependency] private readonly PopupSystem _popupSystem = default!;
 
         public override void Initialize()
@@ -34,34 +38,54 @@ namespace Content.Server.Beekeeping
             SubscribeLocalEvent<BeehiveComponent, ExaminedEvent>(OnExamined);
             SubscribeLocalEvent<BeehiveComponent, GetVerbsEvent<AlternativeVerb>>(AddHarvestVerb);
             SubscribeLocalEvent<BeehiveComponent, HarvestFinishedEvent>(OnHarvestFinished);
+            SubscribeLocalEvent<BeehiveComponent, HarvestFailedEvent>(OnHarvestFailed);
             SubscribeLocalEvent<BeehiveComponent, EntInsertedIntoContainerMessage>(OnQueenInserted);
             SubscribeLocalEvent<BeehiveComponent, EntRemovedFromContainerMessage>(OnQueenRemoved);
-            SubscribeLocalEvent<BeehiveComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
+            SubscribeLocalEvent<BeehiveComponent, ContainerIsRemovingAttemptEvent>(OnRemoveAttempt);
         }
 
         public override void Update(float frameTime)
         {
             foreach (var hive in EntityManager.EntityQuery<BeehiveComponent>(false))
             {
+                // Only do hive stuff if theres a queen inside
                 if (hive.HasQueen)
                 {
+                    UpdatePlantCount(hive.Owner, hive);
+
                     hive.AccumulatedTime += frameTime;
 
                     while (hive.AccumulatedTime > hive.UpdateRate)
                     {
                         hive.AccumulatedTime -= hive.UpdateRate;
 
-                        if (!_solutionContainerSystem.TryGetSolution(hive.Owner, hive.TargetSolutionName,
-                                out var solution))
+                        //Gives more honey and bees
+                        if (!_solutionContainerSystem.TryGetSolution(hive.Owner, hive.TargetSolutionName, out var solution))
                             continue;
-
                         hive.BeeCount += 1;
-                        _solutionContainerSystem.TryAddReagent(hive.Owner, solution, "Honey", hive.BeeCount * 0.25,
+                        _solutionContainerSystem.TryAddReagent(hive.Owner, solution, "Honey", hive.BeeCount * hive.PlantCount * 0.05,
                             out var accepted);
 
                     }
                 }
+            }
+        }
+        public void OnComponentInit(EntityUid uid, BeehiveComponent component, ComponentInit args)
+        {
+            _itemSlotsSystem.AddItemSlot(uid, "QueenSlot", component.QueenSlot);
+            UpdatePlantCount(uid, component);
+        }
 
+        private void UpdatePlantCount(EntityUid uid, BeehiveComponent component)
+        {
+            component.PlantCount = 0;
+            var entity = _lookup.GetEntitiesInRange(uid, 4.0f);
+            foreach (var plants in entity)
+            {
+                if (_tagSystem.HasTag(plants, "Plant"))
+                {
+                    component.PlantCount = component.PlantCount + 1;
+                }
             }
         }
 
@@ -84,7 +108,7 @@ namespace Content.Server.Beekeeping
             component.HasQueen = false;
         }
 
-        private void OnInsertAttempt(EntityUid uid, BeehiveComponent component, ContainerIsInsertingAttemptEvent args)
+        private void OnRemoveAttempt(EntityUid uid, BeehiveComponent component, ContainerIsRemovingAttemptEvent args)
         {
 
         }
@@ -103,7 +127,7 @@ namespace Content.Server.Beekeeping
                     AttemptHarvest(uid, args.User, args.Using.Value, component);
                 },
                 Text = "Harvest",
-                Priority = 1
+                Priority = 2
             };
             args.Verbs.Add(verb);
         }
@@ -130,7 +154,7 @@ namespace Content.Server.Beekeeping
                 BreakOnTargetMove = true,
                 MovementThreshold = 1.0f,
                 TargetFinishedEvent = new HarvestFinishedEvent(userUid, containerUid),
-                //TargetCancelledEvent = new HarvestFailEvent()
+                TargetCancelledEvent = new HarvestFailedEvent()
             };
             _doAfterSystem.DoAfter(doargs);
         }
@@ -154,43 +178,41 @@ namespace Content.Server.Beekeeping
                 quantity = targetSolution.AvailableVolume;
             var split = _solutionContainerSystem.SplitSolution(uid, solution, quantity);
             _solutionContainerSystem.TryAddSolution(ev.ContainerUid, targetSolution, split);
-
-
         }
-        public void OnComponentInit(EntityUid uid, BeehiveComponent component, ComponentInit args)
-        {
-            _itemSlotsSystem.AddItemSlot(uid, "QueenSlot", component.QueenSlot);
 
+        private void OnHarvestFailed(EntityUid uid, BeehiveComponent component, HarvestFailedEvent ev)
+        {
+            component.BeingDrained = false;
         }
 
         private void OnExamined(EntityUid uid, BeehiveComponent component, ExaminedEvent args)
         {
             args.PushMarkup("Bees:");
             args.PushMarkup(component.BeeCount.ToString());
-            if (!_solutionContainerSystem.TryGetSolution(component.Owner, component.TargetSolutionName,
-                    out var solution)) { }
             args.PushMarkup("Honey:");
             args.PushMarkup(_solutionContainerSystem.GetReagentQuantity(component.Owner, "Honey").ToString());
+            args.PushMarkup("Nearby Plants:");
+            args.PushMarkup(component.PlantCount.ToString());
         }
 
         private void OnAttacked(EntityUid uid, BeehiveComponent component, AttackedEvent args)
         {
             var count = component.BeeCount / 4;
-            SpawnBees(uid, component, count);
+            SpawnBees(uid, component, count, true);
             component.BeeCount -= count;
 
 
         }
 
-        private void SpawnBees(EntityUid uid, BeehiveComponent component, int count)
+        private void SpawnBees(EntityUid uid, BeehiveComponent component, int count, bool angry)
         {
             if (component.HasQueen)
             {
                 while (count > 0)
                 {
-                    _entityManager.SpawnEntity("MobAngryBee",
-                            Comp<TransformComponent>(component.Owner).Coordinates);
-                    count = count - 1;
+                    if (angry) _entityManager.SpawnEntity("MobAngryBee", Comp<TransformComponent>(component.Owner).Coordinates);
+                    if (!angry) _entityManager.SpawnEntity("MobBee", Comp<TransformComponent>(component.Owner).Coordinates);
+                    count -= count;
                 }
             }
         }
@@ -205,6 +227,11 @@ namespace Content.Server.Beekeeping
                 UserUid = userUid;
                 ContainerUid = containerUid;
             }
+        }
+
+        private sealed class HarvestFailedEvent : EntityEventArgs
+        {
+
         }
     }
 }

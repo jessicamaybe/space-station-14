@@ -39,6 +39,9 @@
       - !type:PlaySoundBehavior
         sound:
           path: /Audio/Effects/plant_rustle.ogg
+  - type: Tag
+    tags:
+    - Plant
 
 - type: entity
   id: PottedPlant0

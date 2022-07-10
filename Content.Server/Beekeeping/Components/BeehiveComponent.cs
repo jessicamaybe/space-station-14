@@ -15,11 +15,14 @@ namespace Content.Server.Beekeeping.Components
 
         [ViewVariables(VVAccess.ReadOnly)]
         [DataField("updateRate")]
-        public float UpdateRate = 5;
+        public float UpdateRate = 15;
 
         public float AccumulatedTime;
 
         public int BeeCount;
+        public int ExternalBeeCount;
+
+        public int PlantCount;
 
         public bool BeingDrained;
 

@@ -46,3 +46,6 @@
     range: 5
     sound:
       path: /Audio/Ambience/Objects/flowing_water_open.ogg
+  - type: Tag
+    tags:
+      - Plant
