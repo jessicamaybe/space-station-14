@@ -13,6 +13,7 @@ using Content.Shared.Audio;
 using Content.Shared.Construction.Components;
 using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Nuke;
+using Content.Shared.Popups;
 using Content.Shared.Sound;
 using Robust.Shared.Audio;
 using Robust.Shared.Containers;
@@ -385,7 +386,7 @@ namespace Content.Server.Nuke
             // Don't double-dip on the octave shifting
             component.LastPlayedKeypadSemitones = number == 0 ? component.LastPlayedKeypadSemitones : semitoneShift;
 
-            SoundSystem.Play(component.KeypadPressSound.GetSound(), Filter.Pvs(uid),
+            SoundSystem.Play(component.KeypadPressSound.GetSound(), Filter.Pvs(uid), uid,
                 AudioHelpers.ShiftSemitone(semitoneShift).WithVolume(-5f));
         }
 
@@ -418,7 +419,7 @@ namespace Content.Server.Nuke
             // Otherwise, you could set every station to whatever AlertLevelOnActivate is.
             if (stationUid != null)
             {
-                _alertLevel.SetLevel(stationUid.Value, component.AlertLevelOnActivate, false, true, true, true);
+                _alertLevel.SetLevel(stationUid.Value, component.AlertLevelOnActivate, true, true, true, true);
             }
 
             // warn a crew
@@ -540,7 +541,8 @@ namespace Content.Server.Nuke
             };
 
             _doAfterSystem.DoAfter(doafter);
-            _popups.PopupEntity(Loc.GetString("nuke-component-doafter-warning"), user, Filter.Entities(user));
+            _popups.PopupEntity(Loc.GetString("nuke-component-doafter-warning"), user,
+                Filter.Entities(user), PopupType.LargeCaution);
         }
 
         private void NukeArmedAudio(NukeComponent component)
