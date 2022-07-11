@@ -11,6 +11,7 @@ using Content.Shared.Electrocution;
 using Content.Shared.Verbs;
 using Content.Shared.Interaction;
 using Content.Shared.Inventory;
+using Content.Shared.Popups;
 using Content.Shared.Tag;
 using Robust.Shared.Player;
 
@@ -116,7 +117,7 @@ namespace Content.Server.Beekeeping
                 {
                     AttemptHarvest(uid, args.User, args.Using.Value, component);
                 },
-                Text = Loc.GetString("hive-verb-harvest");
+                Text = Loc.GetString("hive-verb-harvest"),
                 Priority = 2
             };
             args.Verbs.Add(verb);
@@ -133,7 +134,7 @@ namespace Content.Server.Beekeeping
                 return;
             }
 
-            _popupSystem.PopupEntity(Loc.GetString("hive-harvest-begin"), uid, Filter.Entities(userUid));
+            _popupSystem.PopupEntity(Loc.GetString("hive-harvest-begin"), uid, Filter.Entities(userUid), PopupType.Small);
 
             hive.BeingDrained = true;
 
@@ -159,7 +160,7 @@ namespace Content.Server.Beekeeping
             if (!_inventorySystem.TryGetSlotEntity(ev.UserUid, "outerClothing", out var outerClothing) || !EntityManager.HasComponent<BeeSuitComponent>(outerClothing)
                 || !_inventorySystem.TryGetSlotEntity(ev.UserUid, "head", out var head) || !EntityManager.HasComponent<BeeSuitComponent>(head))
             {
-                _popupSystem.PopupEntity(Loc.GetString("hive-harvest-stung"), ev.UserUid, Filter.Entities(ev.UserUid));
+                _popupSystem.PopupEntity(Loc.GetString("hive-harvest-stung"), ev.UserUid, Filter.Entities(ev.UserUid), PopupType.MediumCaution);
                 _stunSystem.TryParalyze(ev.UserUid, TimeSpan.FromSeconds(3), true);
                 return;
             }
@@ -172,10 +173,12 @@ namespace Content.Server.Beekeeping
             var quantity = solution.TotalVolume;
             if (quantity == 0)
             {
+                _popupSystem.PopupEntity(Loc.GetString("hive-harvest-empty"), ev.UserUid, Filter.Entities(ev.UserUid), PopupType.Medium);
                 return;
             }
 
-            _popupSystem.PopupEntity(Loc.GetString("hive-harvest-success"), ev.UserUid, Filter.Entities(ev.UserUid));
+            _popupSystem.PopupEntity(Loc.GetString("hive-harvest-success"), ev.UserUid, Filter.Entities(ev.UserUid), PopupType.Medium);
+
             if (quantity > targetSolution.AvailableVolume)
                 quantity = targetSolution.AvailableVolume;
             var split = _solutionContainerSystem.SplitSolution(uid, solution, quantity);
@@ -202,8 +205,6 @@ namespace Content.Server.Beekeeping
             var count = component.BeeCount / 4;
             SpawnBees(component, count, true);
             component.BeeCount -= count;
-
-
         }
 
         private void SpawnBees(BeehiveComponent component, int count, bool angry)
