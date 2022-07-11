@@ -13,6 +13,9 @@
   id: Bee
 
 - type: Tag
+  id: BeeSuit
+
+- type: Tag
   id: BrassInstrument
 
 - type: Tag
@@ -340,9 +343,6 @@
 
 - type: Tag
   id: Pizza
-
-- type: Tag
-  id: Plant
 
 - type: Tag
   id: PlantAnalyzer

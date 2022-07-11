@@ -7,11 +7,11 @@ using Content.Server.Chemistry.EntitySystems;
 using Content.Server.DoAfter;
 using Content.Server.Popups;
 using Content.Server.Stunnable;
-using Content.Shared.Verbs;
-using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Electrocution;
+using Content.Shared.Verbs;
+using Content.Shared.Interaction;
+using Content.Shared.Inventory;
 using Content.Shared.Tag;
-using Robust.Shared.Containers;
 using Robust.Shared.Player;
 
 namespace Content.Server.Beekeeping
@@ -20,11 +20,12 @@ namespace Content.Server.Beekeeping
     public sealed class BeehiveSystem : EntitySystem
     {
         [Dependency] private readonly SolutionContainerSystem _solutionContainerSystem = default!;
-        [Dependency] private readonly ItemSlotsSystem _itemSlotsSystem = default!;
         [Dependency] private readonly DoAfterSystem _doAfterSystem = default!;
+        [Dependency] private readonly TagSystem _tagSystem = default!;
         [Dependency] private readonly EntityLookupSystem _lookup = default!;
         [Dependency] private readonly PopupSystem _popupSystem = default!;
         [Dependency] private readonly StunSystem _stunSystem = default!;
+        [Dependency] private readonly InventorySystem _inventorySystem = default!;
 
         public override void Initialize()
         {
@@ -35,14 +36,12 @@ namespace Content.Server.Beekeeping
             SubscribeLocalEvent<BeehiveComponent, GetVerbsEvent<AlternativeVerb>>(AddHarvestVerb);
             SubscribeLocalEvent<BeehiveComponent, HarvestFinishedEvent>(OnHarvestFinished);
             SubscribeLocalEvent<BeehiveComponent, HarvestFailedEvent>(OnHarvestFailed);
-            SubscribeLocalEvent<BeehiveComponent, EntInsertedIntoContainerMessage>(OnQueenInserted);
-            SubscribeLocalEvent<BeehiveComponent, EntRemovedFromContainerMessage>(OnQueenRemoved);
-            SubscribeLocalEvent<BeehiveComponent, ContainerIsRemovingAttemptEvent>(OnRemoveAttempt);
+            SubscribeLocalEvent<BeehiveComponent, InteractUsingEvent>(OnInteractUsing);
         }
 
         public override void Update(float frameTime)
         {
-            foreach (var hive in EntityManager.EntityQuery<BeehiveComponent>(false))
+            foreach (var hive in EntityManager.EntityQuery<BeehiveComponent>())
             {
                 // Only do hive stuff if theres a queen inside
                 if (hive.HasQueen)
@@ -54,19 +53,23 @@ namespace Content.Server.Beekeeping
                     {
                         hive.AccumulatedTime -= hive.UpdateRate;
 
-                        //Gives more honey and bees
+                        if (hive.BeeCount < hive.MaxBees)
+                            hive.BeeCount += 1;
+
+                        //Gives more honey
                         if (!_solutionContainerSystem.TryGetSolution(hive.Owner, hive.TargetSolutionName, out var solution))
                             continue;
-                        hive.BeeCount += 1;
-                        _solutionContainerSystem.TryAddReagent(hive.Owner, solution, "Honey", hive.BeeCount * hive.PlantCount * 0.05,
-                            out var accepted);
+
+                        if (_solutionContainerSystem.GetReagentQuantity(hive.Owner, "Honey") < hive.MaxHoney)
+                            _solutionContainerSystem.TryAddReagent(hive.Owner, solution, "Honey", hive.BeeCount * hive.PlantCount * 0.05, out var accepted);
+
                     }
                 }
             }
         }
         public void OnComponentInit(EntityUid uid, BeehiveComponent component, ComponentInit args)
         {
-            _itemSlotsSystem.AddItemSlot(uid, "QueenSlot", component.QueenSlot);
+
         }
 
         private void UpdatePlantCount(EntityUid uid, BeehiveComponent component)
@@ -77,45 +80,33 @@ namespace Content.Server.Beekeeping
                 if (!EntityManager.TryGetComponent(entity, out PlantHolderComponent? plant)) continue;
                 if (plant.Age > 1)
                 {
-                    component.PlantCount = component.PlantCount + 1;
+                    component.PlantCount += 1;
                 }
             }
         }
 
-        private void OnQueenInserted(EntityUid uid, BeehiveComponent component, ContainerModifiedMessage args)
+        private void OnInteractUsing(EntityUid uid, BeehiveComponent component, InteractUsingEvent args)
         {
-            if (!component.Initialized)
-                return;
-            if (args.Container.ID != component.QueenSlot.ID)
-                return;
+            if (_tagSystem.HasTag(args.Used, "QueenBee"))
+            {
+                if (!component.HasQueen)
+                {
+                    component.HasQueen = true;
+                    EntityManager.QueueDeleteEntity(args.Used);
 
-            component.HasQueen = true;
+                    _popupSystem.PopupCursor(Loc.GetString("hive-queen-insert"), Filter.Entities(args.User));
+                    return;
+                }
 
-        }
-
-        private void OnQueenRemoved(EntityUid uid, BeehiveComponent component, ContainerModifiedMessage args)
-        {
-            if (args.Container.ID != component.QueenSlot.ID)
-                return;
-
-            component.HasQueen = false;
-        }
-
-        private void OnRemoveAttempt(EntityUid uid, BeehiveComponent component, ContainerIsRemovingAttemptEvent args)
-        {
-            EntityManager.DeleteEntity(uid);
-
-            if (EntityManager.HasComponent<InsulatedComponent>(args.EntityUid))
-                return;
-
-            _stunSystem.TryStun(args.Container.Owner, TimeSpan.FromSeconds(5f), true);
-            args.Cancel();
+                _popupSystem.PopupCursor(Loc.GetString("hive-queen-exists"), Filter.Entities(args.User));
+            }
         }
 
         private void AddHarvestVerb(EntityUid uid, BeehiveComponent component, GetVerbsEvent<AlternativeVerb> args)
         {
             if (args.Using == null ||
                 !args.CanInteract ||
+                !component.HasQueen ||
                 !EntityManager.HasComponent<RefillableSolutionComponent>(args.Using.Value))
                 return;
 
@@ -125,23 +116,24 @@ namespace Content.Server.Beekeeping
                 {
                     AttemptHarvest(uid, args.User, args.Using.Value, component);
                 },
-                Text = "Harvest",
+                Text = Loc.GetString("hive-verb-harvest");
                 Priority = 2
             };
             args.Verbs.Add(verb);
         }
 
-        private void AttemptHarvest(EntityUid uid, EntityUid userUid, EntityUid containerUid,
-            BeehiveComponent? hive = null)
+        private void AttemptHarvest(EntityUid uid, EntityUid userUid, EntityUid containerUid, BeehiveComponent? hive = null)
         {
             if (!Resolve(uid, ref hive))
                 return;
 
             if (hive.BeingDrained)
             {
-                _popupSystem.PopupEntity("already being harvested", uid, Filter.Entities(userUid));
+                _popupSystem.PopupEntity(Loc.GetString("hive-harvest-busy"), uid, Filter.Entities(userUid));
                 return;
             }
+
+            _popupSystem.PopupEntity(Loc.GetString("hive-harvest-begin"), uid, Filter.Entities(userUid));
 
             hive.BeingDrained = true;
 
@@ -162,6 +154,16 @@ namespace Content.Server.Beekeeping
         {
             component.BeingDrained = false;
 
+
+            //sting if they aren't wearing a beesuit
+            if (!_inventorySystem.TryGetSlotEntity(ev.UserUid, "outerClothing", out var outerClothing) || !EntityManager.HasComponent<BeeSuitComponent>(outerClothing)
+                || !_inventorySystem.TryGetSlotEntity(ev.UserUid, "head", out var head) || !EntityManager.HasComponent<BeeSuitComponent>(head))
+            {
+                _popupSystem.PopupEntity(Loc.GetString("hive-harvest-stung"), ev.UserUid, Filter.Entities(ev.UserUid));
+                _stunSystem.TryParalyze(ev.UserUid, TimeSpan.FromSeconds(3), true);
+                return;
+            }
+
             if (!_solutionContainerSystem.TryGetSolution(uid, component.TargetSolutionName, out var solution))
                 return;
             if (!_solutionContainerSystem.TryGetRefillableSolution(ev.ContainerUid, out var targetSolution))
@@ -173,6 +175,7 @@ namespace Content.Server.Beekeeping
                 return;
             }
 
+            _popupSystem.PopupEntity(Loc.GetString("hive-harvest-success"), ev.UserUid, Filter.Entities(ev.UserUid));
             if (quantity > targetSolution.AvailableVolume)
                 quantity = targetSolution.AvailableVolume;
             var split = _solutionContainerSystem.SplitSolution(uid, solution, quantity);

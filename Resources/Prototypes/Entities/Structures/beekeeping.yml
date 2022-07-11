@@ -34,10 +34,6 @@
           - ReagentId: Honey
             Quantity: 0
   - type: Beehive
-    QueenSlot:
-      whitelist:
-        tags:
-          - QueenBee
 
 - type: entity
   name: Queen Bee

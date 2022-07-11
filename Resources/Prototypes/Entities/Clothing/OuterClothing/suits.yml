@@ -161,3 +161,5 @@
       sprite: Clothing/OuterClothing/Suits/beekeeper.rsi
     - type: Clothing
       sprite: Clothing/OuterClothing/Suits/beekeeper.rsi
+    - type: BeeSuit
+

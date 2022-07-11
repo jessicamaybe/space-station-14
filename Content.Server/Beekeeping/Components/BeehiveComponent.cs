@@ -19,6 +19,9 @@ namespace Content.Server.Beekeeping.Components
 
         public float AccumulatedTime;
 
+        public int MaxBees = 25;
+        public int MaxHoney = 100;
+
         public int BeeCount;
         public int ExternalBeeCount;
 
