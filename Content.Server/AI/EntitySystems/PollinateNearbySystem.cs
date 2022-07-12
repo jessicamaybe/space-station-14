@@ -25,7 +25,7 @@ namespace Content.Server.AI.EntitySystems
         {
             foreach (var entity in EntitySystem.Get<EntityLookupSystem>().GetEntitiesInRange(bee, range))
             {
-                if (HasComp<PlantHolderComponent>(entity) && !HasComp<RecentlyPollinatedComponent>(entity))
+                if (HasComp<PlantHolderComponent>(entity) && !HasComp<RecentlyPollinatedComponent>(entity) && !HasComp<BeingPollinatedComponent>(entity))
                 {
                     return entity;
                 }
@@ -37,6 +37,7 @@ namespace Content.Server.AI.EntitySystems
         {
             if (!TryComp<PlantHolderComponent>(target, out var plant))
                 return false;
+
             if (!_solutionContainerSystem.TryGetSolution(bee, "pollen", out var solution))
                 return false;
 
@@ -49,7 +50,7 @@ namespace Content.Server.AI.EntitySystems
             if (plant.Age > 1)
             {
                 EnsureComp<RecentlyPollinatedComponent>(target);
-
+                RemComp<BeingPollinatedComponent>(target);
                 _solutionContainerSystem.TryAddReagent(bee, solution, "Honey", 5, out var accepted);
 
                 _popupSystem.PopupEntity("Buzz!", target, Filter.Pvs(target));

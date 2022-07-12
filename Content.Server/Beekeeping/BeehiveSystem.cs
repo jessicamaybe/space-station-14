@@ -59,10 +59,12 @@ namespace Content.Server.Beekeeping
                             hive.BeeCount += 1;
                             SpawnBees(hive, 1, false);
                         }
+
                         //Gives more honey
+                        /*
                         if (!_solutionContainerSystem.TryGetSolution(hive.Owner, hive.TargetSolutionName, out var solution))
                             continue;
-                        /*
+
                         if (_solutionContainerSystem.GetReagentQuantity(hive.Owner, "Honey") < hive.MaxHoney)
                             _solutionContainerSystem.TryAddReagent(hive.Owner, solution, "Honey", hive.BeeCount * hive.PlantCount * 0.05, out var accepted);
                         */

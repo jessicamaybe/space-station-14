@@ -7,6 +7,8 @@ using Content.Server.AI.Utility.Considerations.Combat.Melee;
 using Content.Server.AI.WorldState;
 using Content.Server.AI.WorldState.States;
 using Content.Server.AI.Utility.Considerations.ActionBlocker;
+using Content.Server.AI.Utility.Considerations.Bees;
+
 namespace Content.Server.AI.Utility.ExpandableActions.Bees
 {
     public class HiveReturnExp : ExpandableUtilityAction

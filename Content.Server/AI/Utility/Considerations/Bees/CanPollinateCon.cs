@@ -13,10 +13,12 @@ namespace Content.Server.AI.Utility.Considerations.Bees
         {
             var target = context.GetState<TargetEntityState>().GetValue();
             var bee = context.GetState<SelfState>().GetValue();
+
+
             if (target == null || !IoCManager.Resolve<EntityManager>().TryGetComponent(target, out PlantHolderComponent? plantHolderComponent))
                 return 0f;
 
-            if (IoCManager.Resolve<IEntityManager>().TryGetComponent(target, out RecentlyPollinatedComponent? recently))
+            if (IoCManager.Resolve<IEntityManager>().TryGetComponent(target, out RecentlyPollinatedComponent? recentlyPollinatedComponent))
                 return 0f;
 
             if (!IoCManager.Resolve<IEntityManager>().TryGetComponent(bee, out BeeComponent? beeComponent))
