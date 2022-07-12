@@ -2,6 +2,7 @@ using Content.Server.AI.Tracking;
 using Content.Server.AI.WorldState;
 using Content.Server.AI.WorldState.States;
 using Content.Server.Botany.Components;
+using Content.Server.Chemistry.Components.SolutionManager;
 
 namespace Content.Server.AI.Utility.Considerations.Bees
 {
@@ -11,8 +12,10 @@ namespace Content.Server.AI.Utility.Considerations.Bees
         {
             var target = context.GetState<TargetEntityState>().GetValue();
 
+            var bee = context.GetState<SelfState>().GetValue();
+
             if (target == null || !IoCManager.Resolve<EntityManager>().TryGetComponent(target, out PlantHolderComponent? plantHolderComponent))
-                return 0;
+                return 0f;
 
             if (IoCManager.Resolve<IEntityManager>().TryGetComponent(target, out RecentlyPollinatedComponent? recently))
                 return 0f;

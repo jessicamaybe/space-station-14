@@ -1,3 +1,4 @@
+using Content.Server.AI.Components;
 using Content.Server.Beekeeping.Components;
 using Content.Server.Botany.Components;
 using Content.Shared.Examine;
@@ -55,14 +56,14 @@ namespace Content.Server.Beekeeping
 
                         if (hive.BeeCount < hive.MaxBees)
                             hive.BeeCount += 1;
-
+                        SpawnBees(hive, 1, false);
                         //Gives more honey
                         if (!_solutionContainerSystem.TryGetSolution(hive.Owner, hive.TargetSolutionName, out var solution))
                             continue;
-
+                        /*
                         if (_solutionContainerSystem.GetReagentQuantity(hive.Owner, "Honey") < hive.MaxHoney)
                             _solutionContainerSystem.TryAddReagent(hive.Owner, solution, "Honey", hive.BeeCount * hive.PlantCount * 0.05, out var accepted);
-
+                        */
                     }
                 }
             }
@@ -213,7 +214,13 @@ namespace Content.Server.Beekeeping
                 while (count > 0)
                 {
                     if (angry) EntityManager.SpawnEntity("MobAngryBee", Comp<TransformComponent>(component.Owner).Coordinates);
-                    if (!angry) EntityManager.SpawnEntity("MobBee", Comp<TransformComponent>(component.Owner).Coordinates);
+                    if (!angry)
+                    {
+                        var bee = EntityManager.SpawnEntity("MobBee", Comp<TransformComponent>(component.Owner).Coordinates);
+                        EntityManager.AddComponent<BeeComponent>(bee);
+                        if (TryComp<BeeComponent>(bee, out var beeComponent))
+                            beeComponent.Hive = component.Owner;
+                    }
                     count -= count;
                 }
             }

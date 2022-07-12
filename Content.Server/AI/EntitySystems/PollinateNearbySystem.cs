@@ -25,25 +25,37 @@ namespace Content.Server.AI.EntitySystems
             foreach (var entity in EntitySystem.Get<EntityLookupSystem>().GetEntitiesInRange(bee, range))
             {
                 if (HasComp<PlantHolderComponent>(entity) && !HasComp<RecentlyPollinatedComponent>(entity))
+                {
                     return entity;
+                }
             }
             return default;
         }
 
         public bool Pollinate(EntityUid bee, EntityUid target)
         {
+            if (HasComp<BeingPollinatedComponent>(target))
+                return false;
             if (!TryComp<PlantHolderComponent>(target, out var plant))
                 return false;
-
+            if (!_solutionContainerSystem.TryGetSolution(bee, "pollen", out var solution))
+                return false;
+            if (_solutionContainerSystem.GetReagentQuantity(bee, "Honey") > 9)
+                return false;
             if (plant.Age < 1)
                 return false;
+
             if (plant.Age > 1)
             {
                 EnsureComp<RecentlyPollinatedComponent>(target);
+
+                _solutionContainerSystem.TryAddReagent(bee, solution, "Honey", 5, out var accepted);
+
                 _popupSystem.PopupEntity("Buzz!", target, Filter.Pvs(target));
                 return true;
             }
             return false;
         }
+
     }
 }
