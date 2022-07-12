@@ -149,6 +149,22 @@
   - type: Bloodstream
     bloodMaxVolume: 0.1
 
+- type: entity
+  name: bee
+  suffix: honey
+  parent: MobBee
+  id: MobHoneyBee
+  description: Honey, I'm home!
+  components:
+    - type: MovementSpeedModifier
+      baseWalkSpeed: 3
+      baseSprintSpeed: 3
+    - type: UtilityAI
+      behaviorSets:
+        - Bees
+        - Idle
+    - type: Bloodstream
+      bloodMaxVolume: 0.1
 
 - type: entity
   name: chicken

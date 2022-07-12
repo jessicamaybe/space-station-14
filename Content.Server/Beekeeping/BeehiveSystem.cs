@@ -7,7 +7,6 @@ using Content.Server.Chemistry.EntitySystems;
 using Content.Server.DoAfter;
 using Content.Server.Popups;
 using Content.Server.Stunnable;
-using Content.Shared.Electrocution;
 using Content.Shared.Verbs;
 using Content.Shared.Interaction;
 using Content.Shared.Inventory;
@@ -47,11 +46,11 @@ namespace Content.Server.Beekeeping
                 // Only do hive stuff if theres a queen inside
                 if (hive.HasQueen)
                 {
-                    UpdatePlantCount(hive.Owner, hive);
                     hive.AccumulatedTime += frameTime;
 
                     while (hive.AccumulatedTime > hive.UpdateRate)
                     {
+                        UpdatePlantCount(hive.Owner, hive);
                         hive.AccumulatedTime -= hive.UpdateRate;
 
                         if (hive.BeeCount < hive.MaxBees)

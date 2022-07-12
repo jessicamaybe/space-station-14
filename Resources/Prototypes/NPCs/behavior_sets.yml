@@ -28,6 +28,11 @@
   - MoveRightAndLeftTen
 
 - type: behaviorSet
+  id: Bees
+  actions:
+    - PollinateNearbyExp
+
+- type: behaviorSet
   id: Spirate
   actions:
   - EquipMeleeExp
