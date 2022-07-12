@@ -1,3 +1,4 @@
+using Content.Server.AI.Components;
 using Content.Server.AI.Tracking;
 using Content.Server.Beekeeping.Components;
 using Content.Server.Botany.Components;
@@ -25,16 +26,23 @@ namespace Content.Server.AI.EntitySystems
         {
             if (!TryComp<BeehiveComponent>(target, out var hive))
                 return false;
+            if (!TryComp<BeeComponent>(bee, out var beeComponent))
+                return false;
             if (!_solutionContainerSystem.TryGetSolution(bee, "pollen", out var beesolution))
                 return false;
-            if (!_solutionContainerSystem.TryGetSolution(target, "Honey", out var hivesolution))
+            if (!_solutionContainerSystem.TryGetSolution(target, "hive", out var hivesolution))
                 return false;
 
-            _solutionContainerSystem.TryAddReagent(target, hivesolution, "Honey", beesolution.CurrentVolume,
-                out var accepted);
-            _solutionContainerSystem.TryRemoveReagent(bee, beesolution, "Honey", beesolution.CurrentVolume);
-            _popupSystem.PopupEntity("Returned Honey to hive", target, Filter.Pvs(target));
-            return true;
+            if (beesolution.CurrentVolume > 5)
+            {
+                _solutionContainerSystem.TryAddReagent(target, hivesolution, "Honey", beesolution.CurrentVolume, out var accepted);
+                _solutionContainerSystem.TryRemoveReagent(bee, beesolution, "Honey", beesolution.CurrentVolume);
+                _popupSystem.PopupEntity("Returned Honey to hive", target, Filter.Pvs(target));
+                beeComponent.full = false;
+                return true;
+            }
+
+            return false;
 
         }
     }

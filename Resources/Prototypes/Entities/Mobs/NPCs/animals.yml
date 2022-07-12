@@ -166,6 +166,7 @@
     - type: UtilityAI
       behaviorSets:
         - Bees
+        - Idle
     - type: Bloodstream
       bloodMaxVolume: 0.1
 

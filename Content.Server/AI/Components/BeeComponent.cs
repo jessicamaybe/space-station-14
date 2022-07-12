@@ -4,5 +4,7 @@ namespace Content.Server.AI.Components
     public sealed class BeeComponent : Component
     {
         public EntityUid Hive;
+
+        public bool full;
     }
 }

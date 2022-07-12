@@ -9,7 +9,7 @@ using Content.Server.AI.WorldState.States;
 using Content.Server.AI.Utility.Considerations.ActionBlocker;
 namespace Content.Server.AI.Utility.ExpandableActions.Bees
 {
-    public class PollinateNearbyExp  : ExpandableUtilityAction
+    public class PollinateNearbyExp : ExpandableUtilityAction
     {
         public override float Bonus => 30;
         protected override IReadOnlyCollection<Func<float>> GetCommonConsiderations(Blackboard context)
@@ -31,7 +31,7 @@ namespace Content.Server.AI.Utility.ExpandableActions.Bees
                 throw new InvalidOperationException();
             }
 
-            yield return new HiveReturn()
+            yield return new PollinateNearby()
             {
                 Owner = owner, Target = EntitySystem.Get<PollinateNearbySystem>().GetNearbyPlants(Owner), Bonus = Bonus
             };

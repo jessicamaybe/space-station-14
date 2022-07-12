@@ -1,3 +1,4 @@
+using Content.Server.AI.Components;
 using Content.Server.AI.Tracking;
 using Content.Server.Botany.Components;
 using Content.Server.Chemistry.Components.SolutionManager;
@@ -34,14 +35,14 @@ namespace Content.Server.AI.EntitySystems
 
         public bool Pollinate(EntityUid bee, EntityUid target)
         {
-            if (HasComp<BeingPollinatedComponent>(target))
-                return false;
             if (!TryComp<PlantHolderComponent>(target, out var plant))
                 return false;
             if (!_solutionContainerSystem.TryGetSolution(bee, "pollen", out var solution))
                 return false;
-            if (_solutionContainerSystem.GetReagentQuantity(bee, "Honey") > 9)
+
+            if (!IoCManager.Resolve<IEntityManager>().TryGetComponent(bee, out BeeComponent? beeComponent))
                 return false;
+
             if (plant.Age < 1)
                 return false;
 
@@ -52,6 +53,11 @@ namespace Content.Server.AI.EntitySystems
                 _solutionContainerSystem.TryAddReagent(bee, solution, "Honey", 5, out var accepted);
 
                 _popupSystem.PopupEntity("Buzz!", target, Filter.Pvs(target));
+
+                if (solution.CurrentVolume > 9)
+                {
+                    beeComponent.full = true;
+                }
                 return true;
             }
             return false;

@@ -51,12 +51,14 @@ namespace Content.Server.Beekeeping
 
                     while (hive.AccumulatedTime > hive.UpdateRate)
                     {
-                        UpdatePlantCount(hive.Owner, hive);
+//                      UpdatePlantCount(hive.Owner, hive);
                         hive.AccumulatedTime -= hive.UpdateRate;
 
                         if (hive.BeeCount < hive.MaxBees)
+                        {
                             hive.BeeCount += 1;
-                        SpawnBees(hive, 1, false);
+                            SpawnBees(hive, 1, false);
+                        }
                         //Gives more honey
                         if (!_solutionContainerSystem.TryGetSolution(hive.Owner, hive.TargetSolutionName, out var solution))
                             continue;
@@ -216,7 +218,7 @@ namespace Content.Server.Beekeeping
                     if (angry) EntityManager.SpawnEntity("MobAngryBee", Comp<TransformComponent>(component.Owner).Coordinates);
                     if (!angry)
                     {
-                        var bee = EntityManager.SpawnEntity("MobBee", Comp<TransformComponent>(component.Owner).Coordinates);
+                        var bee = EntityManager.SpawnEntity("MobHoneyBee", Comp<TransformComponent>(component.Owner).Coordinates.Offset(Vector2.One));
                         EntityManager.AddComponent<BeeComponent>(bee);
                         if (TryComp<BeeComponent>(bee, out var beeComponent))
                             beeComponent.Hive = component.Owner;

@@ -31,8 +31,7 @@
   id: Bees
   actions:
     - PollinateNearbyExp
-    - WanderAndWait
-    - HiveReturn
+    - HiveReturnExp
 
 - type: behaviorSet
   id: Spirate

@@ -43,7 +43,9 @@ namespace Content.Server.AI.Utility.Actions.Bees
                 considerationsManager.Get<CanMoveCon>()
                     .BoolCurve(context),
                 considerationsManager.Get<TargetAccessibleCon>()
-                    .BoolCurve(context)
+                    .BoolCurve(context),
+                considerationsManager.Get<CanReturnCon>()
+                    .BoolCurve(context),
             };
         }
     }
