@@ -48,12 +48,13 @@ namespace Content.Server.Chemistry.Components
             {
                 msgFormat = "hypospray-component-inject-self-message";
             }
+            /*
             else if (EligibleEntity(user, _entMan) && ClumsyComponent.TryRollClumsy(user, ClumsyFailChance))
             {
                 msgFormat = "hypospray-component-inject-self-clumsy-message";
                 target = user;
             }
-
+            */
             var solutionsSys = EntitySystem.Get<SolutionContainerSystem>();
             solutionsSys.TryGetSolution(Owner, SolutionName, out var hypoSpraySolution);
 

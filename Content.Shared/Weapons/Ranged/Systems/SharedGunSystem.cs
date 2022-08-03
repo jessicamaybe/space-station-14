@@ -4,11 +4,14 @@ using Content.Shared.Audio;
 using Content.Shared.CombatMode;
 using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Damage;
+using Content.Shared.Damage.Prototypes;
 using Content.Shared.Examine;
 using Content.Shared.Hands.Components;
+using Content.Shared.Interaction.Components;
 using Content.Shared.Interaction.Events;
 using Content.Shared.Popups;
 using Content.Shared.Projectiles;
+using Content.Shared.Stunnable;
 using Content.Shared.Throwing;
 using Content.Shared.Verbs;
 using Content.Shared.Weapons.Ranged.Components;
@@ -46,6 +49,7 @@ public abstract partial class SharedGunSystem : EntitySystem
     [Dependency] protected readonly ThrowingSystem ThrowingSystem = default!;
     [Dependency] protected readonly TagSystem TagSystem = default!;
     [Dependency] protected readonly SharedProjectileSystem Projectiles = default!;
+    [Dependency] private SharedStunSystem _stunSystem = default!;
 
     protected ISawmill Sawmill = default!;
 
@@ -104,6 +108,20 @@ public abstract partial class SharedGunSystem : EntitySystem
         var gun = GetGun(user.Value);
 
         if (gun?.Owner != msg.Gun) return;
+
+
+
+        if (EntityManager.TryGetComponent<ClumsyComponent>(user.Value, out var clumsyComponent) && clumsyComponent.RollClumsy(0.5f))
+        {
+            SoundSystem.Play("/Audio/Items/bikehorn.ogg", Filter.Pvs(clumsyComponent.Owner), Transform(clumsyComponent.Owner).Coordinates, AudioHelpers.WithVariation(0.05f).WithVolume(-1f));
+            PopupSystem.PopupEntity("The gun blows up in your face!", clumsyComponent.Owner, Filter.Entities(clumsyComponent.Owner));
+
+
+            var damage = new DamageSpecifier(ProtoManager.Index<DamageTypePrototype>("Blunt"), (int) 10);
+            Damageable.TryChangeDamage(clumsyComponent.Owner, damage);
+            _stunSystem.TryParalyze(user.Value, TimeSpan.FromSeconds(3), true);
+            return;
+        }
 
         gun.ShootCoordinates = msg.Coordinates;
         Sawmill.Debug($"Set shoot coordinates to {gun.ShootCoordinates}");

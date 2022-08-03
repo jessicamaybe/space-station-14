@@ -1,7 +1,7 @@
 using Content.Shared.Damage;
 using Robust.Shared.Random;
 
-namespace Content.Server.Interaction.Components
+namespace Content.Shared.Interaction.Components
 {
     /// <summary>
     /// A simple clumsy tag-component.
