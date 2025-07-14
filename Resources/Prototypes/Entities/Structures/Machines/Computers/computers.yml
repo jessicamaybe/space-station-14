@@ -242,6 +242,29 @@
     stealGroup: CargoShuttleConsoleCircuitboard
 
 - type: entity
+  parent: BaseComputer
+  id: ComputerFerryShuttle
+  name: ferry shuttle console
+  description: Handles authorization to early launch the shuttle.
+  components:
+  - type: FerryShuttleConsole
+  - type: AccessReader
+    access:
+    - [ Command ]
+  - type: ActivatableUI
+    key: enum.FerryShuttleConsoleUiKey.Key
+  - type: UserInterface
+    interfaces:
+      enum.FerryShuttleConsoleUiKey.Key:
+        type: FerryShuttleConsoleBoundUserInterface
+      enum.WiresUiKey.Key:
+        type: WiresBoundUserInterface
+  - type: PointLight
+    radius: 1.5
+    energy: 1.6
+    color: "#43ccb5"
+
+- type: entity
   parent: BaseComputerAiAccess
   id: ComputerIFF
   name: IFF computer
