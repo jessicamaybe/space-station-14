@@ -21,10 +21,15 @@ public sealed partial class FerryShuttleWindow : FancyWindow,
 
     public void SetupComputerWindow(ComputerBoundUserInterfaceBase cb)
     {
-        LaunchButton.OnPressed += args =>
+        LaunchButton.OnPressed += args => LaunchButtonPressed(cb, args);
         {
 
         };
+    }
+
+    private void LaunchButtonPressed(ComputerBoundUserInterfaceBase cb, BaseButton.ButtonEventArgs obj)
+    {
+
     }
 }
 

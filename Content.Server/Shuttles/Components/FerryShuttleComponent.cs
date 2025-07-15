@@ -12,12 +12,4 @@ public sealed partial class FerryShuttleComponent : Component
 
     [DataField("destination")]
     public EntityUid Destination;
-
-    [DataField("nextTransfer", customTypeSerializer: typeof(TimeOffsetSerializer))]
-    [AutoPausedField]
-    public TimeSpan NextTransfer;
-
-    [DataField("nextArrivalsTime", customTypeSerializer: typeof(TimeOffsetSerializer))]
-    public TimeSpan NextArrivalsTime;
-
 }
