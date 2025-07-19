@@ -14,22 +14,23 @@ namespace Content.Client.Shuttles.UI;
 public sealed partial class FerryShuttleWindow : FancyWindow,
     IComputerWindow<FerryShuttleConsoleBoundUserInterfaceStateState>
 {
+    public event Action? OnLaunchPressed;
+
     public FerryShuttleWindow()
     {
         RobustXamlLoader.Load(this);
+        LaunchButton.OnPressed += OnLaunchButtonPressed;
+
     }
 
-    public void SetupComputerWindow(ComputerBoundUserInterfaceBase cb)
+    private void OnLaunchButtonPressed(BaseButton.ButtonEventArgs obj)
     {
-        LaunchButton.OnPressed += args => LaunchButtonPressed(cb, args);
-        {
-
-        };
+        OnLaunchPressed?.Invoke();
     }
 
-    private void LaunchButtonPressed(ComputerBoundUserInterfaceBase cb, BaseButton.ButtonEventArgs obj)
+    /*public void UpdateState(EmergencyConsoleBoundUserInterfaceState scc)
     {
+    }*/
 
-    }
 }
 
