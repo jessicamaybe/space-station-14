@@ -1,55 +1,18 @@
-using System.Linq;
-using System.Numerics;
-using System.Threading;
-using Content.Server.Access.Systems;
-using Content.Server.Administration.Logs;
-using Content.Server.Administration.Managers;
-using Content.Server.Chat.Systems;
-using Content.Server.Communications;
-using Content.Server.DeviceNetwork.Systems;
-using Content.Server.GameTicking.Events;
-using Content.Server.Pinpointer;
-using Content.Server.Popups;
-using Content.Server.RoundEnd;
-using Content.Server.Screens.Components;
 using Content.Server.Shuttles.Components;
-using Content.Server.Shuttles.Events;
-using Content.Server.Station.Components;
-using Content.Server.Station.Events;
-using Content.Server.Station.Systems;
-using Content.Shared.Access.Systems;
-using Content.Shared.CCVar;
-using Content.Shared.Database;
-using Content.Shared.DeviceNetwork;
-using Content.Shared.DeviceNetwork.Components;
-using Content.Shared.GameTicking;
-using Content.Shared.Localizations;
-using Content.Shared.Shuttles.Components;
 using Content.Shared.Shuttles.Events;
-using Content.Shared.Tag;
-using Content.Shared.Tiles;
-using Robust.Server.GameObjects;
-using Robust.Shared.Audio.Systems;
-using Robust.Shared.Configuration;
-using Robust.Shared.EntitySerialization.Systems;
-using Robust.Shared.Map.Components;
-using Robust.Shared.Player;
-using Robust.Shared.Prototypes;
-using Robust.Shared.Random;
-using Robust.Shared.Timing;
-using Robust.Shared.Utility;
+using Content.Shared.Shuttles.BUIStates;
 
 namespace Content.Server.Shuttles.Systems;
 
-public sealed partial class FerryShuttleSystem : EntitySystem
+public sealed partial class FerrySystem : EntitySystem
 {
 
     private void InitializeFerryConsole()
     {
-        SubscribeLocalEvent<FerryShuttleConsoleComponent, FerryShuttleSendShipMessage>(OnSendFerryShuttle);
+        SubscribeLocalEvent<FerryConsoleComponent, FerrySendShipMessage>(OnSendFerryShuttle);
     }
 
-    private void OnSendFerryShuttle(EntityUid uid, FerryShuttleConsoleComponent component, FerryShuttleSendShipMessage args)
+    private void OnSendFerryShuttle(EntityUid uid, FerryConsoleComponent component, FerrySendShipMessage args)
     {
         if (!TryComp(uid, out TransformComponent? xform) || xform.GridUid == null)
         {

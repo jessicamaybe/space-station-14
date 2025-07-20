@@ -243,20 +243,20 @@
 
 - type: entity
   parent: BaseComputer
-  id: ComputerFerryShuttle
+  id: ComputerFerry
   name: ferry shuttle console
   description: Handles authorization to early launch the shuttle.
   components:
-  - type: FerryShuttleConsole
+  - type: FerryConsole
   - type: AccessReader
     access:
     - [ Command ]
   - type: ActivatableUI
-    key: enum.FerryShuttleConsoleUiKey.Key
+    key: enum.FerryConsoleUiKey.Key
   - type: UserInterface
     interfaces:
-      enum.FerryShuttleConsoleUiKey.Key:
-        type: FerryShuttleConsoleBoundUserInterface
+      enum.FerryConsoleUiKey.Key:
+        type: FerryConsoleBoundUserInterface
       enum.WiresUiKey.Key:
         type: WiresBoundUserInterface
   - type: PointLight

@@ -9,11 +9,11 @@ using Robust.Client.UserInterface;
 namespace Content.Client.Shuttles.BUI;
 
 [UsedImplicitly]
-public sealed class FerryShuttleConsoleBoundUserInterface : BoundUserInterface
+public sealed class FerryConsoleBoundUserInterface : BoundUserInterface
 {
     [ViewVariables]
     private FerryShuttleWindow? _window;
-    public FerryShuttleConsoleBoundUserInterface(EntityUid owner, Enum uiKey) : base(owner, uiKey)
+    public FerryConsoleBoundUserInterface(EntityUid owner, Enum uiKey) : base(owner, uiKey)
     {
 
     }
@@ -27,6 +27,15 @@ public sealed class FerryShuttleConsoleBoundUserInterface : BoundUserInterface
 
     private void LaunchPressed()
     {
-        SendMessage(new FerryShuttleSendShipMessage());
+        SendMessage(new FerrySendShipMessage());
+    }
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing)
+        {
+            _window?.Close();
+            _window = null;
+        }
     }
 }

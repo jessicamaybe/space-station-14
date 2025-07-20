@@ -41,7 +41,7 @@ using Robust.Shared.Utility;
 
 namespace Content.Server.Shuttles.Systems;
 
-public sealed partial class FerryShuttleSystem : EntitySystem
+public sealed partial class FerrySystem : EntitySystem
 {
 
     [Dependency] private readonly IGameTiming _timing = default!;
