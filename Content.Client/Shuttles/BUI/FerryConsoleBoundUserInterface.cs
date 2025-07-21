@@ -17,7 +17,6 @@ public sealed class FerryConsoleBoundUserInterface : BoundUserInterface
     {
 
     }
-
     protected override void Open()
     {
         base.Open();
@@ -25,6 +24,15 @@ public sealed class FerryConsoleBoundUserInterface : BoundUserInterface
         _window.OnLaunchPressed += LaunchPressed;
     }
 
+    protected override void UpdateState(BoundUserInterfaceState state)
+    {
+        base.UpdateState(state);
+
+        if (state is not FerryConsoleBoundUserInterfaceState bState)
+            return;
+
+        _window?.UpdateState(bState);
+    }
     private void LaunchPressed()
     {
         SendMessage(new FerrySendShipMessage());

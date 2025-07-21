@@ -18,6 +18,7 @@ public sealed partial class FerryShuttleWindow : FancyWindow,
         RobustXamlLoader.Load(this);
         LaunchButton.OnPressed += OnLaunchButtonPressed;
 
+
     }
 
     private void OnLaunchButtonPressed(BaseButton.ButtonEventArgs obj)
@@ -25,9 +26,10 @@ public sealed partial class FerryShuttleWindow : FancyWindow,
         OnLaunchPressed?.Invoke();
     }
 
-    /*public void UpdateState(EmergencyConsoleBoundUserInterfaceState scc)
+    public void UpdateState(FerryConsoleBoundUserInterfaceState state)
     {
-    }*/
+        LaunchButton.Disabled = !state.AllowSend;
+    }
 
 }
 
