@@ -4,9 +4,16 @@ namespace Content.Server.Shuttles.Components;
 
 public sealed partial class FerryComponent : Component
 {
-    [DataField("location")]
-    public EntityUid Location;
+    [DataField("station")]
+    public EntityUid Station;
 
     [DataField("destination")]
     public EntityUid Destination;
+
+    [DataField("location")]
+    public EntityUid Location;
+
+    public bool CanSend = true;
+
+
 }

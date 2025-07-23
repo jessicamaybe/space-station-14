@@ -1,43 +1,15 @@
-using System.Linq;
-using System.Numerics;
-using System.Threading;
-using Content.Server.Access.Systems;
-using Content.Server.Administration.Logs;
-using Content.Server.Administration.Managers;
-using Content.Server.Chat.Systems;
-using Content.Server.Communications;
 using Content.Server.DeviceNetwork.Systems;
-using Content.Server.GameTicking.Events;
-using Content.Server.Pinpointer;
-using Content.Server.Popups;
-using Content.Server.RoundEnd;
-using Content.Server.Screens.Components;
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Events;
-using Content.Server.Station.Components;
-using Content.Server.Station.Events;
 using Content.Server.Station.Systems;
-using Content.Shared.Access.Systems;
-using Content.Shared.CCVar;
-using Content.Shared.Database;
-using Content.Shared.DeviceNetwork;
-using Content.Shared.DeviceNetwork.Components;
-using Content.Shared.GameTicking;
-using Content.Shared.Localizations;
-using Content.Shared.Shuttles.Components;
-using Content.Shared.Shuttles.Events;
-using Content.Shared.Tag;
-using Content.Shared.Tiles;
+using Content.Shared.Shuttles.BUIStates;
 using Robust.Server.GameObjects;
-using Robust.Shared.Audio.Systems;
-using Robust.Shared.Configuration;
 using Robust.Shared.EntitySerialization.Systems;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
-using Robust.Shared.Utility;
 
 namespace Content.Server.Shuttles.Systems;
 
@@ -60,7 +32,66 @@ public sealed partial class FerrySystem : EntitySystem
 
     public override void Initialize()
     {
+        base.Initialize();
+        SubscribeLocalEvent<FerryComponent, ComponentStartup>(OnFerryStartup);
+
+        SubscribeLocalEvent<FerryComponent, FTLStartedEvent>(OnFerryFTLStarted);
+        SubscribeLocalEvent<FerryComponent, FTLCompletedEvent>(OnFerryFTLComplete);
+
         InitializeFerryConsole();
+    }
+
+
+    private void OnFerryStartup(EntityUid uid, FerryComponent component, ComponentStartup args)
+    {
+        if (!HasComp<MapGridComponent>(uid))
+            return;
+    }
+
+    private void UpdateConsoles(EntityUid uid, FerryComponent component)
+    {
+        var query = EntityQueryEnumerator<FerryConsoleComponent>();
+        Log.Debug("queried");
+
+        while (query.MoveNext(out var consoleUid, out var consoleComponent))
+        {
+            Log.Debug("found console");
+            if (consoleComponent.Entity != uid)
+            {
+                Log.Debug("not same?");
+                continue;
+            }
+
+            _uiSystem.SetUiState(consoleUid, FerryConsoleUiKey.Key, new FerryConsoleBoundUserInterfaceState()
+            {
+                AllowSend = component.CanSend,
+
+            });
+
+        }
+    }
+
+    private void OnFerryFTLStarted(EntityUid uid, FerryComponent component, ref FTLStartedEvent args)
+    {
+        if (!HasComp<FerryComponent>(args.Entity))
+            return;
+
+        Log.Debug("FTL Started");
+        component.Location = args.TargetCoordinates.EntityId;
+        component.CanSend = false;
+        UpdateConsoles(uid, component);
+
+    }
+
+    private void OnFerryFTLComplete(EntityUid uid, FerryComponent component, ref FTLCompletedEvent args)
+    {
+        if (!HasComp<FerryComponent>(args.Entity))
+            return;
+
+        Log.Debug("FTL completed");
+        component.Location = args.MapUid;
+        component.CanSend = true;
+        UpdateConsoles(uid, component);
     }
 
 }

@@ -248,6 +248,8 @@
   description: Handles authorization to early launch the shuttle.
   components:
   - type: FerryConsole
+    components:
+    - type: Ferry
   - type: AccessReader
     access:
     - [ Command ]
