@@ -36,10 +36,7 @@ public sealed partial class FerrySystem : EntitySystem
             return;
 
         if (!TryComp(component.Entity, out TransformComponent? shuttleXform) || shuttleXform.GridUid == null)
-        {
-            Log.Debug("xform?");
             return;
-        }
 
         var shuttleGridUid = shuttleXform.GridUid;
 
@@ -79,10 +76,7 @@ public sealed partial class FerrySystem : EntitySystem
     private EntityUid? GetFerry(EntityUid uid, FerryConsoleComponent? component = null)
     {
         if (!Resolve(uid, ref component))
-        {
-            Log.Debug("First Resolve Null");
             return null;
-        }
 /*
         var stationUid = _station.GetOwningStation(uid);
 
@@ -110,14 +104,12 @@ public sealed partial class FerrySystem : EntitySystem
             {
                 if (!HasComp(xform.GridUid, compType.Component.GetType()))
                 {
-                    Log.Debug("Component not found");
                     continue;
                 }
 
                 return cUid;
             }
         }
-        Log.Debug("We suck");
         return null;
     }
 
