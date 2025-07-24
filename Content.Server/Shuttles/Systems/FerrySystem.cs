@@ -48,15 +48,10 @@ public sealed partial class FerrySystem : EntitySystem
             return;
 
         if (!TryComp(uid, out TransformComponent? xform))
-        {
-            Log.Debug("no uid?? WHAT?");
             return;
-        }
 
         if (_station.GetStationInMap(xform.MapID) is not { } station)
             return;
-
-        Log.Debug(station.ToString());
 
         //Station
         Log.Debug("Added station");
@@ -65,7 +60,6 @@ public sealed partial class FerrySystem : EntitySystem
         var destinationQuery = EntityQueryEnumerator<ArrivalsSourceComponent>(); // TODO: Do specific docking tagging
         while (destinationQuery.MoveNext(out uid, out _))
         {
-            Log.Debug("Added Destination");
             component.Destination = uid;
         }
 
@@ -75,11 +69,9 @@ public sealed partial class FerrySystem : EntitySystem
     private void UpdateConsoles(EntityUid uid, FerryComponent component)
     {
         var query = EntityQueryEnumerator<FerryConsoleComponent>();
-        Log.Debug("queried");
 
         while (query.MoveNext(out var consoleUid, out var consoleComponent))
         {
-            Log.Debug("found console");
             if (consoleComponent.Entity != uid)
                 continue;
 
