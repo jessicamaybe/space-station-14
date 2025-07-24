@@ -1,6 +1,7 @@
 using Content.Server.DeviceNetwork.Systems;
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Events;
+using Content.Server.Station.Components;
 using Content.Server.Station.Systems;
 using Content.Shared.Shuttles.BUIStates;
 using Robust.Server.GameObjects;
@@ -33,7 +34,7 @@ public sealed partial class FerrySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FerryComponent, ComponentStartup>(OnFerryStartup);
+        SubscribeLocalEvent<FerryComponent, ComponentStartup>(OnComponentStartup);
 
         SubscribeLocalEvent<FerryComponent, FTLStartedEvent>(OnFerryFTLStarted);
         SubscribeLocalEvent<FerryComponent, FTLCompletedEvent>(OnFerryFTLComplete);
@@ -41,11 +42,34 @@ public sealed partial class FerrySystem : EntitySystem
         InitializeFerryConsole();
     }
 
-
-    private void OnFerryStartup(EntityUid uid, FerryComponent component, ComponentStartup args)
+    private void OnComponentStartup(EntityUid uid, FerryComponent component, ComponentStartup args)
     {
         if (!HasComp<MapGridComponent>(uid))
             return;
+
+        if (!TryComp(uid, out TransformComponent? xform))
+        {
+            Log.Debug("no uid?? WHAT?");
+            return;
+        }
+
+        if (_station.GetStationInMap(xform.MapID) is not { } station)
+            return;
+
+        Log.Debug(station.ToString());
+
+        //Station
+        Log.Debug("Added station");
+        component.Station = station;
+
+        var destinationQuery = EntityQueryEnumerator<ArrivalsSourceComponent>(); // TODO: Do specific docking tagging
+        while (destinationQuery.MoveNext(out uid, out _))
+        {
+            Log.Debug("Added Destination");
+            component.Destination = uid;
+        }
+
+
     }
 
     private void UpdateConsoles(EntityUid uid, FerryComponent component)
@@ -57,10 +81,7 @@ public sealed partial class FerrySystem : EntitySystem
         {
             Log.Debug("found console");
             if (consoleComponent.Entity != uid)
-            {
-                Log.Debug("not same?");
                 continue;
-            }
 
             _uiSystem.SetUiState(consoleUid, FerryConsoleUiKey.Key, new FerryConsoleBoundUserInterfaceState()
             {

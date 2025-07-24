@@ -4,11 +4,15 @@ using Content.Shared.Shuttles.Events;
 using Content.Shared.Shuttles.BUIStates;
 using Content.Shared.Shuttles.Components;
 using Content.Shared.Station.Components;
+using Content.Shared.Tag;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Shuttles.Systems;
 
 public sealed partial class FerrySystem : EntitySystem
 {
+
+    private static readonly ProtoId<TagPrototype> DockTag = "DockMining";
 
     private void InitializeFerryConsole()
     {
@@ -24,29 +28,43 @@ public sealed partial class FerrySystem : EntitySystem
             Log.Debug("Ferry Shuttle NULL");
     }
 
+
     private void OnSendFerryShuttle(EntityUid uid, FerryConsoleComponent component, FerrySendShipMessage args)
     {
-        if (!TryComp(component.Entity, out TransformComponent? xform) || xform.GridUid == null)
+
+        if (!TryComp<FerryComponent>(component.Entity, out var ferry))
+            return;
+
+        if (!TryComp(component.Entity, out TransformComponent? shuttleXform) || shuttleXform.GridUid == null)
         {
             Log.Debug("xform?");
             return;
         }
 
-        var shuttleGridUid = xform.GridUid;
+        var shuttleGridUid = shuttleXform.GridUid;
 
-        if (!TryGetDock(out var dock))
-        {
-            Log.Debug("Can't get destination");
+
+        if (!TryComp<ShuttleComponent>(shuttleGridUid, out var shuttleComponent))
             return;
-        }
 
-        if (TryComp<ShuttleComponent>(shuttleGridUid, out var shuttleComponent))
-            _shuttles.FTLToDock(shuttleGridUid.Value, shuttleComponent,dock);
+
+        if (ferry.Location == ferry.Destination)
+        {
+            //if (TryGetDestination(out var dock))
+            Log.Debug("FTLing to station");
+            _shuttles.FTLToDock(shuttleGridUid.Value, shuttleComponent, ferry.Station, null, null, DockTag);
+        }
+        else
+        {
+            Log.Debug("FTLing to destination");
+            _shuttles.FTLToDock(shuttleGridUid.Value, shuttleComponent, ferry.Destination, null, null, DockTag);
+        }
 
         Log.Debug("we should have ftl'd");
     }
+    /*
 
-    private bool TryGetDock(out EntityUid uid)
+    private bool TryGetDestination(out EntityUid uid)
     {
         var dockQuery = EntityQueryEnumerator<ArrivalsSourceComponent>(); // TODO: Do specific docking tagging
 
@@ -56,6 +74,7 @@ public sealed partial class FerrySystem : EntitySystem
         }
         return false;
     }
+    */
 
     private EntityUid? GetFerry(EntityUid uid, FerryConsoleComponent? component = null)
     {
