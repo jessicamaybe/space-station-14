@@ -18,8 +18,37 @@ public sealed partial class FerrySystem : EntitySystem
     {
         SubscribeLocalEvent<FerryConsoleComponent, ComponentStartup>(OnFerryConsoleStartup);
         SubscribeLocalEvent<FerryConsoleComponent, FerrySendShipMessage>(OnSendFerryShuttle);
+        SubscribeLocalEvent<FerryConsoleComponent, FerryConsoleUpdateEvent>(OnFerryUpdate);
     }
 
+
+    private void OnFerryUpdate(EntityUid uid, FerryConsoleComponent component, FerryConsoleUpdateEvent args)
+    {
+        Log.Debug("FerrySystem Update");
+
+        if (args.Uid != component.Entity)
+            return;
+
+        var location = args.Ferry.Location;
+
+        if (!TryComp(args.Uid, out TransformComponent? xform))
+        {
+            Log.Debug("Xform issue");
+            return;
+        }
+
+        var locationName = "Space";
+
+        if (_station.GetStationInMap(xform.MapID) is { } stationId)
+            locationName = Name(stationId);
+
+        _uiSystem.SetUiState(uid, FerryConsoleUiKey.Key, new FerryConsoleBoundUserInterfaceState()
+        {
+            AllowSend = args.Ferry.CanSend,
+            LocationName =  locationName,
+        });
+
+    }
 
     private void OnFerryConsoleStartup(EntityUid uid, FerryConsoleComponent component, ComponentStartup args)
     {
@@ -43,7 +72,6 @@ public sealed partial class FerrySystem : EntitySystem
 
         if (!TryComp<ShuttleComponent>(shuttleGridUid, out var shuttleComponent))
             return;
-
 
         if (ferry.Location == ferry.Destination)
         {

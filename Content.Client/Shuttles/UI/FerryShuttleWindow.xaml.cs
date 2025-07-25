@@ -29,6 +29,16 @@ public sealed partial class FerryShuttleWindow : FancyWindow,
     public void UpdateState(FerryConsoleBoundUserInterfaceState state)
     {
         LaunchButton.Disabled = !state.AllowSend;
+
+        if (state.LocationName == null)
+        {
+            Location.Text = "Unknown";
+        }
+        else
+        {
+            Location.Text = state.LocationName;
+        }
+
     }
 
 }

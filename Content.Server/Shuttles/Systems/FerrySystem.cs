@@ -65,6 +65,9 @@ public sealed partial class FerrySystem : EntitySystem
 
     private void UpdateConsoles(EntityUid uid, FerryComponent component)
     {
+        var ev = new FerryConsoleUpdateEvent(uid, component);
+        RaiseLocalEvent(uid, ref ev, false);
+
         var query = EntityQueryEnumerator<FerryConsoleComponent>();
 
         while (query.MoveNext(out var consoleUid, out var consoleComponent))
@@ -72,13 +75,10 @@ public sealed partial class FerrySystem : EntitySystem
             if (consoleComponent.Entity != uid)
                 continue;
 
-            _uiSystem.SetUiState(consoleUid, FerryConsoleUiKey.Key, new FerryConsoleBoundUserInterfaceState()
-            {
-                AllowSend = component.CanSend,
-
-            });
+            RaiseLocalEvent(consoleUid, ref ev, false);
 
         }
+
     }
 
     private void OnFerryFTLStarted(EntityUid uid, FerryComponent component, ref FTLStartedEvent args)
@@ -87,7 +87,7 @@ public sealed partial class FerrySystem : EntitySystem
             return;
 
         Log.Debug("FTL Started");
-        component.Location = args.TargetCoordinates.EntityId;
+        //component.Location = component.Location;
         component.CanSend = false;
         UpdateConsoles(uid, component);
 

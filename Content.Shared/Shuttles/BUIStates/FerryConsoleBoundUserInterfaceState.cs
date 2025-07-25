@@ -7,6 +7,7 @@ namespace Content.Shared.Shuttles.BUIStates;
 public sealed class FerryConsoleBoundUserInterfaceState : BoundUserInterfaceState
 {
     public bool AllowSend;
+    public string? LocationName;
 
 }
 
