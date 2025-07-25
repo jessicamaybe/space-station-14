@@ -52,9 +52,6 @@ public sealed partial class FerrySystem : EntitySystem
 
         if (_station.GetStationInMap(xform.MapID) is not { } station)
             return;
-
-        //Station
-        Log.Debug("Added station");
         component.Station = station;
 
         var destinationQuery = EntityQueryEnumerator<ArrivalsSourceComponent>(); // TODO: Do specific docking tagging
