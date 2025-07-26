@@ -17,17 +17,7 @@ namespace Content.Server.Shuttles.Systems;
 public sealed partial class FerrySystem : EntitySystem
 {
 
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly IPrototypeManager _protoManager = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly ActorSystem _actor = default!;
-    [Dependency] private readonly DeviceNetworkSystem _deviceNetworkSystem = default!;
-    [Dependency] private readonly MapLoaderSystem _loader = default!;
-    [Dependency] private readonly MetaDataSystem _metaData = default!;
-    [Dependency] private readonly SharedMapSystem _mapSystem = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly ShuttleSystem _shuttles = default!;
-    [Dependency] private readonly StationSpawningSystem _stationSpawning = default!;
     [Dependency] private readonly StationSystem _station = default!;
     [Dependency] private readonly UserInterfaceSystem _uiSystem = default!;
 
@@ -44,6 +34,7 @@ public sealed partial class FerrySystem : EntitySystem
 
     private void OnComponentStartup(EntityUid uid, FerryComponent component, ComponentStartup args)
     {
+
         if (!HasComp<MapGridComponent>(uid))
             return;
 
@@ -54,13 +45,11 @@ public sealed partial class FerrySystem : EntitySystem
             return;
         component.Station = station;
 
-        var destinationQuery = EntityQueryEnumerator<ArrivalsSourceComponent>(); // TODO: Do specific docking tagging
+        var destinationQuery = EntityQueryEnumerator<FerryDestinationComponent>(); // TODO: Do specific docking tagging
         while (destinationQuery.MoveNext(out uid, out _))
         {
             component.Destination = uid;
         }
-
-
     }
 
     private void UpdateConsoles(EntityUid uid, FerryComponent component)
