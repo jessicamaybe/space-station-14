@@ -53,8 +53,11 @@ public sealed partial class FerrySystem : EntitySystem
     private void OnFerryConsoleStartup(EntityUid uid, FerryConsoleComponent component, ComponentStartup args)
     {
         component.Entity = GetFerry(uid, component);
-        if (component.Entity == null)
-            Log.Debug("Ferry Shuttle NULL");
+        if (!TryComp(component.Entity, out FerryComponent? ferryComponent))
+            return;
+
+        var ev = new FerryConsoleUpdateEvent(uid, ferryComponent);
+        RaiseLocalEvent(component.Entity.Value, ref ev, false);
     }
 
 
