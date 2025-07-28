@@ -12,7 +12,7 @@ namespace Content.Server.Shuttles.Systems;
 public sealed partial class FerrySystem : EntitySystem
 {
 
-    private static readonly ProtoId<TagPrototype> DockTag = "DockMining";
+    private static readonly ProtoId<TagPrototype> DockTag = "DockMining"; //TODO: Yeah
 
     private void InitializeFerryConsole()
     {
@@ -24,8 +24,6 @@ public sealed partial class FerrySystem : EntitySystem
 
     private void OnFerryUpdate(EntityUid uid, FerryConsoleComponent component, FerryConsoleUpdateEvent args)
     {
-        Log.Debug("FerrySystem Update");
-
         if (args.Uid != component.Entity)
             return;
 
@@ -37,12 +35,14 @@ public sealed partial class FerrySystem : EntitySystem
             return;
         }
 
-        var locationName = "Space";
+        var locationName = "Space"; // TODO: Localize this
 
         if (_station.GetStationInMap(xform.MapID) is { } stationId)
             locationName = Name(stationId);
 
-        _uiSystem.SetUiState(uid, FerryConsoleUiKey.Key, new FerryConsoleBoundUserInterfaceState()
+        _uiSystem.SetUiState(uid,
+            FerryConsoleUiKey.Key,
+            new FerryConsoleBoundUserInterfaceState()
         {
             AllowSend = args.Ferry.CanSend,
             LocationName =  locationName,
@@ -72,23 +72,17 @@ public sealed partial class FerrySystem : EntitySystem
 
         var shuttleGridUid = shuttleXform.GridUid;
 
-
         if (!TryComp<ShuttleComponent>(shuttleGridUid, out var shuttleComponent))
             return;
 
-        if (ferry.Location == ferry.Destination)
+        if (ferry.Location == ferry.Station)
         {
-            //if (TryGetDestination(out var dock))
-            Log.Debug("FTLing to station");
-            _shuttles.FTLToDock(shuttleGridUid.Value, shuttleComponent, ferry.Station, null, null, DockTag);
+            _shuttles.FTLToDock(shuttleGridUid.Value, shuttleComponent, ferry.Destination, null, null, DockTag);
         }
         else
         {
-            Log.Debug("FTLing to destination");
-            _shuttles.FTLToDock(shuttleGridUid.Value, shuttleComponent, ferry.Destination, null, null, DockTag);
+            _shuttles.FTLToDock(shuttleGridUid.Value, shuttleComponent, ferry.Station, null, null);
         }
-
-        Log.Debug("we should have ftl'd");
     }
 
     private EntityUid? GetFerry(EntityUid uid, FerryConsoleComponent? component = null)
@@ -96,7 +90,7 @@ public sealed partial class FerrySystem : EntitySystem
         if (!Resolve(uid, ref component))
             return null;
 
-        // I know this sucks but needs device linking or something idunno
+        // TODO: I know this sucks but needs device linking or something idunno
         var query = AllEntityQuery<FerryComponent, TransformComponent>();
 
         while (query.MoveNext(out var cUid, out _, out var xform))

@@ -1,10 +1,10 @@
 meta:
   format: 7
   category: Grid
-  engineVersion: 264.0.0
+  engineVersion: 265.0.0
   forkId: ""
   forkVersion: ""
-  time: 07/19/2025 21:43:44
+  time: 07/28/2025 20:29:57
   entityCount: 70
 maps: []
 grids:
@@ -115,6 +115,7 @@ entities:
         chunkSize: 4
     - type: GasTileOverlay
     - type: RadiationGridResistance
+    - type: Ferry
 - proto: AirCanister
   entities:
   - uid: 39
@@ -130,15 +131,9 @@ entities:
   - uid: 54
     components:
     - type: Transform
-      rot: 3.141592653589793 rad
+      rot: 1.5707963267948966 rad
       pos: 3.5,-1.5
       parent: 1
-    - type: Door
-      secondsUntilStateChange: -102.61976
-      state: Opening
-    - type: DeviceLinkSource
-      lastSignals:
-        DoorStatus: True
 - proto: APCBasic
   entities:
   - uid: 55
