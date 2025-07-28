@@ -71,7 +71,7 @@ public sealed partial class FerrySystem : EntitySystem
 
         component.Station = largestGrid;
 
-        SetupMiningStation();
+        SetupMiningStation(); //TODO: Do this better
 
         var destinationQuery = EntityQueryEnumerator<FerryDestinationComponent>(); // TODO: Do specific docking tagging
         while (destinationQuery.MoveNext(out uid, out _))
