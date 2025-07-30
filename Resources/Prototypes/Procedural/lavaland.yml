@@ -1,0 +1,50 @@
+- type: dungeonConfig
+  id: LavaLand
+  layers:
+  - !type:PrototypeDunGen
+    proto: LavaLandBlob
+    inheritDungeons: All
+  - !type:EntityTableDunGen
+    minCount: 7
+    maxCount: 12
+    table:
+      id: VGRoidInteriorRoomMarker
+  # Fill
+  - !type:PrototypeDunGen
+    proto: VGRoidFill
+    inheritDungeons: All
+
+- type: dungeonConfig
+  id: LavaLandBlob
+  layers:
+  - !type:NoiseDistanceDunGen
+    size: 272, 272
+    distanceConfig: !type:DunGenEuclideanSquaredDistance
+      blendWeight: 0.80
+    layers:
+    - tile: FloorBasalt
+      threshold: 0.50
+      noise:
+        frequency: 0.010
+        noiseType: OpenSimplex2
+        fractalType: FBm
+        octaves: 5
+        lacunarity: 2
+        gain: 0.5
+
+
+- type: biomeTemplate
+  id: LavaLandBiome
+  layers:
+  # Fill basalt
+  - !type:BiomeTileLayer
+    threshold: -1
+    tile: FloorBasalt
+
+
+  - !type:BiomeEntityLayer
+    allowedTiles:
+    - FloorBasalt
+    threshold: -1
+    entities:
+    - WallRockBasalt

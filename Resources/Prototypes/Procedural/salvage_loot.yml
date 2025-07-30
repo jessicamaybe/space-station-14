@@ -2,6 +2,7 @@
 # Main loot table for random spawns
 - type: salvageLoot
   id: SalvageLoot
+  guaranteed: true
   loots:
     - !type:RandomSpawnsLoot
       entries:

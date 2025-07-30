@@ -1,17 +1,22 @@
+using System.Threading;
 using Content.Server.DeviceNetwork.Systems;
 using Content.Server.Parallax;
+using Content.Server.Procedural;
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Events;
 using Content.Server.Station.Components;
 using Content.Server.Station.Systems;
 using Content.Shared.CCVar;
+using Content.Shared.Construction.EntitySystems;
 using Content.Shared.Parallax.Biomes;
+using Content.Shared.Procedural;
 using Content.Shared.Salvage;
 using Content.Shared.Shuttles.BUIStates;
 using Content.Shared.Shuttles.Components;
 using Content.Shared.Tiles;
 using Robust.Server.GameObjects;
 using Robust.Shared.Configuration;
+using Robust.Shared.CPUJob.JobQueues.Queues;
 using Robust.Shared.EntitySerialization.Systems;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Player;
@@ -28,18 +33,24 @@ public sealed partial class FerrySystem : EntitySystem
     [Dependency] private readonly ShuttleSystem _shuttles = default!;
     [Dependency] private readonly StationSystem _station = default!;
     [Dependency] private readonly UserInterfaceSystem _uiSystem = default!;
-    [Dependency] private readonly MapLoaderSystem _loader = default!;
     [Dependency] private readonly SharedMapSystem _mapSystem = default!;
+    [Dependency] private readonly MapLoaderSystem _mapLoader = default!;
     [Dependency] private readonly MetaDataSystem _metaData = default!;
     [Dependency] private readonly BiomeSystem _biomes = default!;
-    [Dependency] private readonly IConfigurationManager _cfgManager = default!;
-    [Dependency] private readonly IPrototypeManager _protoManager = default!;
+    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly IEntityManager _entManager  = default!;
+    [Dependency] private readonly IGameTiming _timing = default!;
+    [Dependency] private readonly ILogManager _logManager = default!;
+    [Dependency] private readonly AnchorableSystem _anchorable = default!;
+    [Dependency] private readonly DungeonSystem _dungeon = default!;
 
-    private readonly List<ProtoId<BiomeTemplatePrototype>> _miningBiomeOptions = new()
-    {
-        "Lava",
-    };
+
+    private const double SalvageJobTime = 0.002;
+
+
+    private const double DungeonJobTime = 0.005;
+    private readonly JobQueue _ferryJobQueue = new(DungeonJobTime);
 
     public override void Initialize()
     {
@@ -51,6 +62,16 @@ public sealed partial class FerrySystem : EntitySystem
 
         InitializeFerryConsole();
     }
+
+    public override void Update(float frameTime)
+    {
+        base.Update(frameTime);
+        _ferryJobQueue.Process();
+    }
+
+    private static readonly ProtoId<BiomeTemplatePrototype> MiningBiome = "LavaLandBiome";
+    private static readonly ProtoId<DungeonConfigPrototype> DungeonConfig = "LavaLand";
+
 
     private void OnComponentStartup(EntityUid uid, FerryComponent component, ComponentStartup args)
     {
@@ -70,14 +91,10 @@ public sealed partial class FerrySystem : EntitySystem
             return;
 
         component.Station = largestGrid;
+        component.Location = component.Station;
 
-        SetupMiningStation(); //TODO: Do this better
+        SetupMiningPlanet(component);
 
-        var destinationQuery = EntityQueryEnumerator<FerryDestinationComponent>(); // TODO: Do specific docking tagging
-        while (destinationQuery.MoveNext(out uid, out _))
-        {
-            component.Destination = uid;
-        }
     }
 
     private void UpdateConsoles(EntityUid uid, FerryComponent component)
@@ -116,24 +133,44 @@ public sealed partial class FerrySystem : EntitySystem
         UpdateConsoles(uid, component);
     }
 
-    private void SetupMiningStation()
+    private void SetupMiningPlanet(FerryComponent component)
     {
-        var path = new ResPath("/Maps/Misc/miningoutpost.yml"); //TODO: maybe a cvar
+        //
+        // Shitty shitty shitty planet generation, this is just testing stuff TODO: PELASE REMOVE THIS
+        //
+        var path = new ResPath("/Maps/Misc/miningoutpost.yml");
         _mapSystem.CreateMap(out var mapId, runMapInit: false);
         var mapUid = _mapSystem.GetMap(mapId);
 
-        if (!_loader.TryLoadGrid(mapId, path, out var grid))
+        if (!_mapLoader.TryLoadGrid(mapId, path, out var outpostGrid))
             return;
 
-        _metaData.SetEntityName(mapUid, "Mining Outpost"); //TODO: Localize this
+        if (!TryComp(mapUid, out TransformComponent? mapTransform))
+        {
+            Log.Debug("no map transform?");
+            return;
+        }
 
-        EnsureComp<FerryDestinationComponent>(grid.Value);
-        EnsureComp<PreventPilotComponent>(grid.Value);
 
-        var template = _random.Pick(_miningBiomeOptions);
-        _biomes.EnsurePlanet(mapUid, _protoManager.Index(template));
+        _metaData.SetEntityName(mapUid, "Mining Outpost");
+
+        EnsureComp<FerryDestinationComponent>(outpostGrid.Value);
+        EnsureComp<PreventPilotComponent>(outpostGrid.Value);
+
+        _biomes.EnsurePlanet(mapUid, _prototypeManager.Index(MiningBiome));
+
+        if (!TryComp(mapUid, out MapGridComponent? mapGridComponent))
+            return;
 
         _mapSystem.InitializeMap(mapId);
+
+        // Do dungeon
+        var seed = _random.Next();
+        var dungeonPosition = Vector2i.Zero;
+
+        _dungeon.GenerateDungeon(_prototypeManager.Index(DungeonConfig), mapUid, mapGridComponent, dungeonPosition, seed);
+
+        component.Destination = outpostGrid.Value;
     }
 
 }
