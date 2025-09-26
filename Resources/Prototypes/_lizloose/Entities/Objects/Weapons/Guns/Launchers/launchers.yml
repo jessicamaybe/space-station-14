@@ -1,0 +1,39 @@
+- type: entity
+  name: grenade launcher
+  parent: [BaseWeaponLauncher, BaseGunWieldable, BaseSyndicateContraband]
+  id: WeaponLauncherRiot
+  description: PLOOP.
+  components:
+  - type: Sprite
+    sprite: _lizloose/Objects/Weapons/Guns/Launchers/riotgun.rsi
+    layers:
+    - state: icon
+      map: ["enum.GunVisualLayers.Base"]
+  - type: Clothing
+    sprite: _lizloose/Objects/Weapons/Guns/Launchers/riotgun.rsi
+    slots:
+    - Back
+    - suitStorage
+  - type: Item
+    size: Huge
+    shape:
+    - 0,0,4,2
+  - type: AmmoCounter
+  - type: Gun
+    fireRate: 1
+    selectedMode: SemiAuto
+    availableModes:
+    - SemiAuto
+    soundGunshot:
+      path: /Audio/Weapons/Guns/Gunshots/grenade_launcher.ogg
+  - type: BallisticAmmoProvider
+    whitelist:
+      tags:
+      - Grenade
+    capacity: 1
+    proto: GrenadeFlash
+    soundInsert:
+      path: /Audio/Weapons/Guns/MagIn/batrifle_magin.ogg
+  - type: GunRequiresWield
+  - type: StaticPrice
+    price: 10000
