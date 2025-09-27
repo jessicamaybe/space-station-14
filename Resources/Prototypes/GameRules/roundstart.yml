@@ -522,3 +522,9 @@
     - id: BasicDecalDirtMonospaceVariationPass
       prob: 0.50
       orGroup: monospaceDecals
+
+- type: entity
+  id: Spacemas
+  parent: BaseGameRule
+  components:
+  - type: SpacemasRule
