@@ -27,6 +27,8 @@
       - FakeNukeDisk # So you can't tell if the nuke disk is real or fake depending on if it can be wrapped or not.
   - type: LimitedCharges
     maxCharges: 30
+  - type: SpacemasScore
+    cheerScore: 2
 
 - type: entity
   parent: BaseItem
@@ -61,6 +63,8 @@
       params:
         volume: -4
     unwrapTrash: ParcelWrapTrash
+  - type: SpacemasScore
+    cheerScore: 4
   - type: Damageable
     damageContainer: Inorganic
   - type: Destructible

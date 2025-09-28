@@ -8,6 +8,8 @@
     sprite: Objects/Decoration/present.rsi
     layers:
       - state: present
+  - type: SpacemasScore
+    cheerScore: 1
 
 - type: entity
   id: Present
