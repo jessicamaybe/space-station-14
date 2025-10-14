@@ -1,25 +1,16 @@
-using System.Threading;
-using Content.Server.DeviceNetwork.Systems;
 using Content.Server.Parallax;
 using Content.Server.Procedural;
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Events;
-using Content.Server.Station.Components;
 using Content.Server.Station.Systems;
-using Content.Shared.CCVar;
 using Content.Shared.Construction.EntitySystems;
 using Content.Shared.Parallax.Biomes;
 using Content.Shared.Procedural;
-using Content.Shared.Salvage;
-using Content.Shared.Shuttles.BUIStates;
 using Content.Shared.Shuttles.Components;
-using Content.Shared.Tiles;
 using Robust.Server.GameObjects;
-using Robust.Shared.Configuration;
 using Robust.Shared.CPUJob.JobQueues.Queues;
 using Robust.Shared.EntitySerialization.Systems;
 using Robust.Shared.Map.Components;
-using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
@@ -84,10 +75,7 @@ public sealed partial class FerrySystem : EntitySystem
         if (_station.GetStationInMap(xform.MapID) is not { } station)
             return;
 
-        if (!TryComp<StationDataComponent>(station, out var stationData))
-            return;
-
-        if (_station.GetLargestGrid(stationData) is not { } largestGrid)
+        if (_station.GetLargestGrid(station) is not { } largestGrid)
             return;
 
         component.Station = largestGrid;

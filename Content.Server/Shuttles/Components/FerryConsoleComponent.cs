@@ -11,6 +11,9 @@ public sealed partial class FerryConsoleComponent : Component
     [DataField("components", required: true)]
     public ComponentRegistry Components = default!;
 
+    /// <summary>
+    /// The entity this console is controlling
+    /// </summary>
     [DataField("entity")]
     public EntityUid? Entity;
 }
