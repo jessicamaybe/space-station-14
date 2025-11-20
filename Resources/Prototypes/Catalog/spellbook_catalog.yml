@@ -1,5 +1,18 @@
 # Offensive
 - type: listing
+  id: SpellbookMagicMissile
+  name: Magic Missile
+  description: magic missile
+  productAction: ActionMagicMissile
+  cost:
+    WizCoin: 2
+  categories:
+  - SpellbookOffensive
+  conditions:
+  - !type:ListingLimitedStockCondition
+    stock: 1
+
+- type: listing
   id: SpellbookFireball
   name: spellbook-fireball-name
   description: spellbook-fireball-desc

@@ -1,11 +1,13 @@
 using Content.Server.Chat.Systems;
 using Content.Server.GameTicking;
 using Content.Server.GameTicking.Rules.Components;
+using Content.Server.Physics.Components;
 using Content.Shared.Magic;
 using Content.Shared.Magic.Events;
 using Content.Shared.Mind;
 using Content.Shared.Tag;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
 
 namespace Content.Server.Magic;
 
@@ -15,12 +17,16 @@ public sealed class MagicSystem : SharedMagicSystem
     [Dependency] private readonly GameTicker _gameTicker = default!;
     [Dependency] private readonly TagSystem _tag = default!;
     [Dependency] private readonly SharedMindSystem _mind = default!;
+    [Dependency] private readonly EntityLookupSystem _lookup = default!;
+    [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private readonly IRobustRandom _random = default!;
 
     private static readonly ProtoId<TagPrototype> InvalidForSurvivorAntagTag = "InvalidForSurvivorAntag";
 
     public override void Initialize()
     {
         base.Initialize();
+        SubscribeLocalEvent<MagicMissileSpellEvent>(OnMagicMissile);
     }
 
     public override void OnVoidApplause(VoidApplauseSpellEvent ev)
@@ -50,5 +56,43 @@ public sealed class MagicSystem : SharedMagicSystem
 
         if (!_gameTicker.IsGameRuleActive<SurvivorRuleComponent>())
             _gameTicker.StartGameRule(survivorRule);
+    }
+
+
+    /// <summary>
+    /// Handles the instant action (i.e. on the caster) attempting to spawn an entity.
+    /// </summary>
+    private void OnMagicMissile(MagicMissileSpellEvent args)
+    {
+        if (args.Handled)
+            return;
+
+        var transform = Transform(args.Performer);
+
+        var compType = _random.Pick(args.TargetComponent.Values).Component.GetType();
+
+        HashSet<Entity<IComponent>> chasetargets = new();
+        chasetargets.Clear();
+
+        _lookup.GetEntitiesInRange(compType, _transform.GetMapCoordinates(transform), args.Range, chasetargets, LookupFlags.Uncontained);
+
+        var count = 0;
+
+        foreach (var target in chasetargets)
+        {
+            if (args.Performer == target.Owner)
+                continue;
+
+            if (count > args.MaxMissiles)
+                continue;
+
+            var missile = Spawn(args.Prototype, transform.Coordinates);
+            EnsureComp<ChasingWalkComponent>(missile, out var chasingComp);
+            chasingComp.ChasingEntity = target;
+
+            count++;
+        }
+
+        args.Handled = true;
     }
 }

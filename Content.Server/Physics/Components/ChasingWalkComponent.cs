@@ -1,6 +1,8 @@
 
 using Content.Server.Administration.Systems;
+using Content.Server.Magic;
 using Content.Server.Physics.Controllers;
+using Content.Shared.Magic;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
@@ -9,7 +11,7 @@ namespace Content.Server.Physics.Components;
 /// <summary>
 /// A component which makes its entity chasing entity with selected component.
 /// </summary>
-[RegisterComponent, Access(typeof(ChasingWalkSystem), typeof(AdminVerbSystem)), AutoGenerateComponentPause]
+[RegisterComponent, Access(typeof(ChasingWalkSystem), typeof(AdminVerbSystem), typeof(SharedMagicSystem)), AutoGenerateComponentPause]
 public sealed partial class ChasingWalkComponent : Component
 {
     /// <summary>

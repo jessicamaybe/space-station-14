@@ -1,0 +1,17 @@
+- type: entity
+  parent: BaseAction
+  id: ActionMagicMissile
+  name: Magic Missile
+  description: Fires several, slow moving, magic projectiles at nearby targets.
+  components:
+  - type: Action
+    useDelay: 10
+    itemIconStyle: BigAction
+    icon:
+      sprite: Objects/Magic/magicactions.rsi
+      state: magicmissile
+  - type: InstantAction
+    event: !type:MagicMissileSpellEvent
+      prototype: MagicMissile
+      targetComponent:
+      - type: Stamina
