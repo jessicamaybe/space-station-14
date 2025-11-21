@@ -5,6 +5,7 @@ using Content.Server.Physics.Components;
 using Content.Shared.Magic;
 using Content.Shared.Magic.Events;
 using Content.Shared.Mind;
+using Content.Shared.Projectiles;
 using Content.Shared.Tag;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
@@ -88,7 +89,12 @@ public sealed class MagicSystem : SharedMagicSystem
 
             var missile = Spawn(args.Prototype, transform.Coordinates);
             EnsureComp<ChasingWalkComponent>(missile, out var chasingComp);
-            chasingComp.ChasingEntity = target;
+            chasingComp.ChasingEntity = target.Owner;
+            chasingComp.ImpulseInterval = 0.5f;
+            chasingComp.RotateWithImpulse = true;
+            
+            EnsureComp<ProjectileComponent>(missile, out var projectileComponent);
+            projectileComponent.Shooter = args.Performer;
 
             count++;
         }

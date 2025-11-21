@@ -3,14 +3,6 @@
   id: MagicMissile
   parent: BaseBullet
   components:
-  - type: Clickable
-  - type: Physics
-    bodyType: Dynamic
-    sleepingAllowed: false
-    linearDamping: 0
-    angularDamping: 0
-  - type: MovementIgnoreGravity
-    weightless: true
   - type: Sprite
     sprite: Objects/Weapons/Guns/Projectiles/magic.rsi
     layers:
@@ -31,8 +23,7 @@
   - type: StaminaDamageOnCollide
     damage: 100
   - type: ChasingWalk
-    NextChangeVectorTime: 300 #whatever
-    ImpulseInterval: 0.1
+    ImpulseInterval: 0.5
     minSpeed: 3
     maxSpeed: 5
     chasingComponent:
@@ -47,9 +38,7 @@
     impactEffect: BulletImpactEffectDisabler
     damage:
       types:
-        Heat: 0
+        Heat: 15
     soundHit:
       collection: WeakHit
     forceSound: true
-  - type: TimedDespawn
-    lifetime: 10
