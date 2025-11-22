@@ -41,7 +41,7 @@
       types:
         Heat: 15
     soundHit:
-      collection: WeakHit
+      path: /Audio/Magic/mm_hit.ogg
     forceSound: true
   - type: TimedDespawn #delete the egg after the chicken spawns
     lifetime: 3

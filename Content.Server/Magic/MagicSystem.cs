@@ -7,6 +7,7 @@ using Content.Shared.Magic.Events;
 using Content.Shared.Mind;
 using Content.Shared.Projectiles;
 using Content.Shared.Tag;
+using Robust.Shared.Audio.Systems;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 
@@ -21,6 +22,7 @@ public sealed class MagicSystem : SharedMagicSystem
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly SharedAudioSystem _audio = default!;
 
     private static readonly ProtoId<TagPrototype> InvalidForSurvivorAntagTag = "InvalidForSurvivorAntag";
 
@@ -74,9 +76,7 @@ public sealed class MagicSystem : SharedMagicSystem
 
         HashSet<Entity<IComponent>> chasetargets = new();
         chasetargets.Clear();
-
         _lookup.GetEntitiesInRange(compType, _transform.GetMapCoordinates(transform), args.Range, chasetargets, LookupFlags.Uncontained);
-
         var count = 0;
 
         foreach (var target in chasetargets)
@@ -84,7 +84,7 @@ public sealed class MagicSystem : SharedMagicSystem
             if (args.Performer == target.Owner)
                 continue;
 
-            if (count > args.MaxMissiles)
+            if (count >= args.MaxMissiles)
                 continue;
 
             var missile = Spawn(args.Prototype, transform.Coordinates);
@@ -92,13 +92,14 @@ public sealed class MagicSystem : SharedMagicSystem
             chasingComp.ChasingEntity = target.Owner;
             chasingComp.ImpulseInterval = 0.5f;
             chasingComp.RotateWithImpulse = true;
-            
+
             EnsureComp<ProjectileComponent>(missile, out var projectileComponent);
             projectileComponent.Shooter = args.Performer;
 
             count++;
         }
 
+        _audio.PlayPvs(args.Sound, args.Performer);
         args.Handled = true;
     }
 }

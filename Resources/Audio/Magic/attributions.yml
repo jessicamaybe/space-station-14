@@ -13,6 +13,13 @@
   license: CC-BY-SA-3.0
   source: https://github.com/tgstation/tgstation/commit/6fde7a49fcd56d6edb844cd31a04ce026065de8b
 
+- files: 
+  - magic_missile.ogg
+  - mm_hit.ogg
+  copyright: '"magic_missile.ogg", "mm_hit.ogg" by /tg/station'
+  license: CC-BY-SA-3.0
+  source: https://github.com/tgstation/tgstation/commit/6fde7a49fcd56d6edb844cd31a04ce026065de8b
+
 - files:
   - forcewall.ogg
   - knock.ogg

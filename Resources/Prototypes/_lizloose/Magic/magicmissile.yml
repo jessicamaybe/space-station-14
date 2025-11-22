@@ -5,8 +5,9 @@
   description: Fires several, slow moving, magic projectiles at nearby targets.
   components:
   - type: Action
-    useDelay: 10
+    useDelay: 20
     itemIconStyle: BigAction
+    raiseOnUser: false
     icon:
       sprite: Objects/Magic/magicactions.rsi
       state: magicmissile
@@ -15,5 +16,31 @@
       prototype: MagicMissile
       targetComponent:
       - type: Stamina
+      # TODO: figure out why this wont work on actions
+      sound: !type:SoundPathSpecifier
+        path: /Audio/Magic/magic_missile.ogg
   - type: SpeakOnAction
     sentence: FORTI GY AMA!
+  - type: ActionUpgrade
+    effectedLevels:
+      2: ActionMagicMissileII
+      3: ActionMagicMissileIII
+
+- type: entity
+  parent: ActionMagicMissile
+  id: ActionMagicMissileII
+  name: Magic Missile II
+  description: Magic Missile! Magic Missile!
+  components:
+  - type: Action
+    useDelay: 10
+
+
+- type: entity
+  parent: ActionMagicMissile
+  id: ActionMagicMissileIII
+  name: Magic Missile III
+  description: Magic Missile! Magic Missile! Magic Missile!
+  components:
+  - type: Action
+    useDelay: 6
