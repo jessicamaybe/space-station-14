@@ -5,8 +5,8 @@
   description: Pushes entities away from the user.
   components:
   - type: RepulseAttract
-    speed: 10
-    range: 5
+    speed: 3 # Changed from wizden
+    range: 8
     whitelist:
       components:
       - MobMover

@@ -43,3 +43,5 @@
     soundHit:
       collection: WeakHit
     forceSound: true
+  - type: TimedDespawn #delete the egg after the chicken spawns
+    lifetime: 3

@@ -15,3 +15,5 @@
       prototype: MagicMissile
       targetComponent:
       - type: Stamina
+  - type: SpeakOnAction
+    sentence: FORTI GY AMA!
