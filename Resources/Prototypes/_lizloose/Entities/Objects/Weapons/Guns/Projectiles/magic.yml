@@ -24,7 +24,7 @@
   - type: StaminaDamageOnCollide
     damage: 200
   - type: ChasingWalk
-    ImpulseInterval: 0.5
+    impulseInterval: 0.1
     minSpeed: 3
     maxSpeed: 5
     chasingComponent:

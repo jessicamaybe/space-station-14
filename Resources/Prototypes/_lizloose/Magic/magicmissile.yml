@@ -20,7 +20,7 @@
       sound: !type:SoundPathSpecifier
         path: /Audio/Magic/magic_missile.ogg
   - type: SpeakOnAction
-    sentence: FORTI GY AMA!
+    sentence: action-speech-spell-magicmissile
   - type: ActionUpgrade
     effectedLevels:
       2: ActionMagicMissileII
