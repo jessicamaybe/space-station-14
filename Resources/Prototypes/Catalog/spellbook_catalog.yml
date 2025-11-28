@@ -5,7 +5,7 @@
   description: magic missile
   productAction: ActionMagicMissile
   cost:
-    WizCoin: 2
+    WizCoin: 1
   categories:
   - SpellbookOffensive
   conditions:
