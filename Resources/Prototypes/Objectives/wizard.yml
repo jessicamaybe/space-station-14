@@ -21,6 +21,7 @@
     icon:
       sprite: Clothing/Head/Hats/wizardhat.rsi
       state: icon
+    difficulty: 1 # added for lizloose
 
 - type: entity
   parent: [BaseWizardObjective, BaseFreeObjective]

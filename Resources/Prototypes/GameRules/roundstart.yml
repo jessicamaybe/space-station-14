@@ -317,10 +317,18 @@
   parent: BaseGameRule
   id: BaseWizardRule
   components:
-  - type: AntagObjectives
-    objectives:
-    - WizardSurviveObjective
-    - WizardDemonstrateObjective
+#  - type: AntagObjectives
+#    objectives:
+#    - WizardSurviveObjective
+#    - WizardDemonstrateObjective
+  - type: AntagRandomObjectives # Changed for lizloose
+    sets:
+    - groups: WizardObjectiveGroups
+      maxPicks: 2
+    - groups: WizardObjectiveGroupsEscape
+      prob: 1.0
+      maxPicks: 1
+    maxDifficulty: 12
   - type: LoadMapRule
     mapPath: /Maps/Nonstations/wizardsden.yml
   - type: RuleGrids

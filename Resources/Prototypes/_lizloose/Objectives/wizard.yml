@@ -1,0 +1,101 @@
+- type: entity
+  parent: [BaseWizardObjective, BaseLivingObjective]
+  id: WizardHijackShuttleObjective
+  name: Hitch a ride to centcomm. Alone.
+  description: Show up to centcomm on the emergency shuttle. Make sure nobody else is on board.
+  components:
+  - type: Objective
+    difficulty: 3.5
+    icon:
+      sprite: Structures/Furniture/chairs.rsi
+      state: shuttle
+  - type: HijackShuttleCondition
+
+# stealing
+
+- type: entity
+  abstract: true
+  parent: [BaseWizardObjective, BaseStealObjective]
+  id: BaseWizardStealObjective
+  components:
+  - type: StealCondition
+    verifyMapExistence: false
+  - type: Objective
+    difficulty: 3.5
+  - type: ObjectiveLimit
+    limit: 2 # there is usually only 1 of each steal objective, have 2 max for drama
+
+- type: entity
+  parent: BaseWizardStealObjective
+  id: CaptainIDWizardStealObjective
+  components:
+  - type: StealCondition
+    stealGroup: CaptainIDCard
+
+- type: entity
+  parent: BaseWizardStealObjective
+  id: CaptainJetpackWizardStealObjective
+  components:
+  - type: StealCondition
+    stealGroup: JetpackCaptainFilled
+
+- type: entity
+  parent: BaseWizardStealObjective
+  id: NukeDiskWizardStealObjective
+  components:
+  - type: Objective
+    difficulty: 4
+  - type: StealCondition
+    stealGroup: NukeDisk
+    owner: objective-condition-steal-station
+
+- type: entity
+  parent: BaseWizardStealObjective
+  id: EnergyMagnumWizardStealObjective
+  components:
+  - type: Objective
+  - type: StealCondition
+    stealGroup: WeaponEnergyMagnum
+    owner: job-name-hos
+
+- type: entity
+  parent: BaseWizardStealObjective
+  id: HandTeleporterWizardStealObjective
+  components:
+  - type: StealCondition
+    stealGroup: HandTeleporter
+
+- type: entity
+  parent: BaseWizardStealObjective
+  id: CMOCrewMonitorWizardStealObjective
+  components:
+  - type: StealCondition
+    stealGroup: HandheldCrewMonitor
+
+
+- type: weightedRandom
+  id: WizardObjectiveGroups
+  weights:
+    WizardObjectiveGroupSteal: 1
+
+- type: weightedRandom
+  id: WizardObjectiveGroupSteal
+  weights:
+    CaptainIDWizardStealObjective: 1
+    CaptainJetpackWizardStealObjective: 1
+    NukeDiskStealObjective: 1
+    EnergyMagnumWizardStealObjective: 1
+    CMOCrewMonitorStealObjective: 1
+    HandTeleporterWizardStealObjective: 1
+
+- type: weightedRandom
+  id: WizardObjectiveGroupsEscape
+  weights:
+    WizardObjectiveGroupState: 1
+
+- type: weightedRandom
+  id: WizardObjectiveGroupState
+  weights:
+    WizardHijackShuttleObjective: 1
+    WizardSurviveObjective: 1
+
