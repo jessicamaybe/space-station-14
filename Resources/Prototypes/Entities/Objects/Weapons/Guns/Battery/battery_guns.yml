@@ -822,8 +822,30 @@
       - state: base
         map: ["enum.GunVisualLayers.Base"]
       - state: mag-unshaded-4
-        map: ["enum.GunVisualLayers.MagUnshaded"]
+        map: ["color", "enum.GunVisualLayers.MagUnshaded"]
         shader: unshaded
+  - type: GenericVisualizer
+    visuals:
+      enum.BatteryWeaponFireModeVisuals.State:
+        color:
+          BulletLaserSpreadNarrow: { color: "#ff0006"}
+          BulletDisablerSmgSpread: { color: "#5fcde4" }
+  - type: FireModeVisuals
+    inhandVisuals:
+      left:
+      - state: energy-inhand-left-color
+      right:
+      - state: energy-inhand-right-color
+    clothingVisuals:
+      back:
+      - state: equipped-BACKPACK-color
+      suitstorage:
+      - state: equipped-SUITSTORAGE-color
+    wieldedInhandVisuals:
+      left:
+      - state: wielded-energy-inhand-left-color
+      right:
+      - state: wielded-energy-inhand-right-color
   - type: MagazineVisuals
     magState: mag
     steps: 5
@@ -842,9 +864,11 @@
     fireModes:
     - proto: BulletLaserSpreadNarrow
       fireCost: 80
+      color: "#ff0006"
     - proto: BulletDisablerSmgSpread
       fireCost: 48
       pacifismAllowedMode: true
+      color: "#5fcde4"
   - type: Item
     size: Large
     sprite: Objects/Weapons/Guns/Battery/inhands_64x.rsi
@@ -913,8 +937,30 @@
     - state: base
       map: ["enum.GunVisualLayers.Base"]
     - state: mag-unshaded-1
-      map: ["enum.GunVisualLayers.MagUnshaded"]
+      map: ["enum.GunVisualLayers.MagUnshaded", "color"]
       shader: unshaded
+  - type: GenericVisualizer
+    visuals:
+      enum.BatteryWeaponFireModeVisuals.State:
+        color:
+          BoltTempgunCold: { color: "#a7ecde" }
+          BoltTempgunHot: { color: OrangeRed }
+  - type: FireModeVisuals
+    inhandVisuals:
+      left:
+      - state: inhand-left-color
+      right:
+      - state: inhand-right-color
+    wieldedInhandVisuals:
+      left:
+      - state: wielded-inhand-left-color
+      right:
+      - state: wielded-inhand-right-color
+    clothingVisuals:
+      back:
+      - state: equipped-BACKPACK-color
+      suitstorage:
+      - state: equipped-SUITSTORAGE-color
   - type: Appearance
   - type: Item
     size: Large
@@ -937,8 +983,10 @@
     fireModes:
     - proto: BoltTempgunCold
       fireCost: 100
+      color: "#a7ecde"
     - proto: BoltTempgunHot
       fireCost: 100
+      color: OrangeRed
   - type: Battery
     maxCharge: 1000
     startingCharge: 1000
