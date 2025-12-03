@@ -891,8 +891,15 @@
       map: [ "enum.GunVisualLayers.Base" ]
     - state: mag-unshaded-1
       visible: false
-      map: [ "enum.GunVisualLayers.MagUnshaded" ]
+      map: [ "enum.GunVisualLayers.MagUnshaded", "color" ]
       shader: unshaded
+  - type: GenericVisualizer
+    visuals:
+      enum.BatteryWeaponFireModeVisuals.State:
+        color:
+          BulletLaserMagnum: { color: "#ff0006" }
+          BulletLaserWindowPiercingMagnum: { color: OrangeRed }
+          BulletDisabler: { color: "#5fcde4" }
   - type: MagazineVisuals
     magState: mag
     steps: 4
@@ -916,11 +923,25 @@
     fireModes:
     - proto: BulletLaserMagnum
       fireCost: 150
+      color: "#ff0006"
     - proto: BulletLaserWindowPiercingMagnum
       fireCost: 150
+      color: OrangeRed
     - proto: BulletDisabler
       fireCost: 62.5
       pacifismAllowedMode: true
+      color: "#5fcde4"
+  - type: FireModeVisuals
+    inhandVisuals:
+      left:
+      - state: inhand-left-color
+      right:
+      - state: inhand-right-color
+    clothingVisuals:
+      suitstorage:
+      - state: equipped-SUITSTORAGE-color
+      belt:
+      - state: equipped-BELT-color
   - type: BatterySelfRecharger
     autoRechargeRate: 48
     autoRechargePauseTime: 10
