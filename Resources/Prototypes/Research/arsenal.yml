@@ -88,13 +88,13 @@
   id: AdvancedRiotControl
   name: research-technology-advanced-riot-control
   icon:
-    sprite: Objects/Weapons/Melee/truncheon.rsi
-    state: icon
+    sprite: Objects/Weapons/Melee/teleriot_shield.rsi
+    state: teleriot-on
   discipline: Arsenal
   tier: 1
   cost: 8000
   recipeUnlocks:
-  - Truncheon
+#  - Truncheon
   - TelescopicShield
   - HoloprojectorSecurity
   - WeaponDisablerSMG
