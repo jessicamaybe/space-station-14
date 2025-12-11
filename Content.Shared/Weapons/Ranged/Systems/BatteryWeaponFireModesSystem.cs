@@ -5,7 +5,6 @@ using Content.Shared.Interaction.Events;
 using Content.Shared.Popups;
 using Content.Shared.Verbs;
 using Content.Shared.Weapons.Ranged.Components;
-using Content.Shared.Weapons.Ranged.Events;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared.Weapons.Ranged.Systems;
@@ -144,6 +143,6 @@ public sealed class BatteryWeaponFireModesSystem : EntitySystem
     /// <param name="args"></param>
     private void OnComponentInit(Entity<BatteryWeaponFireModesComponent> ent, ref ComponentInit args)
     {
-        SetFireMode(ent, 0);
+        SetFireMode(ent.Owner, ent.Comp, 0);
     }
 }
