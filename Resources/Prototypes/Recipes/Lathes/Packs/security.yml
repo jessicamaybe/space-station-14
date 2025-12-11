@@ -127,7 +127,7 @@
 - type: latheRecipePack
   id: SecurityWeapons
   recipes:
-  - Truncheon
+#  - Truncheon
   - WeaponAdvancedLaser
   - WeaponLaserCannon
   - WeaponLaserCarbine

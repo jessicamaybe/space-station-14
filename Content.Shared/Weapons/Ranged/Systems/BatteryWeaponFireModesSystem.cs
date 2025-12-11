@@ -1,4 +1,3 @@
-using Content.Shared.Access.Components;
 using Content.Shared.Access.Systems;
 using Content.Shared.Database;
 using Content.Shared.Examine;
@@ -22,7 +21,7 @@ public sealed class BatteryWeaponFireModesSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
+        SubscribeLocalEvent<BatteryWeaponFireModesComponent, ComponentInit>(OnComponentInit);
         SubscribeLocalEvent<BatteryWeaponFireModesComponent, UseInHandEvent>(OnUseInHandEvent);
         SubscribeLocalEvent<BatteryWeaponFireModesComponent, GetVerbsEvent<Verb>>(OnGetVerb);
         SubscribeLocalEvent<BatteryWeaponFireModesComponent, ExaminedEvent>(OnExamined);
@@ -136,5 +135,15 @@ public sealed class BatteryWeaponFireModesSystem : EntitySystem
 
             _gun.UpdateShots((uid, batteryAmmoProviderComponent));
         }
+    }
+
+    /// <summary>
+    /// Initialize the appearance and firemode.
+    /// </summary>
+    /// <param name="ent"></param>
+    /// <param name="args"></param>
+    private void OnComponentInit(Entity<BatteryWeaponFireModesComponent> ent, ref ComponentInit args)
+    {
+        SetFireMode(ent, 0);
     }
 }
