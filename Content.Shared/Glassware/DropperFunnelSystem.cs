@@ -32,9 +32,11 @@ public sealed class DropperFunnelSystem : EntitySystem
             return;
 
 
-        var solution = _solutionContainer.SplitSolution(funnelSolution.Value, 0.01);
 
-        _solutionContainer.TryAddSolution(outletSolution.Value, solution);
+        var solution = _solutionContainer.SplitSolution(funnelSolution.Value, ent.Comp.Speed);
+
+        if (!_solutionContainer.TryAddSolution(outletSolution.Value, solution))
+            _solutionContainer.TryAddSolution(funnelSolution.Value, solution);
 
     }
 }

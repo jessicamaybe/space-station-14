@@ -11,5 +11,5 @@ public sealed partial class DropperFunnelComponent : Component
     ///
     /// </summary>
     [ViewVariables]
-    public int Speed = 10;
+    public int Speed = 1;
 }
