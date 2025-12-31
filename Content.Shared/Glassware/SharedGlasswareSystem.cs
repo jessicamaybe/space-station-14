@@ -15,6 +15,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
 {
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly SharedToolSystem _tool = default!;
+
     /// <inheritdoc/>
     public override void Initialize()
     {
@@ -84,7 +85,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
             return;
         }
 
-        var ev = new GlasswareChangeEvent();
+        var ev = new GlasswareChangeEvent(args.Dragged, ent.Owner);
         RaiseLocalEvent(ent, ref ev);
         draggedGlassware.OutletDevice = ent;
         ent.Comp.InletDevices.Add(args.Dragged);

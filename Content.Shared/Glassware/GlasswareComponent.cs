@@ -33,4 +33,12 @@ public struct GlasswareUpdateEvent
 [ByRefEvent]
 public struct GlasswareChangeEvent
 {
+    public EntityUid Origin;
+    public EntityUid Target;
+
+    public GlasswareChangeEvent(EntityUid origin, EntityUid target)
+    {
+        Origin = origin;
+        Target = target;
+    }
 }
