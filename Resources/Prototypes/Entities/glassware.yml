@@ -1,0 +1,43 @@
+- type: entity
+  parent: BaseItem
+  id: BaseGlassware
+  name: base glassware
+  components:
+  - type: Visibility
+    layer: 1
+  - type: Item
+    size: Normal
+  - type: Sprite
+    sprite: Objects/Specific/Chemistry/beaker.rsi
+    layers:
+    - state: beaker
+    - state: beaker1
+      map: ["enum.SolutionContainerLayers.Fill"]
+      visible: false
+  - type: Glassware
+
+
+
+- type: entity
+  parent: Beaker
+  id: GlasswareBeaker
+  name: glassware beaker
+  components:
+  - type: Glassware
+
+
+
+- type: entity
+  parent: LargeBeaker
+  id: GlasswareFunnel
+  name: glassware funnel
+  components:
+  - type: Glassware
+  - type: DropperFunnel
+  - type: Sprite
+    sprite: Objects/Specific/Chemistry/beaker_large.rsi
+    layers:
+    - state: beakerlarge
+    - state: beakerlarge1
+      map: ["enum.SolutionContainerLayers.Fill"]
+      visible: false
