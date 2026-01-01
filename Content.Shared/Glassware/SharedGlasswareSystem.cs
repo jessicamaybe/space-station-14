@@ -141,6 +141,10 @@ public sealed class SharedGlasswareSystem : EntitySystem
         RaiseNetworkEvent(ev);
     }
 
+    /// <summary>
+    /// Disconnects a glassware from its outlet
+    /// </summary>
+    /// <param name="ent"></param>
     public void RemoveGlasswareOutlet(Entity<GlasswareComponent> ent)
     {
         if (ent.Comp.OutletDevice == null)

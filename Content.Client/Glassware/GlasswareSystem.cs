@@ -50,7 +50,7 @@ public sealed class GlasswareSystem : EntitySystem
 
             var distance = Vector2.Distance(xformOrigin, xformTarget);
 
-            var scale = new Vector2(2, distance * 25); //I eyeballed 25 and it was the magic number. hooray...?
+            var scale = new Vector2(1.25f, distance * 25); //I eyeballed 25 and it was the magic number. hooray...?
 
             _spriteSystem.LayerSetScale((pipeEnt, spriteComponent), effectLayer, scale);
             _spriteSystem.LayerSetOffset((pipeEnt, spriteComponent), effectLayer, midpoint/2);
