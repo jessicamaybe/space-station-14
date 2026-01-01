@@ -16,14 +16,19 @@ public sealed class GlasswareSystem : EntitySystem
     /// <inheritdoc/>m
     public override void Initialize()
     {
-
-        SubscribeLocalEvent<GlasswareComponent, AppearanceChangeEvent>(OnAppearanceChange);
+        base.Initialize();
+        SubscribeNetworkEvent<GlasswareConnectEvent>(OnGlasswareConnect);
     }
 
-
-    private void OnAppearanceChange(Entity<GlasswareComponent> ent, ref AppearanceChangeEvent ev)
+    private void OnGlasswareConnect(GlasswareConnectEvent ev)
     {
-        if (!TryComp<GlasswareVisualizerComponent>(ent.Owner, out var glasswareVisualizer))
+        var origin = GetEntity(ev.Origin);
+        var target = GetEntity(ev.Target);
+
+        if (!TryComp<GlasswareVisualizerComponent>(origin, out var glasswareVisualizer))
+            return;
+
+        if (!TryComp<GlasswareComponent>(origin, out var originGlasswareComponent))
             return;
 
         foreach (var tubeSprite in glasswareVisualizer.TubeSprites)
@@ -31,20 +36,19 @@ public sealed class GlasswareSystem : EntitySystem
             Del(tubeSprite);
         }
 
-        if (ent.Comp.OutletDevice != null)
+        if (originGlasswareComponent.OutletDevice != null)
         {
-            var xformOrigin = Transform(ent.Owner).LocalPosition;
-            var xformTarget = Transform(ent.Comp.OutletDevice.Value).LocalPosition;
+            var xformOrigin = Transform(origin).LocalPosition;
+            var xformTarget = Transform(target).LocalPosition;
 
             var midpoint = xformTarget - xformOrigin;
 
-            var pipeEnt = Spawn(null, _transformSystem.GetMapCoordinates(ent.Owner));
+            var pipeEnt = Spawn(null, _transformSystem.GetMapCoordinates(origin));
             var spriteComponent = AddComp<SpriteComponent>(pipeEnt);
 
             var effectLayer = _spriteSystem.AddLayer((pipeEnt, spriteComponent), new SpriteSpecifier.Rsi(new ResPath("glassware.rsi"), "tube"));
 
             var distance = Vector2.Distance(xformOrigin, xformTarget);
-
 
             var scale = new Vector2(2, distance * 25); //I eyeballed 25 and it was the magic number. hooray...?
 

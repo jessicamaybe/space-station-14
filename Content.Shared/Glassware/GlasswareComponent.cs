@@ -1,6 +1,7 @@
 using Content.Shared.Tools;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Serialization;
 
 namespace Content.Shared.Glassware;
 
@@ -27,17 +28,18 @@ public sealed partial class GlasswareComponent : Component
 }
 
 [ByRefEvent]
-public struct GlasswareUpdateEvent
+public record struct GlasswareUpdateEvent()
 {
+    public bool Handled = false;
 }
 
-[ByRefEvent]
-public struct GlasswareChangeEvent
+[Serializable, NetSerializable]
+public sealed class GlasswareConnectEvent : EntityEventArgs
 {
-    public EntityUid Origin;
-    public EntityUid Target;
+    public NetEntity Origin;
+    public NetEntity Target;
 
-    public GlasswareChangeEvent(EntityUid origin, EntityUid target)
+    public GlasswareConnectEvent(NetEntity origin, NetEntity target)
     {
         Origin = origin;
         Target = target;

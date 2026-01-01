@@ -22,13 +22,13 @@ public sealed class DropperFunnelSystem : EntitySystem
             return;
 
 
-        if (!_solutionContainer.TryGetSolution(ent.Owner, "beaker", out var funnelSolution))
+        if (!_solutionContainer.TryGetSolution(ent.Owner, ent.Comp.SolutionName, out var funnelSolution))
             return;
 
         if (glasswareComponent.OutletDevice == null)
             return;
 
-        if (!_solutionContainer.TryGetSolution(glasswareComponent.OutletDevice.Value, "beaker", out var outletSolution))
+        if (!_solutionContainer.TryGetSolution(glasswareComponent.OutletDevice.Value, ent.Comp.SolutionName, out var outletSolution))
             return;
 
         var solution = _solutionContainer.SplitSolution(funnelSolution.Value, ent.Comp.Speed);
@@ -36,5 +36,9 @@ public sealed class DropperFunnelSystem : EntitySystem
         if (!_solutionContainer.TryAddSolution(outletSolution.Value, solution))
             _solutionContainer.TryAddSolution(funnelSolution.Value, solution);
 
+        args.Handled = true;
+
+        var ev = new GlasswareUpdateEvent();
+        RaiseLocalEvent(glasswareComponent.OutletDevice.Value, ref ev);
     }
 }

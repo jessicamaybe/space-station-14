@@ -31,6 +31,7 @@ public sealed class CondenserSystem : EntitySystem
 
         var currentContents = condenserSolution.Value.Comp.Solution.Contents.ShallowClone();
 
+
         _chemicalReactionSystem.FullyReactSolution(condenserSolution.Value);
 
         if (glasswareComponent.OutletDevice == null)
@@ -44,38 +45,34 @@ public sealed class CondenserSystem : EntitySystem
 
         var newContents = new List<ReagentQuantity>();
 
-        Log.Debug("---Looping through reagents---");
         foreach (var reactedContent in reactedContents)
         {
-            Log.Debug("Checking reagent: " + reactedContent);
             if (currentContents.Contains(reactedContent))
-            {
-                Log.Debug("    Reagent was already here!");
-                var index = currentContents.FindIndex(x => x.Reagent == reactedContent.Reagent);
-                if (reactedContent.Quantity > currentContents[index].Quantity)
-                {
-                    Log.Debug("         Reagent has more now! Probably from reaction?");
-                    var difference = reactedContent.Quantity - currentContents[index].Quantity;
-
-                    var outletRoom = outletSolution.Value.Comp.Solution.AvailableVolume;
-
-                    if (outletRoom < difference)
-                        difference = outletRoom;
-
-                    var removedAmount = _solutionContainer.RemoveReagent(condenserSolution.Value, reactedContent.Reagent, difference);
-                    _solutionContainer.TryAddReagent(outletSolution.Value, reactedContent.Reagent.Prototype, removedAmount);
-                }
                 continue;
+
+            if (!currentContents.Exists(x => x.Reagent == reactedContent.Reagent))
+                continue;
+            var index = currentContents.FindIndex(x => x.Reagent == reactedContent.Reagent);
+
+            if (reactedContent.Quantity > currentContents[index].Quantity)
+            {
+                var difference = reactedContent.Quantity - currentContents[index].Quantity;
+                var outletRoom = outletSolution.Value.Comp.Solution.AvailableVolume;
+
+                if (outletRoom < difference)
+                    difference = outletRoom;
+
+                var removedAmount = _solutionContainer.RemoveReagent(condenserSolution.Value, reactedContent.Reagent, difference);
+                _solutionContainer.TryAddReagent(outletSolution.Value, reactedContent.Reagent.Prototype, removedAmount);
             }
             newContents.Add(reactedContent);
         }
 
         foreach (var reagent in newContents)
         {
-            if (currentContents.Contains(reagent))
+            if (currentContents.Exists(x => x.Reagent == reagent.Reagent))
                 continue;
 
-            Log.Debug("New reagent: " + reagent);
             var outletRoom = outletSolution.Value.Comp.Solution.AvailableVolume;
             var amount = _solutionContainer.RemoveReagent(condenserSolution.Value, reagent.Reagent.Prototype, outletRoom);
             _solutionContainer.TryAddReagent(outletSolution.Value, reagent.Reagent.Prototype, amount);

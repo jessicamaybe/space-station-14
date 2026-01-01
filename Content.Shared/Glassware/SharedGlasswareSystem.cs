@@ -40,14 +40,14 @@ public sealed class SharedGlasswareSystem : EntitySystem
     {
         base.Update(frameTime);
         // Set all of our eye rotations to the relevant values.
-        var query = EntityQueryEnumerator<GlasswareComponent>();
+        var query = EntityQueryEnumerator<GlasswareComponent, DropperFunnelComponent>();
 
-        while (query.MoveNext(out var uid, out var comp))
+        while (query.MoveNext(out var uid, out var glasswareComponent, out var dropperFunnelComponent))
         {
-            if (_timing.CurTime < comp.NextUpdate)
+            if (_timing.CurTime < glasswareComponent.NextUpdate)
                 continue;
 
-            comp.NextUpdate = _timing.CurTime + comp.UpdateInterval;
+            glasswareComponent.NextUpdate = _timing.CurTime + glasswareComponent.UpdateInterval;
 
             var ev = new GlasswareUpdateEvent();
             RaiseLocalEvent(uid, ref ev);
@@ -61,7 +61,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
     private void OnGlasswareCanDragDropped(Entity<GlasswareComponent> ent, ref CanDropDraggedEvent args)
     {
-        // Easily drawn-from thing can be dragged onto easily refillable thing.
         if (!HasComp<GlasswareComponent>(args.Target))
             return;
 
@@ -79,35 +78,14 @@ public sealed class SharedGlasswareSystem : EntitySystem
         if (!TryComp<GlasswareComponent>(args.Dragged, out var draggedGlassware))
             return;
 
-        if (ent.Comp.InletDevices.Contains(args.Dragged))
-            return;
-
         if (ent.Comp.OutletDevice == args.Dragged) //Prevent connecting one thing to another and then directly back
         {
             Log.Debug("Circular loop check");
             return;
         }
 
-        var ev = new GlasswareChangeEvent(args.Dragged, ent.Owner);
-        RaiseLocalEvent(ent, ref ev);
-
-
-        if (draggedGlassware.OutletDevice != null &&
-            TryComp<GlasswareComponent>(draggedGlassware.OutletDevice.Value, out var oldoutletComp))
-        {
-            if (TryComp<AppearanceComponent>(draggedGlassware.OutletDevice.Value, out var appearanceOldOutlet))
-                _appearance.QueueUpdate(draggedGlassware.OutletDevice.Value, appearanceOldOutlet);
-
-            oldoutletComp.InletDevices.Remove(args.Dragged);
-        }
-
-        draggedGlassware.OutletDevice = ent;
-
-        ent.Comp.InletDevices.Add(args.Dragged);
-
-        if (TryComp<AppearanceComponent>(args.Dragged, out var appearance))
-            _appearance.QueueUpdate(args.Dragged, appearance);
-
+        var dragged = (args.Dragged, draggedGlassware);
+        ConnectGlassware(dragged, ent);
     }
 
     private void OnPickupAttempt(Entity<GlasswareComponent> ent, ref GettingPickedUpAttemptEvent args)
@@ -141,20 +119,63 @@ public sealed class SharedGlasswareSystem : EntitySystem
     }
 
     /// <summary>
-    /// Removes a piece of glassware from its network
+    /// Connect the output of ent to an input on target
+    /// </summary>
+    /// <param name="ent"></param>
+    /// <param name="target"></param>
+    public void ConnectGlassware(Entity<GlasswareComponent> ent, Entity<GlasswareComponent> target)
+    {
+        if (target.Comp.InletDevices.Contains(ent.Owner) || ent.Comp.OutletDevice == target.Owner)
+            return;
+
+        if (ent.Comp.OutletDevice != null)
+            RemoveGlasswareOutlet(ent);
+
+        ent.Comp.OutletDevice = target.Owner;
+        target.Comp.InletDevices.Add(ent.Owner);
+
+        Dirty(ent);
+        Dirty(target);
+
+        var ev = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(target));
+        RaiseNetworkEvent(ev);
+    }
+
+    public void RemoveGlasswareOutlet(Entity<GlasswareComponent> ent)
+    {
+        if (ent.Comp.OutletDevice == null)
+            return;
+
+        var outletEnt = ent.Comp.OutletDevice.Value;
+
+        if (!TryComp<GlasswareComponent>(outletEnt, out var outletDeviceComp))
+            return;
+
+        outletDeviceComp.InletDevices.Remove(ent);
+
+        Dirty(ent.Comp.OutletDevice.Value, outletDeviceComp);
+
+        var ev = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(ent.Comp.OutletDevice.Value));
+        RaiseNetworkEvent(ev);
+        ent.Comp.OutletDevice = null;
+        Dirty(ent);
+    }
+
+    /// <summary>
+    /// Removes a piece of glassware from the network
     /// </summary>
     /// <param name="ent"></param>
     public void RemoveGlassware(Entity<GlasswareComponent> ent)
     {
-        if (TryComp<AppearanceComponent>(ent, out var appearance))
-            _appearance.QueueUpdate(ent.Owner, appearance);
-
-
         foreach (var inlet in ent.Comp.InletDevices)
         {
             if (!TryComp<GlasswareComponent>(inlet, out var inletGlassware))
                 continue;
             inletGlassware.OutletDevice = null;
+            DirtyEntity(inlet);
+
+            var ev = new GlasswareConnectEvent(GetNetEntity(inlet), GetNetEntity(ent));
+            RaiseNetworkEvent(ev);
 
             if (TryComp<AppearanceComponent>(inlet, out var inletAppearance))
                 _appearance.QueueUpdate(inlet, inletAppearance);
@@ -165,12 +186,18 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
         ent.Comp.OutletDevice = null;
         ent.Comp.InletDevices.Clear();
-        var ev = new GlasswareChangeEvent();
-        RaiseLocalEvent(ent, ref ev);
+
+        DirtyEntity(ent);
+
+        var ev2 = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(ent));
+        RaiseNetworkEvent(ev2);
     }
 
     private void OnGlasswareMoved(Entity<GlasswareComponent> ent, ref MoveEvent args)
     {
+        if (ent.Comp.InletDevices.Count == 0 && ent.Comp.OutletDevice == null)
+            return;
+
         RemoveGlassware(ent);
     }
 
