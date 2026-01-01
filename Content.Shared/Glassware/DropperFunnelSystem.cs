@@ -1,6 +1,7 @@
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.FixedPoint;
+using Robust.Shared.Timing;
 
 namespace Content.Shared.Glassware;
 
@@ -8,6 +9,8 @@ public sealed class DropperFunnelSystem : EntitySystem
 {
 
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
+    [Dependency] private readonly IGameTiming _timing = default!;
+
     /// <inheritdoc/>
     public override void Initialize()
     {
@@ -38,7 +41,15 @@ public sealed class DropperFunnelSystem : EntitySystem
 
         args.Handled = true;
 
-        var ev = new GlasswareUpdateEvent();
-        RaiseLocalEvent(glasswareComponent.OutletDevice.Value, ref ev);
+        if (TryComp<GlasswareComponent>(glasswareComponent.OutletDevice, out var outlet))
+        {
+            if (_timing.CurTime < outlet.NextUpdate)
+                return;
+
+            outlet.NextUpdate = _timing.CurTime + outlet.UpdateInterval;
+
+            var ev = new GlasswareUpdateEvent();
+            RaiseLocalEvent(glasswareComponent.OutletDevice.Value, ref ev);
+        }
     }
 }

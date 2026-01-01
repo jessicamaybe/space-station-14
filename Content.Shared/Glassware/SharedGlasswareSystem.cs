@@ -178,10 +178,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
             RaiseNetworkEvent(ev);
         }
 
-        if (TryComp<GlasswareComponent>(ent.Comp.OutletDevice, out var outletComp))
-            outletComp.InletDevices.Remove(ent.Owner);
-
-        ent.Comp.OutletDevice = null;
+        RemoveGlasswareOutlet(ent);
         ent.Comp.InletDevices.Clear();
 
         DirtyEntity(ent);
