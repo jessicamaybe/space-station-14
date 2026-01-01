@@ -1,3 +1,4 @@
+using Content.Shared.Destructible;
 using Content.Shared.DragDrop;
 using Content.Shared.Interaction;
 using Content.Shared.Item;
@@ -15,6 +16,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
 {
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly SharedToolSystem _tool = default!;
+    [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -32,6 +34,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
         SubscribeLocalEvent<GlasswareComponent, ToolUseAttemptEvent>(OnToolUseAttempt);
 
         SubscribeLocalEvent<GlasswareComponent, MoveEvent>(OnGlasswareMoved);
+        SubscribeLocalEvent<GlasswareComponent, DestructionAttemptEvent>(OnDestruction);
     }
     public override void Update(float frameTime)
     {
@@ -87,8 +90,24 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
         var ev = new GlasswareChangeEvent(args.Dragged, ent.Owner);
         RaiseLocalEvent(ent, ref ev);
+
+
+        if (draggedGlassware.OutletDevice != null &&
+            TryComp<GlasswareComponent>(draggedGlassware.OutletDevice.Value, out var oldoutletComp))
+        {
+            if (TryComp<AppearanceComponent>(draggedGlassware.OutletDevice.Value, out var appearanceOldOutlet))
+                _appearance.QueueUpdate(draggedGlassware.OutletDevice.Value, appearanceOldOutlet);
+
+            oldoutletComp.InletDevices.Remove(args.Dragged);
+        }
+
         draggedGlassware.OutletDevice = ent;
+
         ent.Comp.InletDevices.Add(args.Dragged);
+
+        if (TryComp<AppearanceComponent>(args.Dragged, out var appearance))
+            _appearance.QueueUpdate(args.Dragged, appearance);
+
     }
 
     private void OnPickupAttempt(Entity<GlasswareComponent> ent, ref GettingPickedUpAttemptEvent args)
@@ -127,12 +146,22 @@ public sealed class SharedGlasswareSystem : EntitySystem
     /// <param name="ent"></param>
     public void RemoveGlassware(Entity<GlasswareComponent> ent)
     {
+        if (TryComp<AppearanceComponent>(ent, out var appearance))
+            _appearance.QueueUpdate(ent.Owner, appearance);
+
+
         foreach (var inlet in ent.Comp.InletDevices)
         {
             if (!TryComp<GlasswareComponent>(inlet, out var inletGlassware))
                 continue;
             inletGlassware.OutletDevice = null;
+
+            if (TryComp<AppearanceComponent>(inlet, out var inletAppearance))
+                _appearance.QueueUpdate(inlet, inletAppearance);
         }
+
+        if (TryComp<GlasswareComponent>(ent.Comp.OutletDevice, out var outletComp))
+            outletComp.InletDevices.Remove(ent.Owner);
 
         ent.Comp.OutletDevice = null;
         ent.Comp.InletDevices.Clear();
@@ -142,6 +171,11 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
     private void OnGlasswareMoved(Entity<GlasswareComponent> ent, ref MoveEvent args)
     {
-        //RemoveGlassware(ent);
+        RemoveGlassware(ent);
+    }
+
+    private void OnDestruction(Entity<GlasswareComponent> ent, ref DestructionAttemptEvent args)
+    {
+        RemoveGlassware(ent);
     }
 }

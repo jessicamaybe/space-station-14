@@ -15,7 +15,8 @@
       map: ["enum.SolutionContainerLayers.Fill"]
       visible: false
   - type: Glassware
-
+  - type: GlasswareVisualizer
+  - type: Appearance
 
 
 - type: entity
@@ -23,16 +24,18 @@
   id: GlasswareBeaker
   name: glassware beaker
   components:
+  - type: Appearance
   - type: Glassware
-
-
+  - type: GlasswareVisualizer
 
 - type: entity
   parent: LargeBeaker
   id: GlasswareFunnel
   name: glassware funnel
   components:
+  - type: Appearance
   - type: Glassware
+  - type: GlasswareVisualizer
   - type: DropperFunnel
   - type: Sprite
     sprite: Objects/Specific/Chemistry/beaker_large.rsi
@@ -41,3 +44,25 @@
     - state: beakerlarge1
       map: ["enum.SolutionContainerLayers.Fill"]
       visible: false
+
+
+- type: entity
+  parent: LargeBeaker
+  id: GlasswareCondenser
+  name: glassware condenser
+  components:
+  - type: Appearance
+  - type: Glassware
+  - type: GlasswareVisualizer
+  - type: Condenser
+  - type: Sprite
+    sprite: Objects/Specific/Chemistry/beaker_cryostasis.rsi
+    layers:
+    - state: beakernoreact
+  - type: SolutionContainerVisuals
+    maxFillLevels: 0
+  - type: SolutionContainerManager
+    solutions:
+      beaker:
+        maxVol: 100
+        canReact: false

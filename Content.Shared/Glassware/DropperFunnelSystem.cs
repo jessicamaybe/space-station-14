@@ -31,8 +31,6 @@ public sealed class DropperFunnelSystem : EntitySystem
         if (!_solutionContainer.TryGetSolution(glasswareComponent.OutletDevice.Value, "beaker", out var outletSolution))
             return;
 
-
-
         var solution = _solutionContainer.SplitSolution(funnelSolution.Value, ent.Comp.Speed);
 
         if (!_solutionContainer.TryAddSolution(outletSolution.Value, solution))

@@ -1,9 +1,5 @@
 using System.Numerics;
-using Content.Client.Beam;
-using Content.Shared.Beam;
-using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Glassware;
-using Robust.Client.Debugging;
 using Robust.Client.GameObjects;
 using Robust.Shared.Utility;
 
@@ -21,34 +17,43 @@ public sealed class GlasswareSystem : EntitySystem
     public override void Initialize()
     {
 
-        SubscribeLocalEvent<GlasswareComponent, GlasswareChangeEvent>(OnGlasswareChange);
+        SubscribeLocalEvent<GlasswareComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
 
-    private void OnGlasswareChange(Entity<GlasswareComponent> ent, ref GlasswareChangeEvent ev)
+    private void OnAppearanceChange(Entity<GlasswareComponent> ent, ref AppearanceChangeEvent ev)
     {
-        //if (!TryComp<SpriteComponent>(ev.Origin, out var spriteComponent))
-        //    return;
+        if (!TryComp<GlasswareVisualizerComponent>(ent.Owner, out var glasswareVisualizer))
+            return;
 
-        var xformOrigin = Transform(ev.Origin).LocalPosition;
-        var xformTarget = Transform(ev.Target).LocalPosition;
+        foreach (var tubeSprite in glasswareVisualizer.TubeSprites)
+        {
+            Del(tubeSprite);
+        }
 
-        var midpoint = xformTarget - xformOrigin;
+        if (ent.Comp.OutletDevice != null)
+        {
+            var xformOrigin = Transform(ent.Owner).LocalPosition;
+            var xformTarget = Transform(ent.Comp.OutletDevice.Value).LocalPosition;
 
-        var pipeEnt = Spawn(null, _transformSystem.GetMapCoordinates(ev.Origin));
-        var spriteComponent = AddComp<SpriteComponent>(pipeEnt);
+            var midpoint = xformTarget - xformOrigin;
 
-        var effectLayer = _spriteSystem.AddLayer((pipeEnt, spriteComponent), new SpriteSpecifier.Rsi(new ResPath("glassware.rsi"), "tube"));
+            var pipeEnt = Spawn(null, _transformSystem.GetMapCoordinates(ent.Owner));
+            var spriteComponent = AddComp<SpriteComponent>(pipeEnt);
 
-        var distance = Vector2.Distance(xformOrigin, xformTarget);
-        Log.Debug("Distance: ", distance);
+            var effectLayer = _spriteSystem.AddLayer((pipeEnt, spriteComponent), new SpriteSpecifier.Rsi(new ResPath("glassware.rsi"), "tube"));
 
-        var scale = new Vector2(2, distance * 25);
+            var distance = Vector2.Distance(xformOrigin, xformTarget);
 
 
-        _spriteSystem.LayerSetScale((pipeEnt, spriteComponent), effectLayer, scale);
-        _spriteSystem.LayerSetOffset((pipeEnt, spriteComponent), effectLayer, midpoint/2);
-        _spriteSystem.LayerSetRotation((pipeEnt, spriteComponent), effectLayer, midpoint.ToWorldAngle() );
+            var scale = new Vector2(2, distance * 25); //I eyeballed 25 and it was the magic number. hooray...?
+
+            _spriteSystem.LayerSetScale((pipeEnt, spriteComponent), effectLayer, scale);
+            _spriteSystem.LayerSetOffset((pipeEnt, spriteComponent), effectLayer, midpoint/2);
+            _spriteSystem.LayerSetRotation((pipeEnt, spriteComponent), effectLayer, midpoint.ToWorldAngle() );
+
+            glasswareVisualizer.TubeSprites.Add(pipeEnt);
+        }
     }
 
 }

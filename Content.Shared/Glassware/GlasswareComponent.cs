@@ -5,14 +5,14 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.Glassware;
 
 
-[RegisterComponent, NetworkedComponent]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class GlasswareComponent : Component
 {
 
-    [ViewVariables]
+    [ViewVariables, AutoNetworkedField]
     public List<EntityUid> InletDevices = new();
 
-    [ViewVariables]
+    [ViewVariables, AutoNetworkedField]
     public EntityUid? OutletDevice;
 
     [ViewVariables]
@@ -23,6 +23,7 @@ public sealed partial class GlasswareComponent : Component
 
     [ViewVariables]
     public ProtoId<ToolQualityPrototype> Tool { get; private set; } = "Screwing";
+
 }
 
 [ByRefEvent]
