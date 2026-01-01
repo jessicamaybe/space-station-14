@@ -176,9 +176,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
             var ev = new GlasswareConnectEvent(GetNetEntity(inlet), GetNetEntity(ent));
             RaiseNetworkEvent(ev);
-
-            if (TryComp<AppearanceComponent>(inlet, out var inletAppearance))
-                _appearance.QueueUpdate(inlet, inletAppearance);
         }
 
         if (TryComp<GlasswareComponent>(ent.Comp.OutletDevice, out var outletComp))
