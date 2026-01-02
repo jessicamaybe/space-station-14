@@ -26,8 +26,6 @@ public sealed partial class GlasswareComponent : Component
     [ViewVariables]
     public ProtoId<ToolQualityPrototype> Tool { get; private set; } = "Screwing";
 
-
-
 }
 
 [ByRefEvent]

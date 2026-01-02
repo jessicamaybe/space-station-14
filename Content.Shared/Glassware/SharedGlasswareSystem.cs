@@ -219,8 +219,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
     /// <param name="ent"></param>
     public void UpdateGlasswareTube(Entity<GlasswareComponent> ent)
     {
-        Log.Debug("Updating tube for: " + ent);
-
         if (!TryComp<GlasswareVisualizerComponent>(ent, out var glasswareVisualizerComponent))
             return;
 

@@ -79,6 +79,7 @@
 - type: entity
   id: GlasswareTube
   name: glassware tube
+  description: Fuck you, it's a tube
   components:
   - type: Transform
     anchored: false

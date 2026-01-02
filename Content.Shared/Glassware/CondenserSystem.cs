@@ -51,7 +51,10 @@ public sealed class CondenserSystem : EntitySystem
                 continue;
 
             if (!currentContents.Exists(x => x.Reagent == reactedContent.Reagent))
+            {
+                newContents.Add(reactedContent);
                 continue;
+            }
             var index = currentContents.FindIndex(x => x.Reagent == reactedContent.Reagent);
 
             if (reactedContent.Quantity > currentContents[index].Quantity)
