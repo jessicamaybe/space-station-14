@@ -18,52 +18,17 @@ public sealed class GlasswareSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeNetworkEvent<GlasswareConnectEvent>(OnGlasswareConnect);
+        SubscribeLocalEvent<GlasswareTubeVisualizerComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
-    private void OnGlasswareConnect(GlasswareConnectEvent ev)
+    private void OnAppearanceChange(Entity<GlasswareTubeVisualizerComponent> ent, ref AppearanceChangeEvent ev)
     {
-        var origin = GetEntity(ev.Origin);
-        var target = GetEntity(ev.Target);
-
-        if (!TryComp<GlasswareVisualizerComponent>(origin, out var originGlasswareVisualizer))
+        if (!TryComp<SpriteComponent>(ent, out var sprite))
             return;
 
-        if (!TryComp<GlasswareVisualizerComponent>(origin, out var targetGlasswareVisualizer))
-            return;
+        var scale = new Vector2(1.25f, ent.Comp.TubeLength * 8); //I eyeballed 8 and it was the magic number for a tube sprite 4px long
 
-        if (!TryComp<GlasswareComponent>(origin, out var originGlasswareComponent))
-            return;
+        _spriteSystem.SetScale((ent, sprite), scale);
 
-        foreach (var tubeSprite in originGlasswareVisualizer.TubeSprites)
-        {
-            Del(tubeSprite);
-        }
-
-        if (originGlasswareComponent.OutletDevice != null)
-        {
-            var xformOrigin = Transform(origin).LocalPosition + originGlasswareVisualizer.OutletLocation;
-            var xformTarget = Transform(target).LocalPosition + targetGlasswareVisualizer.InletLocation;
-
-            var midpoint = xformTarget - xformOrigin;
-
-            var pipeEnt = Spawn(null, _transformSystem.GetMapCoordinates(origin));
-            var spriteComponent = AddComp<SpriteComponent>(pipeEnt);
-
-            var effectLayer = _spriteSystem.AddLayer((pipeEnt, spriteComponent), new SpriteSpecifier.Rsi(new ResPath("glassware.rsi"), "tube"));
-
-            var distance = Vector2.Distance(xformOrigin, xformTarget);
-            Log.Debug("Distance: " + distance);
-
-            var scale = new Vector2(1.25f, distance * 8); //I eyeballed 25 and it was the magic number. hooray...?
-
-            _spriteSystem.SetScale((pipeEnt, spriteComponent), scale);
-            _spriteSystem.SetOffset((pipeEnt, spriteComponent), midpoint/2);
-
-            _spriteSystem.SetRotation((pipeEnt, spriteComponent), midpoint.ToWorldAngle());
-
-            originGlasswareVisualizer.TubeSprites.Add(pipeEnt);
-        }
     }
-
 }

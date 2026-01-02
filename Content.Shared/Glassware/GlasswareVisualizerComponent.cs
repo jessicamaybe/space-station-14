@@ -6,21 +6,21 @@ namespace Content.Shared.Glassware;
 /// <summary>
 /// This is used for...
 /// </summary>
-[RegisterComponent, NetworkedComponent]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class GlasswareVisualizerComponent : Component
 {
-
+    [DataField]
     public List<EntityUid> TubeSprites = new();
 
     /// <summary>
     /// Sprite offset for where the inlet tube should connect to
     /// </summary>
-    [DataField]
-    public Vector2 InletLocation = new();
+    [DataField, AutoNetworkedField]
+    public Vector2 InletOffset = new();
 
     /// <summary>
     /// Sprite offset for where the outlet tube should connect to
     /// </summary>
-    [DataField]
-    public Vector2 OutletLocation = new();
+    [DataField, AutoNetworkedField]
+    public Vector2 OutletOffset = new();
 }

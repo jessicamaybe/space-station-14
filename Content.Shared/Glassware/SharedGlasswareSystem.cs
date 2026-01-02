@@ -1,3 +1,4 @@
+using System.Numerics;
 using Content.Shared.Destructible;
 using Content.Shared.DeviceLinking.Events;
 using Content.Shared.DragDrop;
@@ -22,6 +23,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
     [Dependency] private readonly SharedToolSystem _tool = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
+    [Dependency] private readonly SharedTransformSystem _transform = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -139,14 +141,12 @@ public sealed class SharedGlasswareSystem : EntitySystem
         ent.Comp.OutletDevice = target.Owner;
         target.Comp.InletDevices.Add(ent.Owner);
 
-        _physics.SetBodyType(ent, BodyType.Static);
-        _physics.SetBodyType(target, BodyType.Static);
-
         Dirty(ent);
         Dirty(target);
 
-        var ev = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(target));
-        RaiseNetworkEvent(ev);
+        //var ev = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(target));
+        //RaiseNetworkEvent(ev);
+        UpdateGlasswareTube(ent);
     }
 
     /// <summary>
@@ -167,8 +167,10 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
         Dirty(ent.Comp.OutletDevice.Value, outletDeviceComp);
 
-        var ev = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(ent.Comp.OutletDevice.Value));
-        RaiseNetworkEvent(ev);
+        //var ev = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(ent.Comp.OutletDevice.Value));
+        //RaiseNetworkEvent(ev);
+
+        UpdateGlasswareTube(ent);
         ent.Comp.OutletDevice = null;
         Dirty(ent);
     }
@@ -184,21 +186,79 @@ public sealed class SharedGlasswareSystem : EntitySystem
             if (!TryComp<GlasswareComponent>(inlet, out var inletGlassware))
                 continue;
             inletGlassware.OutletDevice = null;
+            UpdateGlasswareTube((inlet, inletGlassware));
             DirtyEntity(inlet);
-
-            var ev = new GlasswareConnectEvent(GetNetEntity(inlet), GetNetEntity(ent));
-            RaiseNetworkEvent(ev);
         }
 
         RemoveGlasswareOutlet(ent);
         ent.Comp.InletDevices.Clear();
 
-        _physics.SetBodyType(ent, BodyType.Dynamic);
-
         DirtyEntity(ent);
+        UpdateGlasswareTube(ent);
+    }
 
-        var ev2 = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(ent));
-        RaiseNetworkEvent(ev2);
+    public bool TryGetOutlet(Entity<GlasswareComponent> ent, out Entity<GlasswareComponent>? outlet)
+    {
+        outlet = null;
+
+        if (ent.Comp.OutletDevice == null)
+            return false;
+
+        if (!TryComp<GlasswareComponent>(ent.Comp.OutletDevice.Value, out var outletGlassware))
+            return false;
+
+        outlet = (ent.Comp.OutletDevice.Value, outletGlassware);
+        return true;
+    }
+
+    /// <summary>
+    /// Updates the visualization for a piece of glassware
+    /// Will spawn the tube between the specified entity and it's outlet entity
+    /// Probably jank as fuck
+    /// </summary>
+    /// <param name="ent"></param>
+    public void UpdateGlasswareTube(Entity<GlasswareComponent> ent)
+    {
+        Log.Debug("Updating tube for: " + ent);
+
+        if (!TryComp<GlasswareVisualizerComponent>(ent, out var glasswareVisualizerComponent))
+            return;
+
+        foreach (var tubes in glasswareVisualizerComponent.TubeSprites)
+        {
+            Del(tubes);
+        }
+
+        if (!TryGetOutlet(ent, out var outlet))
+            return;
+
+        if (!TryComp<GlasswareVisualizerComponent>(outlet, out var outletVisualizerComponent))
+            return;
+
+        glasswareVisualizerComponent.TubeSprites.Clear();
+
+        var xformOrigin = Transform(ent);
+        var xformTarget = Transform(outlet.Value);
+
+        //TODO: Incorporate offsets to make the art niceer, maybe figure out a way to make this less shit idk.
+        var midpoint = (xformTarget.LocalPosition + xformOrigin.LocalPosition) / 2;
+        var rotation = (xformTarget.LocalPosition - xformOrigin.LocalPosition).ToWorldAngle();
+
+        var tube = PredictedSpawnAtPosition("GlasswareTube", xformOrigin.Coordinates);
+
+        _transform.SetLocalPositionRotation(tube, midpoint, rotation);
+
+        var comp = EnsureComp<GlasswareTubeVisualizerComponent>(tube);
+        comp.TubeLength = Vector2.Distance(xformOrigin.LocalPosition, xformTarget.LocalPosition);
+
+        glasswareVisualizerComponent.TubeSprites.Add(tube);
+        Dirty(outlet.Value, outletVisualizerComponent);
+        Dirty(tube, comp);
+
+        if (!TryComp<AppearanceComponent>(tube, out var appearanceComponent))
+            return;
+
+        _appearance.QueueUpdate(tube, appearanceComponent);
     }
 
     private void OnGlasswareMoved(Entity<GlasswareComponent> ent, ref MoveEvent args)

@@ -27,8 +27,8 @@
   - type: Appearance
   - type: Glassware
   - type: GlasswareVisualizer
-    inletLocation: 1,1
-    outletLocation: 0,0.30
+    inletOffset: 1,1
+    outletOffset: 0,0.30
   - type: SolutionContainerManager
     solutions:
       beaker:
@@ -43,8 +43,8 @@
   - type: Appearance
   - type: Glassware
   - type: GlasswareVisualizer
-    inletLocation: 0.030,-0.030
-    outletLocation: 0,0.030
+    inletOffset: 0.030,-0.030
+    outletOffset: 1,0.030
   - type: DropperFunnel
   - type: Sprite
     sprite: Objects/Specific/Chemistry/beaker_large.rsi
@@ -75,3 +75,20 @@
       beaker:
         maxVol: 100
         canReact: false
+
+- type: entity
+  id: GlasswareTube
+  name: glassware tube
+  components:
+  - type: Transform
+    anchored: false
+  - type: Clickable
+  - type: GravityAffected
+  - type: Physics
+    bodyType: Static
+  - type: Appearance
+  - type: GlasswareTubeVisualizer
+  - type: Sprite
+    sprite: glassware.rsi
+    layers:
+    - state: tube
