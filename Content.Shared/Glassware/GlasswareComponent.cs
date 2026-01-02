@@ -1,3 +1,4 @@
+using System.Numerics;
 using Content.Shared.Tools;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -24,6 +25,8 @@ public sealed partial class GlasswareComponent : Component
 
     [ViewVariables]
     public ProtoId<ToolQualityPrototype> Tool { get; private set; } = "Screwing";
+
+
 
 }
 

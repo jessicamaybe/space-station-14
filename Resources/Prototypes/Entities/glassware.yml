@@ -27,6 +27,13 @@
   - type: Appearance
   - type: Glassware
   - type: GlasswareVisualizer
+    inletLocation: 1,1
+    outletLocation: 0,0.30
+  - type: SolutionContainerManager
+    solutions:
+      beaker:
+        maxVol: 300
+        canReact: false
 
 - type: entity
   parent: LargeBeaker
@@ -36,6 +43,8 @@
   - type: Appearance
   - type: Glassware
   - type: GlasswareVisualizer
+    inletLocation: 0.030,-0.030
+    outletLocation: 0,0.030
   - type: DropperFunnel
   - type: Sprite
     sprite: Objects/Specific/Chemistry/beaker_large.rsi
