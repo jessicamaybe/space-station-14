@@ -144,8 +144,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
         Dirty(ent);
         Dirty(target);
 
-        //var ev = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(target));
-        //RaiseNetworkEvent(ev);
         UpdateGlasswareTube(ent);
     }
 
@@ -167,11 +165,8 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
         Dirty(ent.Comp.OutletDevice.Value, outletDeviceComp);
 
-        //var ev = new GlasswareConnectEvent(GetNetEntity(ent), GetNetEntity(ent.Comp.OutletDevice.Value));
-        //RaiseNetworkEvent(ev);
-
-        UpdateGlasswareTube(ent);
         ent.Comp.OutletDevice = null;
+        UpdateGlasswareTube(ent);
         Dirty(ent);
     }
 
@@ -190,11 +185,17 @@ public sealed class SharedGlasswareSystem : EntitySystem
             DirtyEntity(inlet);
         }
 
+        if (TryComp<GlasswareVisualizerComponent>(ent, out var glasswareVisualizer))
+        {
+            foreach (var tubeSprite in glasswareVisualizer.TubeSprites)
+            {
+                Del(tubeSprite);
+            }
+        }
+
         RemoveGlasswareOutlet(ent);
         ent.Comp.InletDevices.Clear();
-
         DirtyEntity(ent);
-        UpdateGlasswareTube(ent);
     }
 
     public bool TryGetOutlet(Entity<GlasswareComponent> ent, out Entity<GlasswareComponent>? outlet)
@@ -242,14 +243,18 @@ public sealed class SharedGlasswareSystem : EntitySystem
         var midpoint = (xformTarget.LocalPosition + xformOrigin.LocalPosition) / 2;
         var rotation = (xformTarget.LocalPosition - xformOrigin.LocalPosition).ToWorldAngle();
 
+        if (!xformOrigin.Coordinates.IsValid(EntityManager))
+            return;
+
         var tube = PredictedSpawnAtPosition("GlasswareTube", xformOrigin.Coordinates);
+        glasswareVisualizerComponent.TubeSprites.Add(tube);
+
 
         _transform.SetLocalPositionRotation(tube, midpoint, rotation);
 
         var comp = EnsureComp<GlasswareTubeVisualizerComponent>(tube);
         comp.TubeLength = Vector2.Distance(xformOrigin.LocalPosition, xformTarget.LocalPosition);
 
-        glasswareVisualizerComponent.TubeSprites.Add(tube);
         Dirty(outlet.Value, outletVisualizerComponent);
         Dirty(tube, comp);
 
