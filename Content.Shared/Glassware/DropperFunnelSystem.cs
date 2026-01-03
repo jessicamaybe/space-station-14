@@ -1,6 +1,8 @@
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.FixedPoint;
+using Content.Shared.Interaction;
+using Content.Shared.Trigger.Components.Triggers;
 using Robust.Shared.Timing;
 
 namespace Content.Shared.Glassware;
@@ -14,16 +16,21 @@ public sealed class DropperFunnelSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-
         base.Initialize();
         SubscribeLocalEvent<DropperFunnelComponent, GlasswareUpdateEvent>(OnGlasswareUpdate);
     }
 
     private void OnGlasswareUpdate(Entity<DropperFunnelComponent> ent, ref GlasswareUpdateEvent args)
     {
-        if (!TryComp<GlasswareComponent>(ent, out var glasswareComponent))
+        if (!ent.Comp.Enabled)
             return;
 
+        var speed = FixedPoint2.New(ent.Comp.Speed);
+        if (TryComp<SolutionTransferComponent>(ent, out var transfer))
+            speed = transfer.TransferAmount;
+
+        if (!TryComp<GlasswareComponent>(ent, out var glasswareComponent))
+            return;
 
         if (!_solutionContainer.TryGetSolution(ent.Owner, ent.Comp.SolutionName, out var funnelSolution))
             return;
@@ -34,7 +41,7 @@ public sealed class DropperFunnelSystem : EntitySystem
         if (!_solutionContainer.TryGetSolution(glasswareComponent.OutletDevice.Value, ent.Comp.SolutionName, out var outletSolution))
             return;
 
-        var solution = _solutionContainer.SplitSolution(funnelSolution.Value, ent.Comp.Speed);
+        var solution = _solutionContainer.SplitSolution(funnelSolution.Value, speed);
 
         if (!_solutionContainer.TryAddSolution(outletSolution.Value, solution))
             _solutionContainer.TryAddSolution(funnelSolution.Value, solution);

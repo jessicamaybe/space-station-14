@@ -19,6 +19,7 @@ public sealed class CondenserSystem : EntitySystem
         SubscribeLocalEvent<CondenserComponent, GlasswareUpdateEvent>(OnGlasswareUpdate);
     }
 
+
     private void OnGlasswareUpdate(Entity<CondenserComponent> ent, ref GlasswareUpdateEvent args)
     {
 

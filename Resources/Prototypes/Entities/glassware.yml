@@ -8,6 +8,7 @@
   - type: Item
     size: Normal
   - type: Sprite
+    noRot: true
     sprite: Objects/Specific/Chemistry/beaker.rsi
     layers:
     - state: beaker
@@ -41,19 +42,28 @@
   name: glassware funnel
   components:
   - type: Appearance
+  - type: GenericVisualizer
+    visuals:
+      enum.DropperFunnelVisuals.State:
+        enabled:
+          True: { visible: true }
+          False: { visible: false }
   - type: Glassware
   - type: GlasswareVisualizer
-    inletOffset: 0.030,-0.030
-    outletOffset: 1,0.030
+    outletOffset: 0,-0.37
   - type: DropperFunnel
+  - type: SolutionTransfer
+    transferAmount: 1
+    maxTransferAmount: 15
+    minTransferAmount: 1
   - type: Sprite
-    sprite: Objects/Specific/Chemistry/beaker_large.rsi
+    noRot: true
+    sprite: glassware/dropper_funnel.rsi
     layers:
-    - state: beakerlarge
-    - state: beakerlarge1
-      map: ["enum.SolutionContainerLayers.Fill"]
+    - state: dropper_funnel
+    - state: dropper_funnel_on_green
+      map: ["enabled"]
       visible: false
-
 
 - type: entity
   parent: LargeBeaker
@@ -63,13 +73,13 @@
   - type: Appearance
   - type: Glassware
   - type: GlasswareVisualizer
+    outletOffset: 0.30,0.05
   - type: Condenser
   - type: Sprite
-    sprite: Objects/Specific/Chemistry/beaker_cryostasis.rsi
+    noRot: true
+    sprite: glassware/condenser.rsi
     layers:
-    - state: beakernoreact
-  - type: SolutionContainerVisuals
-    maxFillLevels: 0
+    - state: condenser
   - type: SolutionContainerManager
     solutions:
       beaker:
@@ -90,6 +100,6 @@
   - type: Appearance
   - type: GlasswareTubeVisualizer
   - type: Sprite
-    sprite: glassware.rsi
+    sprite: glassware/tube.rsi
     layers:
     - state: tube

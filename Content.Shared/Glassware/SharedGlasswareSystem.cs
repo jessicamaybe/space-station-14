@@ -239,21 +239,22 @@ public sealed class SharedGlasswareSystem : EntitySystem
         var xformOrigin = Transform(ent);
         var xformTarget = Transform(outlet.Value);
 
+        var originCoords = xformOrigin.LocalPosition + glasswareVisualizerComponent.OutletOffset;
+
         //TODO: Incorporate offsets to make the art niceer, maybe figure out a way to make this less shit idk.
-        var midpoint = (xformTarget.LocalPosition + xformOrigin.LocalPosition) / 2;
-        var rotation = (xformTarget.LocalPosition - xformOrigin.LocalPosition).ToWorldAngle();
+        var midpoint = (xformTarget.LocalPosition + originCoords) / 2;
+        var rotation = (originCoords - xformTarget.LocalPosition).ToWorldAngle();
 
         if (!xformOrigin.Coordinates.IsValid(EntityManager))
             return;
 
         var tube = PredictedSpawnAtPosition("GlasswareTube", xformOrigin.Coordinates);
+
         glasswareVisualizerComponent.TubeSprites.Add(tube);
-
-
         _transform.SetLocalPositionRotation(tube, midpoint, rotation);
 
         var comp = EnsureComp<GlasswareTubeVisualizerComponent>(tube);
-        comp.TubeLength = Vector2.Distance(xformOrigin.LocalPosition, xformTarget.LocalPosition);
+        comp.TubeLength = Vector2.Distance(originCoords, xformTarget.LocalPosition);
 
         Dirty(outlet.Value, outletVisualizerComponent);
         Dirty(tube, comp);

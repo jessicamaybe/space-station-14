@@ -1,4 +1,5 @@
 using Robust.Shared.GameStates;
+using Robust.Shared.Serialization;
 
 namespace Content.Shared.Glassware;
 
@@ -17,4 +18,14 @@ public sealed partial class DropperFunnelComponent : Component
     /// </summary>
     [DataField]
     public string SolutionName = "beaker";
+
+    [DataField]
+    public bool Enabled = false;
+}
+
+
+[Serializable, NetSerializable]
+public enum DropperFunnelVisuals : byte
+{
+    State,
 }
