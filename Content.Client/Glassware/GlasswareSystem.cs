@@ -29,6 +29,5 @@ public sealed class GlasswareSystem : EntitySystem
         var scale = new Vector2(1.0f, ent.Comp.TubeLength * 8); //I eyeballed 8 and it was the magic number for a tube sprite 4px long
 
         _spriteSystem.SetScale((ent, sprite), scale);
-
     }
 }

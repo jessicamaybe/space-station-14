@@ -11,6 +11,7 @@ namespace Content.Server.Glassware;
 public sealed class GlasswareSystem : EntitySystem
 {
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
+    [Dependency] private readonly SharedDropperFunnelSystem _dropperFunnelSystem = default!;
     /// <inheritdoc/>
     public override void Initialize()
     {
@@ -23,15 +24,7 @@ public sealed class GlasswareSystem : EntitySystem
         if (args.Handled || !args.Complex)
             return;
 
-        if (ent.Comp.Enabled)
-        {
-            ent.Comp.Enabled = false;
-            _appearance.SetData(ent, DropperFunnelVisuals.State, false);
-            return;
-        }
-
-        ent.Comp.Enabled = true;
-        _appearance.SetData(ent, DropperFunnelVisuals.State, true);
+        _dropperFunnelSystem.Toggle(ent.Owner);
     }
 
 }

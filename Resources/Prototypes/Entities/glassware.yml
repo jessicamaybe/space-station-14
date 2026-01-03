@@ -21,12 +21,13 @@
 
 
 - type: entity
-  parent: Beaker
+  parent: Jug
   id: GlasswareBeaker
   name: glassware beaker
   components:
   - type: Appearance
   - type: Glassware
+    noOutlet: true
   - type: GlasswareVisualizer
     inletOffset: 1,1
     outletOffset: 0,0.30

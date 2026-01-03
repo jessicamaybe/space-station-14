@@ -1,15 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Content.Shared.Destructible;
-using Content.Shared.DeviceLinking.Events;
 using Content.Shared.DragDrop;
 using Content.Shared.Interaction;
 using Content.Shared.Item;
 using Content.Shared.Movement.Pulling.Events;
 using Content.Shared.Tools.Components;
 using Content.Shared.Tools.Systems;
-using Robust.Shared.Physics;
-using Robust.Shared.Physics.Components;
-using Robust.Shared.Physics.Systems;
 using Robust.Shared.Timing;
 
 namespace Content.Shared.Glassware;
@@ -22,7 +19,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly SharedToolSystem _tool = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
-    [Dependency] private readonly SharedPhysicsSystem _physics = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
 
     /// <inheritdoc/>
@@ -83,6 +79,9 @@ public sealed class SharedGlasswareSystem : EntitySystem
     private void OnDragDropTarget(Entity<GlasswareComponent> ent, ref DragDropTargetEvent args)
     {
         if (!TryComp<GlasswareComponent>(args.Dragged, out var draggedGlassware))
+            return;
+
+        if (draggedGlassware.NoOutlet)
             return;
 
         if (ent.Comp.OutletDevice == args.Dragged) //Prevent connecting one thing to another and then directly back
@@ -198,9 +197,12 @@ public sealed class SharedGlasswareSystem : EntitySystem
         DirtyEntity(ent);
     }
 
-    public bool TryGetOutlet(Entity<GlasswareComponent> ent, out Entity<GlasswareComponent>? outlet)
+    public bool TryGetOutlet(Entity<GlasswareComponent?> ent, [NotNullWhen(true)] out Entity<GlasswareComponent>? outlet)
     {
         outlet = null;
+
+        if (!Resolve(ent, ref ent.Comp))
+            return false;
 
         if (ent.Comp.OutletDevice == null)
             return false;
@@ -228,7 +230,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
             Del(tubes);
         }
 
-        if (!TryGetOutlet(ent, out var outlet))
+        if (!TryGetOutlet((ent.Owner, ent.Comp), out var outlet))
             return;
 
         if (!TryComp<GlasswareVisualizerComponent>(outlet, out var outletVisualizerComponent))
