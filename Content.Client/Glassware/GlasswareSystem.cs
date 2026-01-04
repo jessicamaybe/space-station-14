@@ -28,6 +28,17 @@ public sealed class GlasswareSystem : EntitySystem
 
         var scale = new Vector2(1.0f, ent.Comp.TubeLength * 8); //I eyeballed 8 and it was the magic number for a tube sprite 4px long
 
-        _spriteSystem.SetScale((ent, sprite), scale);
+        _spriteSystem.LayerSetScale((ent, sprite), GlasswareTubeLayers.Tube, scale);
+
+        var endpos = ent.Comp.TubeLength / 2;
+
+
+        //TODO: rotate the one on the end, or start. whatever it fuckin is
+        var startCapLayer = _spriteSystem.AddLayer((ent, sprite), new SpriteSpecifier.Rsi(new ResPath("glassware/tube_end.rsi"), "tube_end"));
+        _spriteSystem.LayerSetOffset((ent, sprite), startCapLayer, new Vector2(0, endpos));
+
+        var endCapLayer = _spriteSystem.AddLayer((ent, sprite), new SpriteSpecifier.Rsi(new ResPath("glassware/tube_end.rsi"), "tube_end"));
+        _spriteSystem.LayerSetOffset((ent, sprite), endCapLayer, new Vector2(0, -endpos));
+
     }
 }

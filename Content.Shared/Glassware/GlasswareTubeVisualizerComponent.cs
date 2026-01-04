@@ -16,3 +16,11 @@ public sealed partial class GlasswareTubeVisualizerComponent : Component
     [DataField, AutoNetworkedField]
     public float TubeLength = 1.0f;
 }
+
+
+public enum GlasswareTubeLayers : byte
+{
+    Tube,
+    Start,
+    End,
+}

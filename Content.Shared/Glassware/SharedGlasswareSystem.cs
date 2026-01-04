@@ -255,6 +255,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
     /// <param name="ent"></param>
     public void UpdateGlasswareTube(Entity<GlasswareComponent> ent)
     {
+        //TODO: This throws errors and shit on server shutdown. figure this out
         if (!TryComp<GlasswareVisualizerComponent>(ent, out var glasswareVisualizerComponent))
             return;
 
