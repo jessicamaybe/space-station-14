@@ -18,7 +18,6 @@
   - type: GlasswareVisualizer
   - type: Appearance
 
-
 - type: entity
   parent: Jug
   id: GlasswareBeaker
@@ -30,7 +29,7 @@
   - type: SolutionContainerManager
     solutions:
       beaker:
-        maxVol: 300
+        maxVol: 200
 
 - type: entity
   parent: Jug
@@ -92,8 +91,7 @@
   - type: SolutionContainerManager
     solutions:
       beaker:
-        maxVol: 250
-
+        maxVol: 150
 
 - type: entity
   parent: BaseBeaker
@@ -118,10 +116,8 @@
   - type: SolutionContainerManager
     solutions:
       beaker:
-        maxVol: 200
+        maxVol: 180
         canReact: false
-
-
 
 - type: entity
   id: GlasswareTube
