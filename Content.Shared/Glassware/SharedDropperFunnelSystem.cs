@@ -1,6 +1,7 @@
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.FixedPoint;
+using Content.Shared.Fluids;
 using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Timing;
@@ -11,6 +12,7 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
 {
 
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
+    [Dependency] private readonly SharedPuddleSystem _puddle = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedGlasswareSystem _glasswareSystem = default!;
@@ -73,8 +75,13 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
 
         var currentLevel = funnelSolution.Value.Comp.Solution.FillFraction;
 
+        //its spill time
         if (glasswareComponent.OutletDevice == null)
+        {
+            var spillSolution = _solutionContainer.SplitSolution(funnelSolution.Value, speed);
+            _puddle.TrySpillAt(ent.Owner, spillSolution, out _);
             return;
+        }
 
         if (!_solutionContainer.TryGetSolution(glasswareComponent.OutletDevice.Value, ent.Comp.SolutionName, out var outletSolution))
             return;
