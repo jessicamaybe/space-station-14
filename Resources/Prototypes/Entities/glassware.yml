@@ -8,7 +8,6 @@
   - type: Item
     size: Normal
   - type: Sprite
-    noRot: true
     sprite: Objects/Specific/Chemistry/beaker.rsi
     layers:
     - state: beaker
@@ -78,7 +77,6 @@
     maxTransferAmount: 15
     minTransferAmount: 1
   - type: Sprite
-    noRot: true
     sprite: glassware/dropper_funnel.rsi
     layers:
     - state: dropper_funnel
@@ -108,7 +106,6 @@
     outletOffset: 0.30,0.05
   - type: Condenser
   - type: Sprite
-    noRot: true
     sprite: glassware/condenser.rsi
     layers:
     - state: condenser

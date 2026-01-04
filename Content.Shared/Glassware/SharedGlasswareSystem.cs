@@ -46,7 +46,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
         var query = EntityQueryEnumerator<GlasswareComponent, DropperFunnelComponent>();
 
         //Only updating dropper funnels since they are the "start" of most chains.
-        while (query.MoveNext(out var uid, out var glasswareComponent, out var dropperFunnelComponent))
+        while (query.MoveNext(out var uid, out var glasswareComponent, out _))
         {
             if (_timing.CurTime < glasswareComponent.NextUpdate)
                 continue;
@@ -274,11 +274,12 @@ public sealed class SharedGlasswareSystem : EntitySystem
         var xformOrigin = Transform(ent);
         var xformTarget = Transform(outlet.Value);
 
-        var originCoords = xformOrigin.LocalPosition + glasswareVisualizerComponent.OutletOffset;
+        var originCoords = xformOrigin.Coordinates.Offset(xformOrigin.LocalRotation.RotateVec(glasswareVisualizerComponent.OutletOffset));
+        var targetCoords = xformTarget.Coordinates.Offset(xformTarget.LocalRotation.RotateVec(outletVisualizerComponent.InletOffset));
 
         //TODO: Incorporate offsets to make the art niceer, maybe figure out a way to make this less shit idk.
-        var midpoint = (xformTarget.LocalPosition + originCoords) / 2;
-        var rotation = (originCoords - xformTarget.LocalPosition).ToWorldAngle();
+        var midpoint = (targetCoords.Position + originCoords.Position) / 2;
+        var rotation = (originCoords.Position - targetCoords.Position).ToWorldAngle();
 
         if (!xformOrigin.Coordinates.IsValid(EntityManager))
             return;
@@ -289,7 +290,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
         _transform.SetLocalPositionRotation(tube, midpoint, rotation);
 
         var comp = EnsureComp<GlasswareTubeVisualizerComponent>(tube);
-        comp.TubeLength = Vector2.Distance(originCoords, xformTarget.LocalPosition);
+        comp.TubeLength = Vector2.Distance(originCoords.Position, targetCoords.Position);
 
         Dirty(outlet.Value, outletVisualizerComponent);
         Dirty(tube, comp);
