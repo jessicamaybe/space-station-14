@@ -197,6 +197,12 @@ public sealed class SharedGlasswareSystem : EntitySystem
         DirtyEntity(ent);
     }
 
+    /// <summary>
+    /// If true, returns the entity connected to ent
+    /// </summary>
+    /// <param name="ent"></param>
+    /// <param name="outlet"></param>
+    /// <returns></returns>
     public bool TryGetOutlet(Entity<GlasswareComponent?> ent, [NotNullWhen(true)] out Entity<GlasswareComponent>? outlet)
     {
         outlet = null;
@@ -213,6 +219,32 @@ public sealed class SharedGlasswareSystem : EntitySystem
         outlet = (ent.Comp.OutletDevice.Value, outletGlassware);
         return true;
     }
+
+    /// <summary>
+    /// If true, returns other entities with the same outlet as this one
+    /// </summary>
+    /// <param name="ent"></param>
+    /// <param name="neighbors"></param>
+    /// <returns></returns>
+    public bool TryGetNeighbors(Entity<GlasswareComponent?> ent,
+        [NotNullWhen(true)] out List<Entity<GlasswareComponent>>? neighbors)
+    {
+        neighbors = null;
+
+        if (!TryGetOutlet(ent.Owner, out var outlet) || outlet.Value.Comp.InletDevices.Count == 0)
+            return false;
+
+        neighbors = new List<Entity<GlasswareComponent>>();
+        foreach (var inlet in outlet.Value.Comp.InletDevices)
+        {
+            if (TryComp<GlasswareComponent>(inlet, out var inletGlassware))
+            {
+                neighbors.Add((inlet, inletGlassware));
+            }
+        }
+        return true;
+    }
+
 
     /// <summary>
     /// Updates the visualization for a piece of glassware

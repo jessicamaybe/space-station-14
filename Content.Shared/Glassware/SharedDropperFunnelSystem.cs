@@ -87,15 +87,14 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
         if (funnelSolution.Value.Comp.Solution.FillFraction == 0 && currentLevel != 0)
         {
             SetEnabled((ent.Owner, ent.Comp), false);
-
-            if (!_glasswareSystem.TryGetOutlet(ent.Owner, out var outlet))
-                return;
-
-            foreach (var inlet in outlet.Value.Comp.InletDevices)
+            if (_glasswareSystem.TryGetNeighbors(ent.Owner, out var neighbors))
             {
-                if (!HasComp<DropperFunnelComponent>(inlet))
-                    continue;
-                SetEnabled(inlet, false);
+                foreach (var neighbor in neighbors)
+                {
+                    if (!HasComp<DropperFunnelComponent>(neighbor))
+                        continue;
+                    SetEnabled(neighbor.Owner, false);
+                }
             }
         }
 
