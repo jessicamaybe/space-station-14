@@ -249,7 +249,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
     /// <summary>
     /// Updates the visualization for a piece of glassware
-    /// Will spawn the tube between the specified entity and it's outlet entity
+    /// Will spawn the tube between the specified entity, and it's outlet entity
     /// Probably jank as fuck
     /// </summary>
     /// <param name="ent"></param>
@@ -277,7 +277,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
         var originCoords = xformOrigin.Coordinates.Offset(xformOrigin.LocalRotation.RotateVec(glasswareVisualizerComponent.OutletOffset));
         var targetCoords = xformTarget.Coordinates.Offset(xformTarget.LocalRotation.RotateVec(outletVisualizerComponent.InletOffset));
 
-        //TODO: Incorporate offsets to make the art niceer, maybe figure out a way to make this less shit idk.
         var midpoint = (targetCoords.Position + originCoords.Position) / 2;
         var rotation = (originCoords.Position - targetCoords.Position).ToWorldAngle();
 
