@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "license": null,
+  "copyright": null,
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "flask"
+    },
+    {
+      "name": "flask1"
+    },
+    {
+      "name": "flask2"
+    },
+    {
+      "name": "flask3"
+    },
+    {
+      "name": "flask4"
+    },
+    {
+      "name": "flask5"
+    },
+    {
+      "name": "flask6"
+    }
+  ]
+}

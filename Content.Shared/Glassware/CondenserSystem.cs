@@ -73,8 +73,10 @@ public sealed class CondenserSystem : EntitySystem
                 if (outletRoom < difference)
                     difference = outletRoom;
 
+                var temperature = condenserSolution.Value.Comp.Solution.Temperature;
                 var removedAmount = _solutionContainer.RemoveReagent(condenserSolution.Value, reactedContent.Reagent, difference);
                 _solutionContainer.TryAddReagent(outletSolution.Value, reactedContent.Reagent.Prototype, removedAmount);
+                _solutionContainer.SetTemperature(outletSolution.Value, temperature);
             }
             newContents.Add(reactedContent);
         }
@@ -85,9 +87,11 @@ public sealed class CondenserSystem : EntitySystem
                 continue;
 
             var outletRoom = outletSolution.Value.Comp.Solution.AvailableVolume;
+
+            var temperature = condenserSolution.Value.Comp.Solution.Temperature;
             var amount = _solutionContainer.RemoveReagent(condenserSolution.Value, reagent.Reagent.Prototype, outletRoom);
             _solutionContainer.TryAddReagent(outletSolution.Value, reagent.Reagent.Prototype, amount);
-
+            _solutionContainer.SetTemperature(outletSolution.Value, temperature);
         }
 
     }

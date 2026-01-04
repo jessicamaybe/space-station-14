@@ -9,6 +9,24 @@
   "states": [
     {
       "name": "condenser"
+    },
+    {
+      "name": "condenser-fill-1"
+    },
+    {
+      "name": "condenser-fill-2"
+    },
+    {
+      "name": "condenser-fill-3"
+    },
+    {
+      "name": "condenser-fill-4"
+    },
+    {
+      "name": "condenser-fill-5"
+    },
+    {
+      "name": "condenser-fill-6"
     }
   ]
 }

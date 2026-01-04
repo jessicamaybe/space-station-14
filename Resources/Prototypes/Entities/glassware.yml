@@ -28,17 +28,37 @@
   - type: Appearance
   - type: Glassware
     noOutlet: true
-  - type: GlasswareVisualizer
-    inletOffset: 1,1
-    outletOffset: 0,0.30
   - type: SolutionContainerManager
     solutions:
       beaker:
         maxVol: 300
-        canReact: false
 
 - type: entity
-  parent: LargeBeaker
+  parent: Jug
+  id: GlasswareFlask
+  name: glassware flask
+  components:
+  - type: Appearance
+  - type: Glassware
+    noOutlet: true
+  - type: GlasswareVisualizer
+  - type: Sprite
+    sprite: glassware/flask.rsi
+    layers:
+    - state: flask
+    - state: flask1
+      map: ["enum.SolutionContainerLayers.Fill"]
+      visible: false
+  - type: SolutionContainerVisuals
+    maxFillLevels: 6
+    fillBaseName: flask
+  - type: SolutionContainerManager
+    solutions:
+      beaker:
+        maxVol: 75
+
+- type: entity
+  parent: BaseBeaker
   id: GlasswareFunnel
   name: glassware funnel
   components:
@@ -65,9 +85,20 @@
     - state: dropper_funnel_on_green
       map: ["enabled"]
       visible: false
+    - state: dropper_funnel1
+      map: ["enum.SolutionContainerLayers.Fill"]
+      visible: false
+  - type: SolutionContainerVisuals
+    maxFillLevels: 6
+    fillBaseName: dropper_funnel
+  - type: SolutionContainerManager
+    solutions:
+      beaker:
+        maxVol: 250
+
 
 - type: entity
-  parent: LargeBeaker
+  parent: BaseBeaker
   id: GlasswareCondenser
   name: glassware condenser
   components:
@@ -81,11 +112,19 @@
     sprite: glassware/condenser.rsi
     layers:
     - state: condenser
+    - state: condenser-fill-1
+      map: ["enum.SolutionContainerLayers.Fill"]
+      visible: false
+  - type: SolutionContainerVisuals
+    maxFillLevels: 6
+    fillBaseName: condenser-fill-
   - type: SolutionContainerManager
     solutions:
       beaker:
-        maxVol: 100
+        maxVol: 200
         canReact: false
+
+
 
 - type: entity
   id: GlasswareTube
