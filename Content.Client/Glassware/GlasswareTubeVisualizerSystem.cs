@@ -9,7 +9,7 @@ namespace Content.Client.Glassware;
 /// <summary>
 /// This handles...
 /// </summary>
-public sealed class GlasswareSystem : EntitySystem
+public sealed class GlasswareTubeVisualizerSystem : EntitySystem
 {
     [Dependency] private readonly SpriteSystem _spriteSystem = default!;
     [Dependency] private readonly TransformSystem _transformSystem = default!;

@@ -163,11 +163,10 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
         outletDeviceComp.InletDevices.Remove(ent);
 
-        Dirty(ent.Comp.OutletDevice.Value, outletDeviceComp);
-
         ent.Comp.OutletDevice = null;
         UpdateGlasswareTube(ent);
         Dirty(ent);
+        Dirty(outletEnt, outletDeviceComp);
     }
 
     /// <summary>
@@ -180,9 +179,9 @@ public sealed class SharedGlasswareSystem : EntitySystem
         {
             if (!TryComp<GlasswareComponent>(inlet, out var inletGlassware))
                 continue;
+
             inletGlassware.OutletDevice = null;
             UpdateGlasswareTube((inlet, inletGlassware));
-            DirtyEntity(inlet);
         }
 
         if (TryComp<GlasswareVisualizerComponent>(ent, out var glasswareVisualizer))
@@ -193,9 +192,8 @@ public sealed class SharedGlasswareSystem : EntitySystem
             }
         }
 
-        RemoveGlasswareOutlet(ent);
         ent.Comp.InletDevices.Clear();
-        DirtyEntity(ent);
+        RemoveGlasswareOutlet(ent);
     }
 
     /// <summary>
@@ -248,8 +246,8 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
 
     /// <summary>
-    /// Updates the visualization for a piece of glassware
-    /// Will spawn the tube between the specified entity, and it's outlet entity
+    /// Updates the visualization for a piece of glassware.
+    /// Will spawn the tube between the specified entity, and it's outlet entity.
     /// Probably jank as fuck
     /// </summary>
     /// <param name="ent"></param>
