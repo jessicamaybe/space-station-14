@@ -1,3 +1,4 @@
+using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
 
@@ -21,6 +22,12 @@ public sealed partial class DropperFunnelComponent : Component
 
     [DataField]
     public bool Enabled = false;
+
+    /// <summary>
+    /// Sound when <see cref="Open"/> is toggled.
+    /// </summary>
+    [DataField]
+    public SoundSpecifier ValveSound = new SoundCollectionSpecifier("valveSqueak");
 }
 
 

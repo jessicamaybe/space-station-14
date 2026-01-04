@@ -1,6 +1,8 @@
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.FixedPoint;
+using Robust.Shared.Audio;
+using Robust.Shared.Audio.Systems;
 using Robust.Shared.Timing;
 
 namespace Content.Shared.Glassware;
@@ -12,6 +14,7 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedGlasswareSystem _glasswareSystem = default!;
+    [Dependency] private readonly SharedAudioSystem _audio = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -48,6 +51,7 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
             return;
 
         ent.Comp.Enabled = enabled;
+        _audio.PlayPredicted(ent.Comp.ValveSound, ent.Owner, null, AudioParams.Default.WithVariation(0.25f));
         _appearance.SetData(ent, DropperFunnelVisuals.State, enabled);
     }
 
