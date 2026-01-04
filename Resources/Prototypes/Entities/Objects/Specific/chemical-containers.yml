@@ -87,6 +87,9 @@
       tags:
       - ChemDispensable
     - type: DnaSubstanceTrace
+    - type: Glassware
+      noOutlet: true
+    - type: GlasswareVisualizer
 
 - type: entity
   parent: Jug

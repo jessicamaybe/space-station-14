@@ -19,20 +19,7 @@
   - type: Appearance
 
 - type: entity
-  parent: Jug
-  id: GlasswareBeaker
-  name: glassware beaker
-  components:
-  - type: Appearance
-  - type: Glassware
-    noOutlet: true
-  - type: SolutionContainerManager
-    solutions:
-      beaker:
-        maxVol: 200
-
-- type: entity
-  parent: Jug
+  parent: BaseBeaker
   id: GlasswareFlask
   name: glassware flask
   components:

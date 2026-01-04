@@ -182,6 +182,9 @@
     fillBaseName: beaker
     inHandsMaxFillLevels: 3
     inHandsFillBaseName: -fill-
+  - type: Glassware
+    noOutlet: true
+  - type: GlasswareVisualizer
 
 - type: entity
   suffix: cryoxadone
@@ -321,6 +324,9 @@
       Glass: 100
   - type: StaticPrice
     price: 20
+  - type: Glassware
+    noOutlet: true
+  - type: GlasswareVisualizer
 
 - type: entity
   name: cryostasis beaker
@@ -341,6 +347,9 @@
       beaker:
         maxVol: 60
         canReact: false
+  - type: Glassware
+    noOutlet: true
+  - type: GlasswareVisualizer
 
 - type: entity
   name: bluespace beaker
@@ -360,6 +369,9 @@
     solutions:
       beaker:
         maxVol: 1000
+  - type: Glassware
+    noOutlet: true
+  - type: GlasswareVisualizer
 
 - type: entity
   name: dropper
