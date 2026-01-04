@@ -120,6 +120,8 @@
     bodyType: Static
   - type: Appearance
   - type: GlasswareTubeVisualizer
+    rsiPath: glassware/tube_end.rsi
+    rsiState: tube_end
   - type: Sprite
     sprite: glassware/tube.rsi
     drawdepth: 4

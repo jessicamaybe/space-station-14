@@ -30,15 +30,20 @@ public sealed class GlasswareSystem : EntitySystem
 
         _spriteSystem.LayerSetScale((ent, sprite), GlasswareTubeLayers.Tube, scale);
 
-        var endpos = ent.Comp.TubeLength / 2;
+        var endPosition = ent.Comp.TubeLength / 2;
 
+        var layer = new PrototypeLayerData
+        {
+            RsiPath = ent.Comp.RsiPath,
+            State = ent.Comp.RsiState
+        };
 
-        //TODO: rotate the one on the end, or start. whatever it fuckin is
-        var startCapLayer = _spriteSystem.AddLayer((ent, sprite), new SpriteSpecifier.Rsi(new ResPath("glassware/tube_end.rsi"), "tube_end"));
-        _spriteSystem.LayerSetOffset((ent, sprite), startCapLayer, new Vector2(0, endpos));
+        var startCapLayer = _spriteSystem.AddLayer((ent, sprite), layer, null);
+        _spriteSystem.LayerSetOffset((ent, sprite), startCapLayer, new Vector2(0, endPosition));
 
-        var endCapLayer = _spriteSystem.AddLayer((ent, sprite), new SpriteSpecifier.Rsi(new ResPath("glassware/tube_end.rsi"), "tube_end"));
-        _spriteSystem.LayerSetOffset((ent, sprite), endCapLayer, new Vector2(0, -endpos));
+        var endCapLayer = _spriteSystem.AddLayer((ent, sprite), layer, null);
+        _spriteSystem.LayerSetOffset((ent, sprite), endCapLayer, new Vector2(0, -endPosition));
+        _spriteSystem.LayerSetRotation((ent, sprite), endCapLayer, Angle.FromDegrees(180));
 
     }
 }
