@@ -45,6 +45,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
         // Set all of our eye rotations to the relevant values.
         var query = EntityQueryEnumerator<GlasswareComponent, DropperFunnelComponent>();
 
+        //Only updating dropper funnels since they are the "start" of most chains.
         while (query.MoveNext(out var uid, out var glasswareComponent, out var dropperFunnelComponent))
         {
             if (_timing.CurTime < glasswareComponent.NextUpdate)

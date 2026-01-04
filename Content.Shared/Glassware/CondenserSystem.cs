@@ -17,8 +17,15 @@ public sealed class CondenserSystem : EntitySystem
 
         base.Initialize();
         SubscribeLocalEvent<CondenserComponent, GlasswareUpdateEvent>(OnGlasswareUpdate);
+        SubscribeLocalEvent<CondenserComponent, SolutionContainerChangedEvent>(OnSolutionChanged);
     }
 
+    private void OnSolutionChanged(Entity<CondenserComponent> ent, ref SolutionContainerChangedEvent args)
+    {
+
+        var ev = new GlasswareUpdateEvent();
+        RaiseLocalEvent(ent, ref ev);
+    }
 
     private void OnGlasswareUpdate(Entity<CondenserComponent> ent, ref GlasswareUpdateEvent args)
     {

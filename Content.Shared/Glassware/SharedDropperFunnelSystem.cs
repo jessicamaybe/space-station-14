@@ -98,6 +98,7 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
             }
         }
 
+        //Update the next outlet in the chain so we do things in order
         if (_glasswareSystem.TryGetOutlet(ent.Owner, out var outletDevice))
         {
             if (_timing.CurTime < outletDevice.Value.Comp.NextUpdate)
