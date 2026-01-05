@@ -9,6 +9,7 @@ public sealed class CondenserSystem : EntitySystem
 {
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
     [Dependency] private readonly ChemicalReactionSystem _chemicalReactionSystem = default!;
+    [Dependency] private readonly ReactionMixerSystem _reactionMixerSystem = default!;
     /// <inheritdoc/>
     public override void Initialize()
     {
@@ -36,7 +37,14 @@ public sealed class CondenserSystem : EntitySystem
         var currentContents = condenserSolution.Value.Comp.Solution.Contents.ShallowClone();
 
 
-        _chemicalReactionSystem.FullyReactSolution(condenserSolution.Value);
+        if (TryComp<ReactionMixerComponent>(ent, out var reactionMixer))
+        {
+            _chemicalReactionSystem.FullyReactSolution(condenserSolution.Value, reactionMixer);
+        }
+        else
+        {
+            _chemicalReactionSystem.FullyReactSolution(condenserSolution.Value);
+        }
 
         if (glasswareComponent.OutletDevice == null)
             return;

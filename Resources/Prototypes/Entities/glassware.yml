@@ -96,6 +96,16 @@
         canReact: false
   - type: Spillable
     solution: beaker
+  - type: ReactionMixer
+    reactionTypes:
+    - Condense
+
+- type: mixingCategory
+  id: Condense
+  verbText: mixing-verb-shake
+  icon:
+    sprite: Objects/Consumable/Drinks/shaker.rsi
+    state: icon
 
 - type: entity
   id: GlasswareTube
