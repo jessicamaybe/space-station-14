@@ -1,4 +1,5 @@
 using Content.Shared.Temperature.Systems;
+using Content.Shared.Temperature.HeatContainer;
 using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
 

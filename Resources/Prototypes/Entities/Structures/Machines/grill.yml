@@ -26,6 +26,7 @@
     whitelist:
       components:
       - Temperature
+      - SolutionContainerManager
   - type: PlaceableSurface
   - type: Machine
     board: ElectricGrillMachineCircuitboard
