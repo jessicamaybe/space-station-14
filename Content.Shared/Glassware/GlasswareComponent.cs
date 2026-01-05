@@ -28,7 +28,7 @@ public sealed partial class GlasswareComponent : Component
     public ProtoId<ToolQualityPrototype> Tool { get; private set; } = "Screwing";
 
     [ViewVariables, DataField]
-    public bool NoOutlet = false;
+    public bool NoOutlet;
 }
 
 [ByRefEvent]

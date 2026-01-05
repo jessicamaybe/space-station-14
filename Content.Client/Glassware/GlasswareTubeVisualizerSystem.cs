@@ -1,8 +1,6 @@
 using System.Numerics;
 using Content.Shared.Glassware;
 using Robust.Client.GameObjects;
-using Robust.Client.Graphics;
-using Robust.Shared.Utility;
 
 namespace Content.Client.Glassware;
 
@@ -12,9 +10,8 @@ namespace Content.Client.Glassware;
 public sealed class GlasswareTubeVisualizerSystem : EntitySystem
 {
     [Dependency] private readonly SpriteSystem _spriteSystem = default!;
-    [Dependency] private readonly TransformSystem _transformSystem = default!;
 
-    /// <inheritdoc/>m
+    /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();

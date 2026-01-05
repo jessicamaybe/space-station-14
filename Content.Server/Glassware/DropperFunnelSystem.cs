@@ -6,7 +6,7 @@ namespace Content.Server.Glassware;
 /// <summary>
 /// This handles...
 /// </summary>
-public sealed class GlasswareSystem : EntitySystem
+public sealed class DropperFunnelSystem : EntitySystem
 {
     [Dependency] private readonly SharedDropperFunnelSystem _dropperFunnelSystem = default!;
     /// <inheritdoc/>

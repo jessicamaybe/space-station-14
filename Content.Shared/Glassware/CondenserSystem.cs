@@ -20,7 +20,6 @@ public sealed class CondenserSystem : EntitySystem
 
     private void OnSolutionChanged(Entity<CondenserComponent> ent, ref SolutionContainerChangedEvent args)
     {
-
         var ev = new GlasswareUpdateEvent();
         RaiseLocalEvent(ent, ref ev);
     }
