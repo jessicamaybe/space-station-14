@@ -25,7 +25,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GlasswareComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<GlasswareComponent, CanDragEvent>(OnGlasswareCanDrag);
         SubscribeLocalEvent<GlasswareComponent, CanDropDraggedEvent>(OnGlasswareCanDragDropped);
         SubscribeLocalEvent<GlasswareComponent, DragDropTargetEvent>(OnDragDropTarget);
@@ -39,29 +38,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
 
         SubscribeLocalEvent<GlasswareComponent, MoveEvent>(OnGlasswareMoved);
         SubscribeLocalEvent<GlasswareComponent, DestructionAttemptEvent>(OnDestruction);
-    }
-    public override void Update(float frameTime)
-    {
-        base.Update(frameTime);
-        // Set all of our eye rotations to the relevant values.
-        var query = EntityQueryEnumerator<GlasswareComponent, DropperFunnelComponent>();
-
-        //Only updating dropper funnels since they are the "start" of most chains.
-        while (query.MoveNext(out var uid, out var glasswareComponent, out _))
-        {
-            if (_timing.CurTime < glasswareComponent.NextUpdate)
-                continue;
-
-            glasswareComponent.NextUpdate = _timing.CurTime + glasswareComponent.UpdateInterval;
-
-            var ev = new GlasswareUpdateEvent();
-            RaiseLocalEvent(uid, ref ev);
-        }
-    }
-
-    private void OnMapInit(Entity<GlasswareComponent> ent, ref MapInitEvent args)
-    {
-        ent.Comp.NextUpdate = _timing.CurTime + ent.Comp.UpdateInterval;
     }
 
     private void OnGlasswareCanDragDropped(Entity<GlasswareComponent> ent, ref CanDropDraggedEvent args)

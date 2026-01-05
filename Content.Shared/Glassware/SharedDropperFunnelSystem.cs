@@ -22,7 +22,35 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
+        SubscribeLocalEvent<DropperFunnelComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<DropperFunnelComponent, GlasswareUpdateEvent>(OnGlasswareUpdate);
+    }
+
+    public override void Update(float frameTime)
+    {
+        base.Update(frameTime);
+        // Set all of our eye rotations to the relevant values.
+        var query = EntityQueryEnumerator<DropperFunnelComponent>();
+
+        //Only updating dropper funnels since they are the "start" of most chains.
+        while (query.MoveNext(out var uid, out var dropperFunnelComponent))
+        {
+            if (_timing.CurTime < dropperFunnelComponent.NextUpdate)
+                continue;
+
+            dropperFunnelComponent.NextUpdate = _timing.CurTime + dropperFunnelComponent.UpdateInterval;
+
+            if (!dropperFunnelComponent.Enabled)
+                continue;
+
+            var ev = new GlasswareUpdateEvent();
+            RaiseLocalEvent(uid, ref ev);
+        }
+    }
+
+    private void OnMapInit(Entity<DropperFunnelComponent> ent, ref MapInitEvent args)
+    {
+        ent.Comp.NextUpdate = _timing.CurTime + ent.Comp.UpdateInterval;
     }
 
     /// <summary>
@@ -56,7 +84,6 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
         _audio.PlayPredicted(ent.Comp.ValveSound, ent.Owner, null, AudioParams.Default.WithVariation(0.25f));
         _appearance.SetData(ent, DropperFunnelVisuals.State, enabled);
     }
-
 
     private void OnGlasswareUpdate(Entity<DropperFunnelComponent> ent, ref GlasswareUpdateEvent args)
     {
@@ -107,18 +134,6 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
                     SetEnabled(neighbor.Owner, false);
                 }
             }
-        }
-
-        //Update the next outlet in the chain so we do things in order
-        if (_glasswareSystem.TryGetOutlet(ent.Owner, out var outletDevice))
-        {
-            if (_timing.CurTime < outletDevice.Value.Comp.NextUpdate)
-                return;
-
-            outletDevice.Value.Comp.NextUpdate = _timing.CurTime + outletDevice.Value.Comp.UpdateInterval;
-
-            var ev = new GlasswareUpdateEvent();
-            RaiseLocalEvent(glasswareComponent.OutletDevice.Value, ref ev);
         }
     }
 }

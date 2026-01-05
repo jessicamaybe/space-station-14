@@ -19,12 +19,6 @@ public sealed partial class GlasswareComponent : Component
     public EntityUid? OutletDevice;
 
     [ViewVariables]
-    public TimeSpan NextUpdate;
-
-    [ViewVariables]
-    public TimeSpan UpdateInterval = TimeSpan.FromSeconds(0.5);
-
-    [ViewVariables]
     public ProtoId<ToolQualityPrototype> Tool { get; private set; } = "Screwing";
 
     [ViewVariables, DataField]

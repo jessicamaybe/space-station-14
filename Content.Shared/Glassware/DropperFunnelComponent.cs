@@ -14,6 +14,12 @@ public sealed partial class DropperFunnelComponent : Component
     [ViewVariables]
     public int Speed = 1;
 
+    [ViewVariables]
+    public TimeSpan NextUpdate;
+
+    [ViewVariables]
+    public TimeSpan UpdateInterval = TimeSpan.FromSeconds(0.5);
+
     /// <summary>
     /// The solution to drop from.
     /// </summary>
