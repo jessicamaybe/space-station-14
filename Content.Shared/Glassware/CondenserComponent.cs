@@ -1,4 +1,3 @@
-using Content.Shared.Chemistry.Reagent;
 using Robust.Shared.GameStates;
 
 namespace Content.Shared.Glassware;

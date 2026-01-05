@@ -29,6 +29,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
         SubscribeLocalEvent<GlasswareComponent, CanDragEvent>(OnGlasswareCanDrag);
         SubscribeLocalEvent<GlasswareComponent, CanDropDraggedEvent>(OnGlasswareCanDragDropped);
         SubscribeLocalEvent<GlasswareComponent, DragDropTargetEvent>(OnDragDropTarget);
+        SubscribeLocalEvent<GlasswareComponent, CanDropTargetEvent>(OnCanDropTargetEvent);
 
         SubscribeLocalEvent<GlasswareComponent, GettingPickedUpAttemptEvent>(OnPickupAttempt);
         SubscribeLocalEvent<GlasswareComponent, PullAttemptEvent>(OnPullAttemptEvent);
@@ -77,6 +78,37 @@ public sealed class SharedGlasswareSystem : EntitySystem
         args.Handled = true;
     }
 
+    private void OnCanDropTargetEvent(Entity<GlasswareComponent> ent, ref CanDropTargetEvent args)
+    {
+        var xform = Transform(ent);
+        var xformTarget = Transform(args.Dragged);
+
+        if (xformTarget.GridUid == null || xform.GridUid == null)
+        {
+            args.CanDrop = false;
+            args.Handled = true;
+            return;
+        }
+
+        if (xform.GridUid != xformTarget.GridUid)
+        {
+            args.CanDrop = false;
+            args.Handled = true;
+            return;
+        }
+
+        var distance = Vector2.Distance(xform.LocalPosition, xformTarget.LocalPosition);
+        if (distance > 2)
+        {
+            args.CanDrop = false;
+            args.Handled = true;
+            return;
+        }
+
+        args.CanDrop = true;
+        args.Handled = true;
+    }
+
     private void OnDragDropTarget(Entity<GlasswareComponent> ent, ref DragDropTargetEvent args)
     {
         if (!TryComp<GlasswareComponent>(args.Dragged, out var draggedGlassware))
@@ -86,10 +118,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
             return;
 
         if (ent.Comp.OutletDevice == args.Dragged) //Prevent connecting one thing to another and then directly back
-        {
-            Log.Debug("Circular loop check");
             return;
-        }
 
         var dragged = (args.Dragged, draggedGlassware);
         ConnectGlassware(dragged, ent);

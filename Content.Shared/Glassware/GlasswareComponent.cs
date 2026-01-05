@@ -1,4 +1,3 @@
-using System.Numerics;
 using Content.Shared.Tools;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -10,6 +9,8 @@ namespace Content.Shared.Glassware;
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class GlasswareComponent : Component
 {
+    [DataField]
+    public string Solution = "default";
 
     [ViewVariables, AutoNetworkedField]
     public List<EntityUid> InletDevices = new();

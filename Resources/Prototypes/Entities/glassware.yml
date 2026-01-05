@@ -25,6 +25,7 @@
   components:
   - type: Appearance
   - type: Glassware
+    solution: beaker
     noOutlet: true
   - type: GlasswareVisualizer
     inletOffset: -0.1,-0.2
@@ -56,6 +57,7 @@
           True: { visible: true }
           False: { visible: false }
   - type: Glassware
+    solution: beaker
   - type: GlasswareVisualizer
     outletOffset: 0,-0.37
   - type: DropperFunnel
@@ -88,6 +90,7 @@
   components:
   - type: Appearance
   - type: Glassware
+    solution: beaker
   - type: GlasswareVisualizer
     inletOffset: -0.1,-0.22
     outletOffset: 0.30,0.05

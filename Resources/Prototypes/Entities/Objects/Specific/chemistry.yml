@@ -183,6 +183,7 @@
     inHandsMaxFillLevels: 3
     inHandsFillBaseName: -fill-
   - type: Glassware
+    solution: beaker
     noOutlet: true
   - type: GlasswareVisualizer
 
@@ -325,6 +326,7 @@
   - type: StaticPrice
     price: 20
   - type: Glassware
+    solution: beaker
     noOutlet: true
   - type: GlasswareVisualizer
 
@@ -348,6 +350,7 @@
         maxVol: 60
         canReact: false
   - type: Glassware
+    solution: beaker
     noOutlet: true
   - type: GlasswareVisualizer
 
@@ -370,6 +373,7 @@
       beaker:
         maxVol: 1000
   - type: Glassware
+    solution: beaker
     noOutlet: true
   - type: GlasswareVisualizer
 

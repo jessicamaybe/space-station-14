@@ -21,10 +21,10 @@ public sealed partial class DropperFunnelComponent : Component
     public string SolutionName = "beaker";
 
     [DataField]
-    public bool Enabled = false;
+    public bool Enabled;
 
     /// <summary>
-    /// Sound when <see cref="Open"/> is toggled.
+    /// Sound when toggled.
     /// </summary>
     [DataField]
     public SoundSpecifier ValveSound = new SoundCollectionSpecifier("valveSqueak");

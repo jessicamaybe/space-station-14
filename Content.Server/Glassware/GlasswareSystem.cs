@@ -1,7 +1,5 @@
-using Content.Server.Beam;
 using Content.Shared.Glassware;
 using Content.Shared.Interaction;
-using Robust.Shared.Prototypes;
 
 namespace Content.Server.Glassware;
 
@@ -10,7 +8,6 @@ namespace Content.Server.Glassware;
 /// </summary>
 public sealed class GlasswareSystem : EntitySystem
 {
-    [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedDropperFunnelSystem _dropperFunnelSystem = default!;
     /// <inheritdoc/>
     public override void Initialize()

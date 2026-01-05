@@ -16,11 +16,11 @@ public sealed partial class GlasswareVisualizerComponent : Component
     /// Sprite offset for where the inlet tube should connect to
     /// </summary>
     [DataField, AutoNetworkedField]
-    public Vector2 InletOffset = new();
+    public Vector2 InletOffset;
 
     /// <summary>
     /// Sprite offset for where the outlet tube should connect to
     /// </summary>
     [DataField, AutoNetworkedField]
-    public Vector2 OutletOffset = new();
+    public Vector2 OutletOffset;
 }

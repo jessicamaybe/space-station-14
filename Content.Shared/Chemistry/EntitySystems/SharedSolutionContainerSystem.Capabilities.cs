@@ -4,6 +4,7 @@ using Content.Shared.Chemistry.Components.SolutionManager;
 using Content.Shared.FixedPoint;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Content.Shared.Glassware;
 
 namespace Content.Shared.Chemistry.EntitySystems;
 
@@ -89,6 +90,17 @@ public abstract partial class SharedSolutionContainerSystem
     }
 
     public bool TryGetMixableSolution(Entity<MixableSolutionComponent?, SolutionContainerManagerComponent?> entity, [NotNullWhen(true)] out Entity<SolutionComponent>? soln, [NotNullWhen(true)] out Solution? solution)
+    {
+        if (!Resolve(entity, ref entity.Comp1, logMissing: false))
+        {
+            (soln, solution) = (default!, null);
+            return false;
+        }
+
+        return TryGetSolution((entity.Owner, entity.Comp2), entity.Comp1.Solution, out soln, out solution);
+    }
+
+    public bool TryGetGlasswareSolution(Entity<GlasswareComponent?, SolutionContainerManagerComponent?> entity, [NotNullWhen(true)] out Entity<SolutionComponent>? soln, [NotNullWhen(true)] out Solution? solution)
     {
         if (!Resolve(entity, ref entity.Comp1, logMissing: false))
         {

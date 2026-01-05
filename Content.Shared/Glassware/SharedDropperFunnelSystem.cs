@@ -83,7 +83,7 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
             return;
         }
 
-        if (!_solutionContainer.TryGetSolution(glasswareComponent.OutletDevice.Value, ent.Comp.SolutionName, out var outletSolution))
+        if (!_solutionContainer.TryGetGlasswareSolution(glasswareComponent.OutletDevice.Value, out var outletSolution, out _))
             return;
 
         var solution = _solutionContainer.SplitSolution(funnelSolution.Value, speed);

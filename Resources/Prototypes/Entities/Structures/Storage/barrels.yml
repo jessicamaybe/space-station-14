@@ -50,6 +50,10 @@
     solution: tank
   - type: StaticPrice
     price: 500
+  - type: Glassware
+    solution: tank
+  - type: GlasswareVisualizer
+    inletOffset: 0.15,-0.22
 
 - type: entity
   parent: BaseBarrelChem

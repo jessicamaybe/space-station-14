@@ -1,8 +1,6 @@
-using System.Linq;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Chemistry.Reaction;
 using Content.Shared.Chemistry.Reagent;
-using Content.Shared.FixedPoint;
 using Robust.Shared.Utility;
 
 namespace Content.Shared.Glassware;
@@ -33,9 +31,8 @@ public sealed class CondenserSystem : EntitySystem
         if (!TryComp<GlasswareComponent>(ent, out var glasswareComponent))
             return;
 
-        if (!_solutionContainer.TryGetSolution(ent.Owner, "beaker", out var condenserSolution))
+        if (!_solutionContainer.TryGetSolution(ent.Owner, glasswareComponent.Solution, out var condenserSolution))
             return;
-
 
         var currentContents = condenserSolution.Value.Comp.Solution.Contents.ShallowClone();
 
@@ -45,7 +42,7 @@ public sealed class CondenserSystem : EntitySystem
         if (glasswareComponent.OutletDevice == null)
             return;
 
-        if (!_solutionContainer.TryGetSolution(glasswareComponent.OutletDevice.Value, "beaker", out var outletSolution))
+        if (!_solutionContainer.TryGetGlasswareSolution(glasswareComponent.OutletDevice.Value, out var outletSolution, out _))
             return;
 
         var reactedContents = condenserSolution.Value.Comp.Solution.Contents.ShallowClone();
