@@ -9,23 +9,33 @@ public sealed class CondenserSystem : EntitySystem
 {
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
     [Dependency] private readonly ChemicalReactionSystem _chemicalReactionSystem = default!;
-    [Dependency] private readonly ReactionMixerSystem _reactionMixerSystem = default!;
     /// <inheritdoc/>
     public override void Initialize()
     {
 
         base.Initialize();
         SubscribeLocalEvent<CondenserComponent, GlasswareUpdateEvent>(OnGlasswareUpdate);
+        SubscribeLocalEvent<CondenserComponent, OnGlasswareConnectEvent>(OnGlasswareConnect);
         SubscribeLocalEvent<CondenserComponent, SolutionContainerChangedEvent>(OnSolutionChanged);
     }
 
     private void OnSolutionChanged(Entity<CondenserComponent> ent, ref SolutionContainerChangedEvent args)
     {
-        var ev = new GlasswareUpdateEvent();
-        RaiseLocalEvent(ent, ref ev);
+        Update(ent);
     }
 
     private void OnGlasswareUpdate(Entity<CondenserComponent> ent, ref GlasswareUpdateEvent args)
+    {
+        Update(ent);
+        args.Handled = true;
+    }
+
+    private void OnGlasswareConnect(Entity<CondenserComponent> ent, ref OnGlasswareConnectEvent args)
+    {
+        Update(ent);
+    }
+
+    public void Update(Entity<CondenserComponent> ent)
     {
 
         if (!TryComp<GlasswareComponent>(ent, out var glasswareComponent))
@@ -37,7 +47,7 @@ public sealed class CondenserSystem : EntitySystem
         var currentContents = condenserSolution.Value.Comp.Solution.Contents.ShallowClone();
 
 
-        if (TryComp<ReactionMixerComponent>(ent, out var reactionMixer))
+        if (TryComp<ReactionMixerComponent>(ent, out var reactionMixer) && glasswareComponent.OutletDevice != null)
         {
             _chemicalReactionSystem.FullyReactSolution(condenserSolution.Value, reactionMixer);
         }

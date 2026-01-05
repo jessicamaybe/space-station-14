@@ -31,6 +31,14 @@ public record struct GlasswareUpdateEvent()
     public bool Handled = false;
 }
 
+/// <summary>
+/// Raised when two pieces of glassware are connected
+/// </summary>
+[ByRefEvent]
+public record struct OnGlasswareConnectEvent()
+{
+}
+
 [Serializable, NetSerializable]
 public sealed class GlasswareConnectEvent : EntityEventArgs
 {

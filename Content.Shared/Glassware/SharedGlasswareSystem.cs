@@ -149,6 +149,10 @@ public sealed class SharedGlasswareSystem : EntitySystem
         Dirty(ent);
         Dirty(target);
 
+        var ev = new OnGlasswareConnectEvent();
+        RaiseLocalEvent(ent, ref ev);
+        RaiseLocalEvent(target, ref ev);
+
         UpdateGlasswareTube(ent);
     }
 
