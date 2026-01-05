@@ -1,5 +1,6 @@
 using System.Numerics;
 using Robust.Shared.GameStates;
+using Robust.Shared.Prototypes;
 
 namespace Content.Shared.Glassware;
 
@@ -11,6 +12,9 @@ public sealed partial class GlasswareVisualizerComponent : Component
 {
     [DataField]
     public List<EntityUid> TubeSprites = new();
+
+    [DataField]
+    public string Prototype = "GlasswareTube";
 
     /// <summary>
     /// Sprite offset for where the inlet tube should connect to

@@ -46,7 +46,7 @@ public sealed class CondenserSystem : EntitySystem
 
         var currentContents = condenserSolution.Value.Comp.Solution.Contents.ShallowClone();
 
-
+        //Only do the condenser reaction if it's connected to an output, otherwise do normal reacting.
         if (TryComp<ReactionMixerComponent>(ent, out var reactionMixer) && glasswareComponent.OutletDevice != null)
         {
             _chemicalReactionSystem.FullyReactSolution(condenserSolution.Value, reactionMixer);

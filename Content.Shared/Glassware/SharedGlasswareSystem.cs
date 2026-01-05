@@ -291,7 +291,7 @@ public sealed class SharedGlasswareSystem : EntitySystem
         if (!xformOrigin.Coordinates.IsValid(EntityManager))
             return;
 
-        var tube = PredictedSpawnAtPosition("GlasswareTube", xformOrigin.Coordinates);
+        var tube = PredictedSpawnAtPosition(glasswareVisualizerComponent.Prototype, xformOrigin.Coordinates);
 
         glasswareVisualizerComponent.TubeSprites.Add(tube);
         _transform.SetLocalPositionRotation(tube, midpoint, rotation);
