@@ -1,4 +1,6 @@
 using Content.Server.Power.Components;
+using Content.Shared.Chemistry.Components.SolutionManager;
+using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Placeable;
 using Content.Shared.Temperature;
 using Content.Shared.Temperature.Components;
@@ -12,6 +14,7 @@ namespace Content.Server.Temperature.Systems;
 public sealed class EntityHeaterSystem : SharedEntityHeaterSystem
 {
     [Dependency] private readonly TemperatureSystem _temperature = default!;
+    [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
 
     public override void Initialize()
     {
@@ -30,7 +33,7 @@ public sealed class EntityHeaterSystem : SharedEntityHeaterSystem
     public override void Update(float deltaTime)
     {
         var query = EntityQueryEnumerator<EntityHeaterComponent, ItemPlacerComponent, ApcPowerReceiverComponent>();
-        while (query.MoveNext(out _, out _, out var placer, out var power))
+        while (query.MoveNext(out _, out var heater, out var placer, out var power))
         {
             if (!power.Powered)
                 continue;
@@ -41,6 +44,17 @@ public sealed class EntityHeaterSystem : SharedEntityHeaterSystem
             var energy = power.PowerReceived * deltaTime;
             foreach (var ent in placer.PlacedEntities)
             {
+                if (TryComp<SolutionContainerManagerComponent>(ent, out var container))
+                {
+                    foreach (var (_, soln) in _solutionContainer.EnumerateSolutions((ent, container)))
+                    {
+                        if ((power.Load / heater.SolutionTemperatureMultiplier) < soln.Comp.Solution.Temperature)
+                            continue;
+
+                        _solutionContainer.AddThermalEnergyClamped(soln, energy / 2, soln.Comp.Solution.Temperature, power.Load / heater.SolutionTemperatureMultiplier);
+                    }
+                    continue;
+                }
                 _temperature.ChangeHeat(ent, energy);
             }
         }
