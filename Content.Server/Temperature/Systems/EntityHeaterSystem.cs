@@ -48,7 +48,10 @@ public sealed class EntityHeaterSystem : SharedEntityHeaterSystem
                 {
                     foreach (var (_, soln) in _solutionContainer.EnumerateSolutions((ent, container)))
                     {
-                        _solutionContainer.AddThermalEnergyClamped(soln, energy/8, 0, power.Load / 3);
+                        if ((power.Load / heater.SolutionTemperatureMultiplier) < soln.Comp.Solution.Temperature)
+                            continue;
+
+                        _solutionContainer.AddThermalEnergyClamped(soln, energy / 2, soln.Comp.Solution.Temperature, power.Load / heater.SolutionTemperatureMultiplier);
                     }
                     continue;
                 }

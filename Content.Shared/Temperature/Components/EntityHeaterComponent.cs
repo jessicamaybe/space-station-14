@@ -20,6 +20,13 @@ public sealed partial class EntityHeaterComponent : Component
     public float Power = 2400f;
 
     /// <summary>
+    /// Power load divided by this is the max reagent temp.
+    /// defaults should be around 1777 Kelvin, what google tells me is bunsen burners RL max temp
+    /// </summary>
+    [DataField]
+    public float SolutionTemperatureMultiplier = 1.35f;
+
+    /// <summary>
     /// Current setting of the heater. If it is off or unpowered it won't heat anything.
     /// </summary>
     [DataField, AutoNetworkedField]
