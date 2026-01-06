@@ -14,7 +14,7 @@ public sealed partial class GlasswareVisualizerComponent : Component
     public List<EntityUid> TubeSprites = new();
 
     [DataField]
-    public string Prototype = "GlasswareTube";
+    public EntProtoId Prototype = "GlasswareTube";
 
     /// <summary>
     /// Sprite offset for where the inlet tube should connect to

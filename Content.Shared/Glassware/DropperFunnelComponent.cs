@@ -1,11 +1,13 @@
 using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
+using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Shared.Glassware;
 
 
 [RegisterComponent, NetworkedComponent]
+[AutoGenerateComponentState, AutoGenerateComponentPause]
 public sealed partial class DropperFunnelComponent : Component
 {
     /// <summary>
@@ -14,11 +16,13 @@ public sealed partial class DropperFunnelComponent : Component
     [ViewVariables]
     public int Speed = 1;
 
-    [ViewVariables]
-    public TimeSpan NextUpdate;
+    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
+    [AutoNetworkedField, AutoPausedField]
+    public TimeSpan NextUpdate = TimeSpan.Zero;
 
     [ViewVariables]
-    public TimeSpan UpdateInterval = TimeSpan.FromSeconds(0.5);
+    [AutoNetworkedField]
+    public TimeSpan UpdateInterval = TimeSpan.FromSeconds(1);
 
     /// <summary>
     /// The solution to drop from.

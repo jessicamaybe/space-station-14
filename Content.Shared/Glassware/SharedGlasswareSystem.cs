@@ -7,7 +7,6 @@ using Content.Shared.Item;
 using Content.Shared.Movement.Pulling.Events;
 using Content.Shared.Tools.Components;
 using Content.Shared.Tools.Systems;
-using Robust.Shared.Timing;
 
 namespace Content.Shared.Glassware;
 
@@ -16,7 +15,6 @@ namespace Content.Shared.Glassware;
 /// </summary>
 public sealed class SharedGlasswareSystem : EntitySystem
 {
-    [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly SharedToolSystem _tool = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;

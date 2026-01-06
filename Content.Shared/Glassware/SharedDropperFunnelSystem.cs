@@ -22,7 +22,6 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DropperFunnelComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<DropperFunnelComponent, GlasswareUpdateEvent>(OnGlasswareUpdate);
     }
 
@@ -38,7 +37,7 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
             if (_timing.CurTime < dropperFunnelComponent.NextUpdate)
                 continue;
 
-            dropperFunnelComponent.NextUpdate = _timing.CurTime + dropperFunnelComponent.UpdateInterval;
+            dropperFunnelComponent.NextUpdate += dropperFunnelComponent.UpdateInterval;
 
             if (!dropperFunnelComponent.Enabled)
                 continue;
@@ -46,11 +45,6 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
             var ev = new GlasswareUpdateEvent();
             RaiseLocalEvent(uid, ref ev);
         }
-    }
-
-    private void OnMapInit(Entity<DropperFunnelComponent> ent, ref MapInitEvent args)
-    {
-        ent.Comp.NextUpdate = _timing.CurTime + ent.Comp.UpdateInterval;
     }
 
     /// <summary>
