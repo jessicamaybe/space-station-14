@@ -1,5 +1,5 @@
 using System.Numerics;
-using Content.Shared.Glassware.Components;
+using Content.Shared.Glassware;
 using Robust.Client.GameObjects;
 
 namespace Content.Client.Glassware;
