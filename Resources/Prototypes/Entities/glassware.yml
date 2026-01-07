@@ -6,7 +6,7 @@
   - type: Appearance
   - type: Glassware
     solution: beaker
-    noOutlet: true
+    numOutlets: 0
   - type: GlasswareVisualizer
     inletOffset: -0.1,-0.2
   - type: Sprite
@@ -39,6 +39,7 @@
           True: { visible: true }
           False: { visible: false }
   - type: Glassware
+    numOutlets: 4
     solution: beaker
   - type: GlasswareVisualizer
     outletOffset: 0,-0.37

@@ -1,6 +1,6 @@
 using Robust.Shared.GameStates;
 
-namespace Content.Shared.Glassware;
+namespace Content.Shared.Glassware.Components;
 
 /// <summary>
 /// This is used for...

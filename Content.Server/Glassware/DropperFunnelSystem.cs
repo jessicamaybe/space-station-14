@@ -1,4 +1,5 @@
 using Content.Shared.Glassware;
+using Content.Shared.Glassware.Components;
 using Content.Shared.Interaction;
 
 namespace Content.Server.Glassware;
@@ -6,9 +7,8 @@ namespace Content.Server.Glassware;
 /// <summary>
 /// This handles...
 /// </summary>
-public sealed class DropperFunnelSystem : EntitySystem
+public sealed class DropperFunnelSystem : SharedDropperFunnelSystem
 {
-    [Dependency] private readonly SharedDropperFunnelSystem _dropperFunnelSystem = default!;
     /// <inheritdoc/>
     public override void Initialize()
     {
@@ -21,7 +21,7 @@ public sealed class DropperFunnelSystem : EntitySystem
         if (args.Handled || !args.Complex)
             return;
 
-        _dropperFunnelSystem.Toggle(ent.Owner);
+        Toggle(ent.Owner);
     }
 
 }

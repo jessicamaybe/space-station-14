@@ -2,7 +2,7 @@ using System.Numerics;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 
-namespace Content.Shared.Glassware;
+namespace Content.Shared.Glassware.Components;
 
 /// <summary>
 /// This is used for...
@@ -10,6 +10,9 @@ namespace Content.Shared.Glassware;
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class GlasswareVisualizerComponent : Component
 {
+    /// <summary>
+    /// Entities that are representing the tubes from this piece of glasswares outlet
+    /// </summary>
     [DataField]
     public List<EntityUid> TubeSprites = new();
 

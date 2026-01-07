@@ -1,6 +1,8 @@
+using System.Linq;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Chemistry.Reaction;
 using Content.Shared.Chemistry.Reagent;
+using Content.Shared.Glassware.Components;
 using Robust.Shared.Utility;
 
 namespace Content.Shared.Glassware;
@@ -9,6 +11,7 @@ public sealed class CondenserSystem : EntitySystem
 {
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
     [Dependency] private readonly ChemicalReactionSystem _chemicalReactionSystem = default!;
+    [Dependency] private readonly SharedGlasswareSystem _glasswareSystem = default!;
     /// <inheritdoc/>
     public override void Initialize()
     {
@@ -17,6 +20,7 @@ public sealed class CondenserSystem : EntitySystem
         SubscribeLocalEvent<CondenserComponent, GlasswareUpdateEvent>(OnGlasswareUpdate);
         SubscribeLocalEvent<CondenserComponent, OnGlasswareConnectEvent>(OnGlasswareConnect);
         SubscribeLocalEvent<CondenserComponent, SolutionContainerChangedEvent>(OnSolutionChanged);
+
     }
 
     private void OnSolutionChanged(Entity<CondenserComponent> ent, ref SolutionContainerChangedEvent args)
@@ -47,7 +51,7 @@ public sealed class CondenserSystem : EntitySystem
         var currentContents = condenserSolution.Value.Comp.Solution.Contents.ShallowClone();
 
         //Only do the condenser reaction if it's connected to an output, otherwise do normal reacting.
-        if (TryComp<ReactionMixerComponent>(ent, out var reactionMixer) && glasswareComponent.OutletDevice != null)
+        if (TryComp<ReactionMixerComponent>(ent, out var reactionMixer) && _glasswareSystem.TryGetOutlets((ent, glasswareComponent), out var outlet) && outlet.Count > 0)
         {
             _chemicalReactionSystem.FullyReactSolution(condenserSolution.Value, reactionMixer);
         }
@@ -56,10 +60,13 @@ public sealed class CondenserSystem : EntitySystem
             _chemicalReactionSystem.FullyReactSolution(condenserSolution.Value);
         }
 
-        if (glasswareComponent.OutletDevice == null)
+        if (!_glasswareSystem.TryGetOutlets((ent, glasswareComponent), out var outlets) || outlets.Count == 0)
             return;
 
-        if (!_solutionContainer.TryGetGlasswareSolution(glasswareComponent.OutletDevice.Value, out var outletSolution, out _))
+
+
+        //TODO: proper multiple outlets
+        if (!_solutionContainer.TryGetGlasswareSolution(outlets.First(), out var outletSolution, out _))
             return;
 
         var reactedContents = condenserSolution.Value.Comp.Solution.Contents.ShallowClone();

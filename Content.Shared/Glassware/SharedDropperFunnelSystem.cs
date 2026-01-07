@@ -2,13 +2,14 @@ using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.FixedPoint;
 using Content.Shared.Fluids;
+using Content.Shared.Glassware.Components;
 using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Timing;
 
 namespace Content.Shared.Glassware;
 
-public sealed class SharedDropperFunnelSystem : EntitySystem
+public abstract class SharedDropperFunnelSystem : EntitySystem
 {
 
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
@@ -96,23 +97,29 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
 
         var currentLevel = funnelSolution.Value.Comp.Solution.FillFraction;
 
+
         //its spill time
-        if (glasswareComponent.OutletDevice == null)
+        if (!_glasswareSystem.TryGetOutlets((ent, glasswareComponent), out var outlets) || outlets.Count == 0)
         {
             var spillSolution = _solutionContainer.SplitSolution(funnelSolution.Value, speed);
             _puddle.TrySpillAt(ent.Owner, spillSolution, out _);
             return;
         }
 
-        if (!_solutionContainer.TryGetGlasswareSolution(glasswareComponent.OutletDevice.Value, out var outletSolution, out _))
-            return;
+        foreach (var outletDevice in outlets)
+        {
+            if (!_solutionContainer.TryGetGlasswareSolution(outletDevice, out var outletSolution, out _))
+                continue;
 
-        var solution = _solutionContainer.SplitSolution(funnelSolution.Value, speed);
+            var splitSolution = _solutionContainer.SplitSolution(funnelSolution.Value, speed / outlets.Count);
 
-        if (!_solutionContainer.TryAddSolution(outletSolution.Value, solution))
-            _solutionContainer.TryAddSolution(funnelSolution.Value, solution);
+            if (!_solutionContainer.TryAddSolution(outletSolution.Value, splitSolution))
+                _solutionContainer.TryAddSolution(funnelSolution.Value, splitSolution);
+        }
 
         args.Handled = true;
+
+        /*
 
         //shutoff the other funnels connected to this ones outlet if it empties
         //QOL to prevent condenser from getting overly full
@@ -129,5 +136,6 @@ public sealed class SharedDropperFunnelSystem : EntitySystem
                 }
             }
         }
+        */
     }
 }

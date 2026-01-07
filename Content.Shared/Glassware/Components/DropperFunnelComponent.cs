@@ -3,7 +3,7 @@ using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
-namespace Content.Shared.Glassware;
+namespace Content.Shared.Glassware.Components;
 
 
 [RegisterComponent, NetworkedComponent]
