@@ -10,9 +10,6 @@ using Content.Shared.Tools.Systems;
 
 namespace Content.Shared.Glassware;
 
-/// <summary>
-/// This handles...
-/// </summary>
 public abstract partial class SharedGlasswareSystem : EntitySystem
 {
     [Dependency] private readonly SharedToolSystem _tool = default!;

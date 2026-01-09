@@ -3,7 +3,8 @@ using Robust.Shared.GameStates;
 namespace Content.Shared.Glassware;
 
 /// <summary>
-/// This is used for...
+/// This is used visualizing the tube between two pieces of glassware
+/// specifically the length of the tube and the ends
 /// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class GlasswareTubeVisualizerComponent : Component

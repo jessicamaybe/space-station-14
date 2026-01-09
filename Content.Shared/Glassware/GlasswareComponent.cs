@@ -1,14 +1,14 @@
 using Content.Shared.Tools;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
-using Robust.Shared.Serialization;
 
 namespace Content.Shared.Glassware;
-
 
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class GlasswareComponent : Component
 {
+    //TODO: Multiple outlets. Max inlets and max outlets
+
     [DataField]
     public string Solution = "default";
 
@@ -32,7 +32,7 @@ public record struct GlasswareUpdateEvent()
 }
 
 /// <summary>
-/// Raised when two pieces of glassware are connected
+/// Raised when two pieces of glassware are connected. Raised on origin entity, target is the output it connects to.
 /// </summary>
 [ByRefEvent]
 public record struct OnGlasswareConnectEvent(Entity<GlasswareComponent?> Target)
@@ -41,23 +41,10 @@ public record struct OnGlasswareConnectEvent(Entity<GlasswareComponent?> Target)
 }
 
 /// <summary>
-/// Raised when two pieces of glassware are connected
+/// Raised when two pieces of glassware are connected. Raised on origin entity, target is the output it connects to.
 /// </summary>
 [ByRefEvent]
 public record struct OnGlasswareDisconnectEvent(Entity<GlasswareComponent?> Target)
 {
     public bool Handled = false;
-}
-
-[Serializable, NetSerializable]
-public sealed class GlasswareConnectEvent : EntityEventArgs
-{
-    public NetEntity Origin;
-    public NetEntity Target;
-
-    public GlasswareConnectEvent(NetEntity origin, NetEntity target)
-    {
-        Origin = origin;
-        Target = target;
-    }
 }

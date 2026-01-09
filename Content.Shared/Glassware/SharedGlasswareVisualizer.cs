@@ -2,9 +2,6 @@ using System.Numerics;
 
 namespace Content.Shared.Glassware;
 
-/// <summary>
-/// This handles...
-/// </summary>
 public sealed class SharedGlasswareVisualizer : EntitySystem
 {
     [Dependency] private readonly SharedTransformSystem _transform = default!;
@@ -23,8 +20,8 @@ public sealed class SharedGlasswareVisualizer : EntitySystem
         if (args.Handled)
             return;
 
-        CreateTube(ent.Owner, args.Target);
-        args.Handled = true;
+        if (CreateTube(ent.Owner, args.Target))
+            args.Handled = true;
     }
 
     private void OnGlasswareDisconnect(Entity<GlasswareVisualizerComponent> ent, ref OnGlasswareDisconnectEvent args)
@@ -32,8 +29,8 @@ public sealed class SharedGlasswareVisualizer : EntitySystem
         if (args.Handled)
             return;
 
-        DeleteTube(ent.Owner, args.Target);
-        args.Handled = true;
+        if (DeleteTube(ent.Owner, args.Target))
+            args.Handled = true;
     }
 
     public bool DeleteTube(Entity<GlasswareComponent?> origin, Entity<GlasswareComponent?> target)
@@ -57,16 +54,16 @@ public sealed class SharedGlasswareVisualizer : EntitySystem
     /// I'm just creating the entity on the origin, moving it to the midpoint, and sending the length to the client where the
     /// sprite scaling stuff is handled
     /// </summary>
-    public void CreateTube(Entity<GlasswareComponent?> origin, Entity<GlasswareComponent?> target)
+    public bool CreateTube(Entity<GlasswareComponent?> origin, Entity<GlasswareComponent?> target)
     {
         if (!Resolve(origin, ref origin.Comp) || !Resolve(target, ref target.Comp))
-            return;
+            return false;
 
         if (!TryComp<GlasswareVisualizerComponent>(origin, out var originGlasswareVisualizer))
-            return;
+            return false;
 
         if (!TryComp<GlasswareVisualizerComponent>(target, out var targetVisualizerComponent))
-            return;
+            return false;
 
         var xformOrigin = Transform(origin);
         var xformTarget = Transform(target);
@@ -78,7 +75,7 @@ public sealed class SharedGlasswareVisualizer : EntitySystem
         var rotation = (originCoords.Position - targetCoords.Position).ToWorldAngle();
 
         if (!xformOrigin.Coordinates.IsValid(EntityManager))
-            return;
+            return false;
 
         var tube = PredictedSpawnAtPosition(originGlasswareVisualizer.Prototype, xformOrigin.Coordinates);
 
@@ -91,9 +88,10 @@ public sealed class SharedGlasswareVisualizer : EntitySystem
 
         Dirty(tube, comp);
 
-        if (!TryComp<AppearanceComponent>(tube, out var appearanceComponent))
-            return;
+        //might want to query this earlier, I can't think of a reason why you'd want a tube with no scaling?
+        if (TryComp<AppearanceComponent>(tube, out var appearanceComponent))
+            _appearance.QueueUpdate(tube, appearanceComponent);
 
-        _appearance.QueueUpdate(tube, appearanceComponent);
+        return true;
     }
 }

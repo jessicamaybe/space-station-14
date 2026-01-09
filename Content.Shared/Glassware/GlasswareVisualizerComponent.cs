@@ -5,7 +5,7 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.Glassware;
 
 /// <summary>
-/// This is used for...
+/// This is used for visualizing tube connections between two pieces of glassware
 /// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class GlasswareVisualizerComponent : Component
