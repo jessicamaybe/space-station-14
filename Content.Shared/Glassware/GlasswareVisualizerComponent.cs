@@ -10,8 +10,12 @@ namespace Content.Shared.Glassware;
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class GlasswareVisualizerComponent : Component
 {
+
+    /// <summary>
+    /// Dictionary containing the target of the tube, and the tubes entity ID
+    /// </summary>
     [DataField]
-    public List<EntityUid> TubeSprites = new();
+    public Dictionary<EntityUid, EntityUid> TubeSprites = new();
 
     [DataField]
     public EntProtoId Prototype = "GlasswareTube";

@@ -13,11 +13,9 @@ namespace Content.Shared.Glassware;
 /// <summary>
 /// This handles...
 /// </summary>
-public sealed class SharedGlasswareSystem : EntitySystem
+public abstract partial class SharedGlasswareSystem : EntitySystem
 {
     [Dependency] private readonly SharedToolSystem _tool = default!;
-    [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -147,11 +145,8 @@ public sealed class SharedGlasswareSystem : EntitySystem
         Dirty(ent);
         Dirty(target);
 
-        var ev = new OnGlasswareConnectEvent();
+        var ev = new OnGlasswareConnectEvent(target.Owner);
         RaiseLocalEvent(ent, ref ev);
-        RaiseLocalEvent(target, ref ev);
-
-        UpdateGlasswareTube(ent);
     }
 
     /// <summary>
@@ -169,11 +164,13 @@ public sealed class SharedGlasswareSystem : EntitySystem
             return;
 
         outletDeviceComp.InletDevices.Remove(ent);
-
         ent.Comp.OutletDevice = null;
-        UpdateGlasswareTube(ent);
+
         Dirty(ent);
         Dirty(outletEnt, outletDeviceComp);
+
+        var ev = new OnGlasswareDisconnectEvent(outletEnt);
+        RaiseLocalEvent(ent, ref ev);
     }
 
     /// <summary>
@@ -184,19 +181,14 @@ public sealed class SharedGlasswareSystem : EntitySystem
     {
         foreach (var inlet in ent.Comp.InletDevices)
         {
-            if (!TryComp<GlasswareComponent>(inlet, out var inletGlassware))
+            if (!TryComp<GlasswareComponent>(inlet, out var inletGlassware) || inletGlassware.OutletDevice == null)
                 continue;
 
+            var outlet = inletGlassware.OutletDevice.Value;
             inletGlassware.OutletDevice = null;
-            UpdateGlasswareTube((inlet, inletGlassware));
-        }
 
-        if (TryComp<GlasswareVisualizerComponent>(ent, out var glasswareVisualizer))
-        {
-            foreach (var tubeSprite in glasswareVisualizer.TubeSprites)
-            {
-                Del(tubeSprite);
-            }
+            var ev = new OnGlasswareDisconnectEvent(outlet);
+            RaiseLocalEvent(inlet, ref ev);
         }
 
         ent.Comp.InletDevices.Clear();
@@ -249,61 +241,6 @@ public sealed class SharedGlasswareSystem : EntitySystem
             }
         }
         return true;
-    }
-
-
-    /// <summary>
-    /// Updates the visualization for a piece of glassware.
-    /// Will spawn the tube between the specified entity, and it's outlet entity.
-    /// Probably jank as fuck
-    /// </summary>
-    /// <param name="ent"></param>
-    public void UpdateGlasswareTube(Entity<GlasswareComponent> ent)
-    {
-        //TODO: This throws errors and shit on server shutdown. figure this out
-        if (!TryComp<GlasswareVisualizerComponent>(ent, out var glasswareVisualizerComponent))
-            return;
-
-        foreach (var tubes in glasswareVisualizerComponent.TubeSprites)
-        {
-            Del(tubes);
-        }
-
-        if (!TryGetOutlet((ent.Owner, ent.Comp), out var outlet))
-            return;
-
-        if (!TryComp<GlasswareVisualizerComponent>(outlet, out var outletVisualizerComponent))
-            return;
-
-        glasswareVisualizerComponent.TubeSprites.Clear();
-
-        var xformOrigin = Transform(ent);
-        var xformTarget = Transform(outlet.Value);
-
-        var originCoords = xformOrigin.Coordinates.Offset(xformOrigin.LocalRotation.RotateVec(glasswareVisualizerComponent.OutletOffset));
-        var targetCoords = xformTarget.Coordinates.Offset(xformTarget.LocalRotation.RotateVec(outletVisualizerComponent.InletOffset));
-
-        var midpoint = (targetCoords.Position + originCoords.Position) / 2;
-        var rotation = (originCoords.Position - targetCoords.Position).ToWorldAngle();
-
-        if (!xformOrigin.Coordinates.IsValid(EntityManager))
-            return;
-
-        var tube = PredictedSpawnAtPosition(glasswareVisualizerComponent.Prototype, xformOrigin.Coordinates);
-
-        glasswareVisualizerComponent.TubeSprites.Add(tube);
-        _transform.SetLocalPositionRotation(tube, midpoint, rotation);
-
-        var comp = EnsureComp<GlasswareTubeVisualizerComponent>(tube);
-        comp.TubeLength = Vector2.Distance(originCoords.Position, targetCoords.Position);
-
-        Dirty(outlet.Value, outletVisualizerComponent);
-        Dirty(tube, comp);
-
-        if (!TryComp<AppearanceComponent>(tube, out var appearanceComponent))
-            return;
-
-        _appearance.QueueUpdate(tube, appearanceComponent);
     }
 
     private void OnGlasswareMoved(Entity<GlasswareComponent> ent, ref MoveEvent args)

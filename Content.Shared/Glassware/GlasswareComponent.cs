@@ -35,7 +35,15 @@ public record struct GlasswareUpdateEvent()
 /// Raised when two pieces of glassware are connected
 /// </summary>
 [ByRefEvent]
-public record struct OnGlasswareConnectEvent()
+public record struct OnGlasswareConnectEvent(Entity<GlasswareComponent?> Target)
+{
+}
+
+/// <summary>
+/// Raised when two pieces of glassware are connected
+/// </summary>
+[ByRefEvent]
+public record struct OnGlasswareDisconnectEvent(Entity<GlasswareComponent?> Target)
 {
 }
 
