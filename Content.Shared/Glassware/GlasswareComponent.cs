@@ -37,6 +37,7 @@ public record struct GlasswareUpdateEvent()
 [ByRefEvent]
 public record struct OnGlasswareConnectEvent(Entity<GlasswareComponent?> Target)
 {
+    public bool Handled = false;
 }
 
 /// <summary>
@@ -45,6 +46,7 @@ public record struct OnGlasswareConnectEvent(Entity<GlasswareComponent?> Target)
 [ByRefEvent]
 public record struct OnGlasswareDisconnectEvent(Entity<GlasswareComponent?> Target)
 {
+    public bool Handled = false;
 }
 
 [Serializable, NetSerializable]

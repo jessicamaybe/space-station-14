@@ -8,7 +8,6 @@ namespace Content.Shared.Glassware;
 public sealed class SharedGlasswareVisualizer : EntitySystem
 {
     [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly SharedGlasswareSystem _glassware = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
 
     /// <inheritdoc/>
@@ -19,15 +18,22 @@ public sealed class SharedGlasswareVisualizer : EntitySystem
         SubscribeLocalEvent<GlasswareVisualizerComponent, OnGlasswareDisconnectEvent>(OnGlasswareDisconnect);
     }
 
-    private void OnGlasswareConnect(Entity<GlasswareVisualizerComponent> ent, ref OnGlasswareConnectEvent ev)
+    private void OnGlasswareConnect(Entity<GlasswareVisualizerComponent> ent, ref OnGlasswareConnectEvent args)
     {
+        if (args.Handled)
+            return;
 
-        CreateTube(ent.Owner, ev.Target);
+        CreateTube(ent.Owner, args.Target);
+        args.Handled = true;
     }
 
-    private void OnGlasswareDisconnect(Entity<GlasswareVisualizerComponent> ent, ref OnGlasswareDisconnectEvent ev)
+    private void OnGlasswareDisconnect(Entity<GlasswareVisualizerComponent> ent, ref OnGlasswareDisconnectEvent args)
     {
-        DeleteTube(ent.Owner, ev.Target);
+        if (args.Handled)
+            return;
+
+        DeleteTube(ent.Owner, args.Target);
+        args.Handled = true;
     }
 
     public bool DeleteTube(Entity<GlasswareComponent?> origin, Entity<GlasswareComponent?> target)
@@ -47,6 +53,9 @@ public sealed class SharedGlasswareVisualizer : EntitySystem
 
     /// <summary>
     /// Creates a tube between two nodes
+    ///
+    /// I'm just creating the entity on the origin, moving it to the midpoint, and sending the length to the client where the
+    /// sprite scaling stuff is handled
     /// </summary>
     public void CreateTube(Entity<GlasswareComponent?> origin, Entity<GlasswareComponent?> target)
     {
