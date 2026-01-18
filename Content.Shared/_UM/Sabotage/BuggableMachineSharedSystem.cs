@@ -42,12 +42,11 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         if (TryComp<WiresPanelComponent>(ent, out var panel) && !panel.Open)
             return;
 
-        if (TryComp<MachineBugComponent>(args.Used, out var bug) && ent.Comp.InstalledBugs.Count == 0)
-        {
-            InstallBug(ent, args.User, args.Used, bug.DoAfterDuration);
-            args.Handled = true;
+        if (!TryComp<MachineBugComponent>(args.Used, out var bug) || ent.Comp.InstalledBugs.Count != 0)
             return;
-        }
+
+        InstallBug(ent, args.User, args.Used, bug.DoAfterDuration);
+        args.Handled = true;
     }
 
     private void OnExamined(Entity<BuggableMachineComponent> ent, ref ExaminedEvent args)
