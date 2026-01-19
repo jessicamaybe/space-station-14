@@ -46,7 +46,7 @@ public sealed partial class MachineBugComponent : Component
     public float DoAfterDuration = 5f;
 
     /// <summary>
-    /// Entities that have these components can be installed
+    /// Can be installed into machines with these components
     /// </summary>
     [DataField]
     public EntityWhitelist? Whitelist;
