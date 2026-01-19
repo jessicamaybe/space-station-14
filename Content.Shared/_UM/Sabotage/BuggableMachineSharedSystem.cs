@@ -61,12 +61,11 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
                 bugComp.NextMalfunction += bugComp.MalfunctionInterval + mod;
             }
         }
-
     }
 
     private void OnComponentInit(Entity<BuggableMachineComponent> ent, ref ComponentInit args)
     {
-        ent.Comp.InstalledBugs = _container.EnsureContainer<ContainerSlot>(ent, BuggableMachineComponent.ContainerID);
+        ent.Comp.InstalledBugs = _container.EnsureContainer<ContainerSlot>(ent, BuggableMachineComponent.ContainerId);
     }
 
     private void OnMachineDeconstructed(Entity<BuggableMachineComponent> ent, ref MachineDeconstructedEvent args)
@@ -79,9 +78,9 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         if (TryComp<WiresPanelComponent>(ent, out var panel) && !panel.Open)
             return;
 
-        var CutQuality = "Cutting";
+        var cutQuality = "Cutting";
 
-        if (_toolSystem.HasQuality(args.Used, CutQuality) && ent.Comp.InstalledBugs.Count > 0)
+        if (_toolSystem.HasQuality(args.Used, cutQuality) && ent.Comp.InstalledBugs.Count > 0)
         {
             RemoveBug(ent, args.User, args.Used, 5f);
             args.Handled = true;

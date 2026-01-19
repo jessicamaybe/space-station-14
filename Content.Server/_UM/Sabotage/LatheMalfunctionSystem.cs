@@ -1,4 +1,3 @@
-using Content.Server.Lathe;
 using Content.Shared._UM.Sabotage.Components;
 using Content.Shared.Lathe;
 
@@ -9,7 +8,6 @@ namespace Content.Server._UM.Sabotage;
 /// </summary>
 public sealed class LatheMalfunctionSystem : EntitySystem
 {
-    [Dependency] private readonly SharedLatheSystem _latheSystem = default!;
     /// <inheritdoc/>
     public override void Initialize()
     {

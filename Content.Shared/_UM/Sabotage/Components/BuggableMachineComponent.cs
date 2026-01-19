@@ -12,7 +12,7 @@ namespace Content.Shared._UM.Sabotage.Components;
 [Access(typeof(BuggableMachineSharedSystem))]
 public sealed partial class BuggableMachineComponent : Component
 {
-    public const string ContainerID = "InstalledBugs";
+    public const string ContainerId = "InstalledBugs";
 
     /// <summary>
     /// Container slot containing any installed bugs

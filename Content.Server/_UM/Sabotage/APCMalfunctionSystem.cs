@@ -1,10 +1,6 @@
-using Content.Server.DeviceNetwork.Systems;
-using Content.Server.DeviceNetwork.Systems.Devices;
 using Content.Server.Power.Components;
 using Content.Server.Power.EntitySystems;
 using Content.Shared._UM.Sabotage.Components;
-using Content.Shared.Lathe;
-using Content.Shared.Power.EntitySystems;
 
 namespace Content.Server._UM.Sabotage;
 
@@ -24,9 +20,6 @@ public sealed class ApcMalfunctionSystem : EntitySystem
 
     private void OnMachineMalfunction(Entity<ApcComponent> ent, ref MachineMalfunctionEvent args)
     {
-        if (!TryComp<ApcPowerProviderComponent>(ent, out var powerProviderComponent))
-            return;
-
         if (!ent.Comp.MainBreakerEnabled)
             return;
 
