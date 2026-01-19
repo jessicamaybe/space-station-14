@@ -138,10 +138,10 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         if (args.Cancelled)
             return;
 
-        if (!_container.Insert(args.Target.Value, ent.Comp.InstalledBugs))
+        if (!TryComp<MachineBugComponent>(args.Target.Value, out var bugComponent))
             return;
 
-        if (!TryComp<MachineBugComponent>(args.Target.Value, out var bugComponent))
+        if (!_container.Insert(args.Target.Value, ent.Comp.InstalledBugs))
             return;
 
         var mod = _random.Next(-bugComponent.MalfunctionIntervalModifier, bugComponent.MalfunctionIntervalModifier);
