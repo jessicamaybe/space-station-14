@@ -1,4 +1,5 @@
 using Content.Shared.DoAfter;
+using Robust.Shared.Audio;
 using Robust.Shared.Containers;
 using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
@@ -19,6 +20,20 @@ public sealed partial class BuggableMachineComponent : Component
     /// </summary>
     [ViewVariables]
     public ContainerSlot InstalledBugs = default!;
+
+    /// <summary>
+    /// Sound played when a bug is broken
+    /// </summary>
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField]
+    public SoundSpecifier BrokenSound = new SoundCollectionSpecifier("Sparks");
+
+    /// <summary>
+    /// Sound played when a bug is removed
+    /// </summary>
+    [ViewVariables(VVAccess.ReadWrite)]
+    [DataField]
+    public SoundSpecifier RemovedSound = new SoundPathSpecifier("/Audio/Items/wirecutter.ogg");
 }
 
 

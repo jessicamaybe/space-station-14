@@ -6,6 +6,7 @@ using Content.Shared.Interaction;
 using Content.Shared.Tools.Systems;
 using Content.Shared.Whitelist;
 using Content.Shared.Wires;
+using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
@@ -23,6 +24,7 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly SharedToolSystem _toolSystem = default!;
+    [Dependency] private readonly SharedAudioSystem _audio = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -71,6 +73,7 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
     private void OnMachineDeconstructed(Entity<BuggableMachineComponent> ent, ref MachineDeconstructedEvent args)
     {
         _container.CleanContainer(ent.Comp.InstalledBugs);
+        _audio.PlayPvs(ent.Comp.BrokenSound, Transform(ent).Coordinates);
     }
 
     private void OnInteractUsing(Entity<BuggableMachineComponent> ent, ref InteractUsingEvent args)
@@ -160,6 +163,7 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         if (args.Used == null)
             return;
 
+        _audio.PlayPredicted(ent.Comp.RemovedSound, ent.Owner, args.Used);
         _container.EmptyContainer(ent.Comp.InstalledBugs, true, Transform(args.Used.Value).Coordinates);
     }
 }
