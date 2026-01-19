@@ -3,8 +3,12 @@ using Content.Shared.Construction;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
 using Content.Shared.Interaction;
+using Content.Shared.Tools.Systems;
+using Content.Shared.Whitelist;
 using Content.Shared.Wires;
 using Robust.Shared.Containers;
+using Robust.Shared.Random;
+using Robust.Shared.Timing;
 
 namespace Content.Shared._UM.Sabotage;
 
@@ -15,6 +19,10 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
 {
     [Dependency] private readonly SharedContainerSystem _container = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
+    [Dependency] private readonly EntityWhitelistSystem _entityWhitelist = default!;
+    [Dependency] private readonly IGameTiming _timing = default!;
+    [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly SharedToolSystem _toolSystem = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -25,6 +33,35 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         SubscribeLocalEvent<BuggableMachineComponent, ComponentInit>(OnComponentInit);
         SubscribeLocalEvent<BuggableMachineComponent, MachineDeconstructedEvent>(OnMachineDeconstructed);
         SubscribeLocalEvent<BuggableMachineComponent, MachineBugInsertDoAfterEvent>(OnMachineBugInsert);
+        SubscribeLocalEvent<BuggableMachineComponent, MachineBugRemoveDoAfterEvent>(OnMachineBugRemove);
+    }
+
+    public override void Update(float frameTime)
+    {
+        base.Update(frameTime);
+
+        var curTime = _timing.CurTime;
+        var query = EntityQueryEnumerator<BuggableMachineComponent>();
+
+        while (query.MoveNext(out var uid, out var comp))
+        {
+            foreach (var bug in comp.InstalledBugs.ContainedEntities)
+            {
+                if (!TryComp<MachineBugComponent>(bug, out var bugComp))
+                    continue;
+
+                if (bugComp.NextMalfunction > curTime)
+                    continue;
+
+                var malfunctionEvent = new MachineMalfunctionEvent();
+                RaiseLocalEvent(uid, malfunctionEvent);
+
+                var mod = _random.Next(-bugComp.MalfunctionIntervalModifier, bugComp.MalfunctionIntervalModifier);
+
+                bugComp.NextMalfunction += bugComp.MalfunctionInterval + mod;
+            }
+        }
+
     }
 
     private void OnComponentInit(Entity<BuggableMachineComponent> ent, ref ComponentInit args)
@@ -34,7 +71,7 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
 
     private void OnMachineDeconstructed(Entity<BuggableMachineComponent> ent, ref MachineDeconstructedEvent args)
     {
-        _container.EmptyContainer(ent.Comp.InstalledBugs, true, Transform(ent).Coordinates);
+        _container.CleanContainer(ent.Comp.InstalledBugs);
     }
 
     private void OnInteractUsing(Entity<BuggableMachineComponent> ent, ref InteractUsingEvent args)
@@ -42,7 +79,19 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         if (TryComp<WiresPanelComponent>(ent, out var panel) && !panel.Open)
             return;
 
-        if (!TryComp<MachineBugComponent>(args.Used, out var bug) || ent.Comp.InstalledBugs.Count != 0)
+        var CutQuality = "Cutting";
+
+        if (_toolSystem.HasQuality(args.Used, CutQuality) && ent.Comp.InstalledBugs.Count > 0)
+        {
+            RemoveBug(ent, args.User, args.Used, 5f);
+            args.Handled = true;
+            return;
+        }
+
+        if (!TryComp<MachineBugComponent>(args.Used, out var bug))
+            return;
+
+        if (_entityWhitelist.IsWhitelistFail(bug.Whitelist, ent))
             return;
 
         InstallBug(ent, args.User, args.Used, bug.DoAfterDuration);
@@ -56,6 +105,18 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
 
         if (ent.Comp.InstalledBugs.Count > 0)
             args.PushText("This things got a bug in it", -10);
+    }
+
+    private void RemoveBug(Entity<BuggableMachineComponent> ent, EntityUid user, EntityUid bug, float duration)
+    {
+        var doAfterEventArgs = new DoAfterArgs(EntityManager, user, duration, new MachineBugRemoveDoAfterEvent(), ent, bug, user)
+        {
+            BreakOnDamage = true,
+            BreakOnMove = true,
+            NeedHand = true,
+        };
+
+        _doAfterSystem.TryStartDoAfter(doAfterEventArgs);
     }
 
     private void InstallBug(Entity<BuggableMachineComponent> ent, EntityUid user, EntityUid bug, float duration)
@@ -78,6 +139,28 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         if (args.Cancelled)
             return;
 
-        _container.Insert(args.Target.Value, ent.Comp.InstalledBugs);
+        if (!_container.Insert(args.Target.Value, ent.Comp.InstalledBugs))
+            return;
+
+        if (!TryComp<MachineBugComponent>(args.Target.Value, out var bugComponent))
+            return;
+
+        var mod = _random.Next(-bugComponent.MalfunctionIntervalModifier, bugComponent.MalfunctionIntervalModifier);
+
+        bugComponent.NextMalfunction += _timing.CurTime + bugComponent.MalfunctionDelay + mod;
+
+        if (args.Used == null)
+            return;
+
+        var insertEvent = new AfterMachineBugInsertEvent();
+        RaiseLocalEvent(args.Used.Value, insertEvent);
+    }
+
+    private void OnMachineBugRemove(Entity<BuggableMachineComponent> ent, ref MachineBugRemoveDoAfterEvent args)
+    {
+        if (args.Used == null)
+            return;
+
+        _container.EmptyContainer(ent.Comp.InstalledBugs, true, Transform(args.Used.Value).Coordinates);
     }
 }

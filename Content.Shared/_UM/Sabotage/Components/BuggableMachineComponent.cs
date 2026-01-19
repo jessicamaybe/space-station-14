@@ -1,8 +1,6 @@
 using Content.Shared.DoAfter;
-using Content.Shared.Power.Generator;
 using Robust.Shared.Containers;
 using Robust.Shared.GameStates;
-using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
 
 namespace Content.Shared._UM.Sabotage.Components;
@@ -17,11 +15,8 @@ public sealed partial class BuggableMachineComponent : Component
     public const string ContainerID = "InstalledBugs";
 
     /// <summary>
-    /// Entities that have these components can be installed
+    /// Container slot containing any installed bugs
     /// </summary>
-    [DataField(required: true)]
-    public ComponentRegistry BugComponentTypes = default!;
-
     [ViewVariables]
     public ContainerSlot InstalledBugs = default!;
 }
@@ -32,5 +27,24 @@ public sealed partial class BuggableMachineComponent : Component
 /// </summary>
 [Serializable, NetSerializable]
 public sealed partial class MachineBugInsertDoAfterEvent : SimpleDoAfterEvent
+{
+}
+
+/// <summary>
+/// Raised on the user of a Machine Bug after the doafter to install the bug
+/// </summary>
+[Serializable, NetSerializable]
+public sealed partial class MachineBugRemoveDoAfterEvent : SimpleDoAfterEvent
+{
+}
+
+
+
+/// <summary>
+/// Event raised on a user after they install a bug
+/// Normally for tracking install bug objectives
+/// </summary>
+[Serializable, NetSerializable]
+public sealed class AfterMachineBugInsertEvent : EntityEventArgs
 {
 }
