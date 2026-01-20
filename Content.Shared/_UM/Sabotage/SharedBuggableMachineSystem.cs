@@ -1,5 +1,4 @@
 using Content.Shared._UM.Sabotage.Components;
-using Content.Shared.Construction;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
 using Content.Shared.Interaction;
@@ -16,7 +15,7 @@ namespace Content.Shared._UM.Sabotage;
 /// <summary>
 /// This handles...
 /// </summary>
-public abstract partial class SharedBuggableMachineSystem : EntitySystem
+public abstract class SharedBuggableMachineSystem : EntitySystem
 {
     [Dependency] private readonly SharedContainerSystem _container = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;

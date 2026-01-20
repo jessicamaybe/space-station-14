@@ -22,7 +22,7 @@ public sealed class CrewMonitorMalfunctionSystem : EntitySystem
 
     /// <summary>
     /// Turning sensors for random people off
-    /// At some point I'd like this to be biased towards kill targets but I don't feel like it right now
+    /// At some point I'd like this to be biased towards kill targets, but I don't feel like it right now
     /// </summary>
     private void OnMachineMalfunction(Entity<CrewMonitoringServerComponent> ent, ref MachineMalfunctionEvent args)
     {
