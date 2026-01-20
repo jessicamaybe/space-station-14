@@ -89,7 +89,7 @@ public abstract partial class SharedBuggableMachineSystem : EntitySystem
         if (!TryComp<MachineBugComponent>(args.Used, out var bug))
             return;
 
-        if (_entityWhitelist.IsWhitelistFail(bug.Whitelist, ent))
+        if (_entityWhitelist.IsWhitelistFail(bug.Whitelist, ent) && bug.Whitelist != null)
             return;
 
         InstallBug(ent, args.User, args.Used, bug.DoAfterDuration);

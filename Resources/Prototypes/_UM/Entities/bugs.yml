@@ -15,6 +15,19 @@
 
 - type: entity
   name: strange device
+  suffix: bug, universal
+  description: A strange device. It looks like it could fit into any machine
+  parent: BaseMachineBug
+  id: MachineBugUniversal
+  components:
+  - type: Sprite
+    sprite: Objects/Materials/Scrap/generic.rsi
+    layers:
+    - state: glass-1
+  - type: MachineBug
+
+- type: entity
+  name: strange device
   suffix: bug, lathe
   description: A strange device. It looks like it could fit into a lathe.
   parent: BaseMachineBug
