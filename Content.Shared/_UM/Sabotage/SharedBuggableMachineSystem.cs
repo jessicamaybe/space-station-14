@@ -16,7 +16,7 @@ namespace Content.Shared._UM.Sabotage;
 /// <summary>
 /// This handles...
 /// </summary>
-public sealed class BuggableMachineSharedSystem : EntitySystem
+public abstract partial class SharedBuggableMachineSystem : EntitySystem
 {
     [Dependency] private readonly SharedContainerSystem _container = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
@@ -33,7 +33,6 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         SubscribeLocalEvent<BuggableMachineComponent, InteractUsingEvent>(OnInteractUsing);
         SubscribeLocalEvent<BuggableMachineComponent, ExaminedEvent>(OnExamined);
         SubscribeLocalEvent<BuggableMachineComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<BuggableMachineComponent, MachineDeconstructedEvent>(OnMachineDeconstructed);
         SubscribeLocalEvent<BuggableMachineComponent, MachineBugInsertDoAfterEvent>(OnMachineBugInsert);
         SubscribeLocalEvent<BuggableMachineComponent, MachineBugRemoveDoAfterEvent>(OnMachineBugRemove);
     }
@@ -68,12 +67,6 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
     private void OnComponentInit(Entity<BuggableMachineComponent> ent, ref ComponentInit args)
     {
         ent.Comp.InstalledBugs = _container.EnsureContainer<ContainerSlot>(ent, BuggableMachineComponent.ContainerId);
-    }
-
-    private void OnMachineDeconstructed(Entity<BuggableMachineComponent> ent, ref MachineDeconstructedEvent args)
-    {
-        _container.CleanContainer(ent.Comp.InstalledBugs);
-        _audio.PlayPvs(ent.Comp.BrokenSound, Transform(ent).Coordinates);
     }
 
     private void OnInteractUsing(Entity<BuggableMachineComponent> ent, ref InteractUsingEvent args)

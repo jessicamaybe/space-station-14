@@ -46,10 +46,26 @@
       - Apc
 
 - type: entity
-  name: doorjack
+  name: strange device
+  suffix: bug, ResearchServer
+  description: A strange device. It looks like it could fit into a research server.
+  parent: BaseMachineBug
+  id: MachineBugResearchServer
+  components:
+  - type: Sprite
+    sprite: Objects/Materials/Scrap/generic.rsi
+    layers:
+    - state: glass-4
+  - type: MachineBug
+    whitelist:
+      components:
+      - ResearchServer
+
+- type: entity
+  name: syndicate door jack
   description: A strange device.
   parent: BaseItem
-  id: doorjack
+  id: DoorJack
   components:
   - type: Item
     sprite: Objects/Tools/access_breaker.rsi
@@ -57,5 +73,7 @@
     sprite: Objects/Tools/access_breaker.rsi
     layers:
     - state: icon
+  - type: LimitedCharges
+  - type: AutoRecharge
   - type: DoorJack
     access: [["SyndicateAgent"]]

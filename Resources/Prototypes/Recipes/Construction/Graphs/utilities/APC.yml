@@ -35,6 +35,10 @@
       edges:
         - to: apcFrame
           completed:
+            # BEGIN UM
+            - !type:RaiseEvent
+              event: !type:MachineDeconstructedEvent
+            # END UM
             - !type:GivePrototype
               prototype: APCElectronics
               amount: 1

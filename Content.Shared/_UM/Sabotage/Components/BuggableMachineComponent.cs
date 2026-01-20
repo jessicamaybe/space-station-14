@@ -10,7 +10,7 @@ namespace Content.Shared._UM.Sabotage.Components;
 /// This handles machines that are able to have bugs/spy equipment install inside of them.
 /// </summary>
 [RegisterComponent, NetworkedComponent]
-[Access(typeof(BuggableMachineSharedSystem))]
+[Access(typeof(SharedBuggableMachineSystem))]
 public sealed partial class BuggableMachineComponent : Component
 {
     public const string ContainerId = "InstalledBugs";
@@ -26,7 +26,7 @@ public sealed partial class BuggableMachineComponent : Component
     /// </summary>
     [ViewVariables(VVAccess.ReadWrite)]
     [DataField]
-    public SoundSpecifier BrokenSound = new SoundCollectionSpecifier("Sparks");
+    public SoundSpecifier BrokenSound = new SoundCollectionSpecifier("sparks");
 
     /// <summary>
     /// Sound played when a bug is removed

@@ -1,9 +1,11 @@
 using Content.Shared._UM.Sabotage.Components;
 using Content.Shared.Access.Components;
 using Content.Shared.Access.Systems;
+using Content.Shared.Charges.Systems;
 using Content.Shared.DoAfter;
 using Content.Shared.Doors.Components;
 using Content.Shared.Interaction;
+using Content.Shared.Popups;
 using Content.Shared.Wires;
 using Robust.Shared.Audio.Systems;
 
@@ -17,6 +19,8 @@ public sealed class DoorJackSystem : EntitySystem
     [Dependency] private readonly AccessReaderSystem _accessReader = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
+    [Dependency] private readonly SharedChargesSystem _sharedCharges = default!;
+    [Dependency] private readonly SharedPopupSystem _popup = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -31,6 +35,12 @@ public sealed class DoorJackSystem : EntitySystem
     {
         if (args.Target == null)
             return;
+
+        if (_sharedCharges.IsEmpty(ent.Owner))
+        {
+            _popup.PopupClient(Loc.GetString("emag-no-charges"), args.User, args.User);
+            return;
+        }
 
         if (TryComp<WiresPanelComponent>(args.Target, out var panel) && !panel.Open)
             return;
@@ -64,6 +74,11 @@ public sealed class DoorJackSystem : EntitySystem
             _audio.PlayPredicted(doorComponent.SparkSound, args.Target.Value, args.User);
 
         _accessReader.TryAddAccesses(accessReaderEnt.Value, ent.Comp.Access);
+
+        _sharedCharges.TryUseCharge(ent.Owner);
+
+        args.Handled = true;
+
         var insertEvent = new InstalledDoorJackEvent(args.Target.Value);
         RaiseLocalEvent(args.User, insertEvent);
     }

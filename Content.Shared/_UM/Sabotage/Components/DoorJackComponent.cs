@@ -12,7 +12,7 @@ namespace Content.Shared._UM.Sabotage.Components;
 public sealed partial class DoorJackComponent : Component
 {
     /// <summary>
-    /// Access given to a door when the doorjack is installed.
+    /// Access given to a door when the doorjack is used.
     /// </summary>
     [DataField]
     public List<HashSet<ProtoId<AccessLevelPrototype>>> Access = new();
@@ -35,7 +35,7 @@ public sealed class InstalledDoorJackEvent(EntityUid door) : EntityEventArgs
 }
 
 /// <summary>
-/// Raised after the doafter on a doorjack
+/// Raised after the doafter to install the doorjack
 /// </summary>
 [Serializable, NetSerializable]
 public sealed partial class DoorJackDoAfterEvent : SimpleDoAfterEvent
