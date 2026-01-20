@@ -81,6 +81,9 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
         if (TryComp<WiresPanelComponent>(ent, out var panel) && !panel.Open)
             return;
 
+        if (TryComp<WiresPanelSecurityComponent>(ent, out var wiresPanelSecurity) && !wiresPanelSecurity.WiresAccessible)
+            return;
+
         var cutQuality = "Cutting";
 
         if (_toolSystem.HasQuality(args.Used, cutQuality) && ent.Comp.InstalledBugs.Count > 0)
@@ -106,7 +109,7 @@ public sealed class BuggableMachineSharedSystem : EntitySystem
             return;
 
         if (ent.Comp.InstalledBugs.Count > 0)
-            args.PushText("This things got a bug in it", -10);
+            args.PushText("This things got a bug in it! TODO Make this not suck", -10);
     }
 
     private void RemoveBug(Entity<BuggableMachineComponent> ent, EntityUid user, EntityUid bug, float duration)

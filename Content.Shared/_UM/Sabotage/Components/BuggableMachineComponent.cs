@@ -53,8 +53,6 @@ public sealed partial class MachineBugRemoveDoAfterEvent : SimpleDoAfterEvent
 {
 }
 
-
-
 /// <summary>
 /// Event raised on a user after they install a bug
 /// Normally for tracking install bug objectives
