@@ -24,6 +24,10 @@ public sealed class ResearchServerMalfunctionSystem : EntitySystem
     {
         if (!TryComp<TechnologyDatabaseComponent>(ent, out var database))
             return;
+
+        if (database.UnlockedTechnologies.Count == 0)
+            return;
+
         var toRemove = _random.Pick(database.UnlockedTechnologies);
 
         _researchSystem.TryRemoveTechnology((ent.Owner, database), toRemove);
