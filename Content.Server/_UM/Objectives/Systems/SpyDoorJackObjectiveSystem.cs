@@ -28,14 +28,46 @@ public sealed class SpyDoorJackObjectiveSystem : EntitySystem
         SubscribeLocalEvent<SpyComponent, InstalledDoorJackEvent>(AfterDoorJack);
 
         SubscribeLocalEvent<SpyDoorJackObjectiveComponent, ObjectiveAssignedEvent>(OnAssigned);
+        SubscribeLocalEvent<SpyDoorJackObjectiveComponent, RequirementCheckEvent>(OnRequirementCheck);
         SubscribeLocalEvent<SpyDoorJackObjectiveComponent, ObjectiveAfterAssignEvent>(OnAfterAssign);
         SubscribeLocalEvent<SpyDoorJackObjectiveComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    private void OnRequirementCheck(Entity<SpyDoorJackObjectiveComponent> ent, ref RequirementCheckEvent args)
+    {
+        if (args.Cancelled)
+            return;
+
+        Log.Debug("Checking requirementdoor");
+
+        //make sure we aren't creating the same objective twice
+        foreach (var objective in args.Mind.Objectives)
+        {
+            if (!TryComp<SpyDoorJackObjectiveComponent>(objective, out var existingjack))
+                continue;
+
+            foreach (var accessList in existingjack.RequiredAccess)
+            {
+                foreach (var access in accessList)
+                {
+                    ent.Comp.Access.RemoveAll(set => set.Contains(access));
+                }
+            }
+        }
+
+        if (ent.Comp.Access.Count == 0)
+        {
+            args.Cancelled = true;
+            return;
+        }
+
+        var pickedAccess = _random.Pick(ent.Comp.Access);
+        ent.Comp.RequiredAccess.Add(pickedAccess);
+    }
+
     private void OnAssigned(Entity<SpyDoorJackObjectiveComponent> ent, ref ObjectiveAssignedEvent args)
     {
-        var access = _random.Pick(ent.Comp.Access);
-        ent.Comp.RequiredAccess.Add(access);
+
     }
 
     private void OnAfterAssign(Entity<SpyDoorJackObjectiveComponent> ent, ref ObjectiveAfterAssignEvent args)
@@ -50,8 +82,16 @@ public sealed class SpyDoorJackObjectiveSystem : EntitySystem
             }
         }
 
-        var title = "DoorJack " + _number.GetTarget(ent) + " doors with: " + accessNames + " access";
+        var number = _number.GetTarget(ent);
+        var title = "";
+        if (number > 1)
+            title = "Doorjack " + number + " doors with: ";
+        else if (number == 1)
+            title = "Doorjack " + number + " door with: ";
+
+        var description = accessNames + " access";
         _metaData.SetEntityName(ent, title, args.Meta);
+        _metaData.SetEntityDescription(ent, description, args.Meta);
     }
 
     private void OnGetProgress(Entity<SpyDoorJackObjectiveComponent> ent, ref ObjectiveGetProgressEvent args)
@@ -69,10 +109,23 @@ public sealed class SpyDoorJackObjectiveSystem : EntitySystem
 
     private void AfterDoorJack(Entity<SpyComponent> ent, ref InstalledDoorJackEvent args)
     {
-        if (!_mind.TryGetObjectiveComp<SpyDoorJackObjectiveComponent>(ent, out var obj))
+        var mind = _mind.GetMind(ent);
+        if (mind == null || !TryComp<MindComponent>(mind, out var mindComponent))
             return;
 
-        if (!_accessReader.GetMainAccessReader(args.Door, out var accessReaderEnt))
+        //Have to loop through each objective on mind incase there are two doorjacks
+        foreach (var objective in mindComponent.Objectives)
+        {
+            CheckObjectiveComplete(objective, args.Door);
+        }
+    }
+
+    private void CheckObjectiveComplete(Entity<SpyDoorJackObjectiveComponent?> obj, EntityUid target)
+    {
+        if (!Resolve(obj.Owner, ref obj.Comp))
+            return;
+
+        if (!_accessReader.GetMainAccessReader(target, out var accessReaderEnt))
             return;
 
         if (!TryComp<AccessReaderComponent>(accessReaderEnt, out var accessReaderComponent))
@@ -82,16 +135,17 @@ public sealed class SpyDoorJackObjectiveSystem : EntitySystem
 
         foreach (var accessList in accessReaderComponent.AccessLists)
         {
-           foreach (var access in accessList)
-           {
-               if (!obj.RequiredAccess.Any(set => set.Contains(access)))
-                   continue;
-               complete = true;
-           }
+            foreach (var access in accessList)
+            {
+                if (!obj.Comp.RequiredAccess.Any(set => set.Contains(access)))
+                    continue;
+                complete = true;
+            }
         }
 
         if (complete)
-            obj.JackedDoors += 1;
+            obj.Comp.JackedDoors += 1;
+
     }
 
 }

@@ -11,11 +11,11 @@
 - type: entity
   parent: BaseSpyObjective
   id: SpyBugLatheObjective
-  description: Plant a bug inside a hyperlathe. We need to heat up science.
+  name: Plant a bug inside a hyperlathe. We need to heat up science.
   components:
   - type: Objective
     icon:
-      sprite: Objects/Tools/emag.rsi
+      sprite: Structures/Machines/autolathe_hypercon.rsi
       state: icon
   - type: PlantBugObjective
     whitelist:
@@ -25,12 +25,12 @@
 - type: entity
   parent: BaseSpyObjective
   id: SpyBugCrewMonitorServer
-  description: Plant a bug inside the crew monitor server. Lets seize control of the suit sensors.
+  name: Plant a bug inside the crew monitor server. We'll shut off their suit sensors.
   components:
   - type: Objective
     icon:
-      sprite: Objects/Tools/emag.rsi
-      state: icon
+      sprite: Structures/Machines/server.rsi
+      state: server-on
   - type: PlantBugObjective
     whitelist:
       components:
@@ -39,12 +39,12 @@
 - type: entity
   parent: BaseSpyObjective
   id: SpyBugResearchServer
-  description: Plant a bug inside the research server. Science is progressing too fast.
+  name: Plant a bug inside the research server. Science is progressing too fast.
   components:
   - type: Objective
     icon:
-      sprite: Objects/Tools/emag.rsi
-      state: icon
+      sprite: Structures/Machines/server.rsi
+      state: server-on
   - type: PlantBugObjective
     whitelist:
       components:
@@ -53,12 +53,12 @@
 - type: entity
   parent: BaseSpyObjective
   id: SpyBugAnomalyVessel
-  description: Plant a bug inside an anomaly vessel. This is going to be a pain in the ass.
+  name: Plant a bug inside an anomaly vessel. This is going to be a pain in the ass.
   components:
   - type: Objective
     icon:
-      sprite: Objects/Tools/emag.rsi
-      state: icon
+      sprite: Structures/Machines/Anomaly/anomaly_vessel.rsi/
+      state: base
   - type: PlantBugObjective
     whitelist:
       components:
@@ -67,12 +67,12 @@
 - type: entity
   parent: BaseSpyObjective
   id: SpyBugAPC
-  description: Plant a bug in an APC. Honestly if you fuck this up we should just gib you.
+  name: Plant a bug in an APC. Honestly if you fuck this up we should just gib you.
   components:
   - type: Objective
     icon:
-      sprite: Objects/Tools/emag.rsi
-      state: icon
+      sprite: Structures/Power/apc.rsi
+      state: static
   - type: PlantBugObjective
     whitelist:
       components:
@@ -83,11 +83,12 @@
   id: SpyDoorJackObjective
   components:
   - type: Objective
+    unique: false
     icon:
       sprite: Objects/Tools/emag.rsi
       state: icon
   - type: SpyDoorJackObjective
     access: [ ["ResearchDirector"], ["HeadOfPersonnel"], ["Captain"]]
   - type: NumberObjective
-    min: 2
+    min: 1
     max: 3

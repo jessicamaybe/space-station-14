@@ -1,0 +1,10 @@
+# Spy
+- type: entity
+  parent: BaseMindRoleAntag
+  id: MindRoleSpy
+  name: Spy Role
+  components:
+  - type: MindRole
+    antagPrototype: Thief
+    subtype: role-subtype-Spy
+  - type: SpyRole
