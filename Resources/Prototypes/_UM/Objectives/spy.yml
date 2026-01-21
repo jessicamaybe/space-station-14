@@ -1,0 +1,93 @@
+- type: entity
+  abstract: true
+  parent: BaseObjective
+  id: BaseSpyObjective
+  components:
+  - type: Objective
+    # difficulty isn't used since all objectives are picked
+    difficulty: 1.5
+    issuer: objective-issuer-spiderclan
+
+- type: entity
+  parent: BaseSpyObjective
+  id: SpyBugLatheObjective
+  description: Plant a bug inside a hyperlathe. We need to heat up science.
+  components:
+  - type: Objective
+    icon:
+      sprite: Objects/Tools/emag.rsi
+      state: icon
+  - type: PlantBugObjective
+    whitelist:
+      components:
+      - LatheHeatProducing
+
+- type: entity
+  parent: BaseSpyObjective
+  id: SpyBugCrewMonitorServer
+  description: Plant a bug inside the crew monitor server. Lets seize control of the suit sensors.
+  components:
+  - type: Objective
+    icon:
+      sprite: Objects/Tools/emag.rsi
+      state: icon
+  - type: PlantBugObjective
+    whitelist:
+      components:
+      - CrewMonitoringServer
+
+- type: entity
+  parent: BaseSpyObjective
+  id: SpyBugResearchServer
+  description: Plant a bug inside the research server. Science is progressing too fast.
+  components:
+  - type: Objective
+    icon:
+      sprite: Objects/Tools/emag.rsi
+      state: icon
+  - type: PlantBugObjective
+    whitelist:
+      components:
+      - ResearchServer
+
+- type: entity
+  parent: BaseSpyObjective
+  id: SpyBugAnomalyVessel
+  description: Plant a bug inside an anomaly vessel. This is going to be a pain in the ass.
+  components:
+  - type: Objective
+    icon:
+      sprite: Objects/Tools/emag.rsi
+      state: icon
+  - type: PlantBugObjective
+    whitelist:
+      components:
+      - AnomalyVessel
+
+- type: entity
+  parent: BaseSpyObjective
+  id: SpyBugAPC
+  description: Plant a bug in an APC. Honestly if you fuck this up we should just gib you.
+  components:
+  - type: Objective
+    icon:
+      sprite: Objects/Tools/emag.rsi
+      state: icon
+  - type: PlantBugObjective
+    whitelist:
+      components:
+      - Apc
+
+- type: entity
+  parent: BaseSpyObjective
+  id: SpyDoorJackObjective
+  components:
+  - type: Objective
+    icon:
+      sprite: Objects/Tools/emag.rsi
+      state: icon
+  - type: SpyDoorJackObjective
+    access: [ ["ResearchDirector"], ["HeadOfPersonnel"], ["Captain"]]
+  - type: NumberObjective
+    min: 2
+    max: 3

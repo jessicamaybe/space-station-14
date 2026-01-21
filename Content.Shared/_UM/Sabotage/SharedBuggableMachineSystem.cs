@@ -149,8 +149,8 @@ public abstract class SharedBuggableMachineSystem : EntitySystem
         if (args.Used == null)
             return;
 
-        var insertEvent = new AfterMachineBugInsertEvent();
-        RaiseLocalEvent(args.Used.Value, insertEvent);
+        var insertEvent = new AfterMachineBugInsertEvent(ent.Owner);
+        RaiseLocalEvent(args.Used.Value, ref insertEvent);
     }
 
     private void OnMachineBugRemove(Entity<BuggableMachineComponent> ent, ref MachineBugRemoveDoAfterEvent args)

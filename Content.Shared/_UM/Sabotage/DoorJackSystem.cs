@@ -1,3 +1,4 @@
+using System.Linq;
 using Content.Shared._UM.Sabotage.Components;
 using Content.Shared.Access.Components;
 using Content.Shared.Access.Systems;
@@ -64,21 +65,40 @@ public sealed class DoorJackSystem : EntitySystem
 
     private void JackDoor(Entity<DoorJackComponent> ent, ref DoorJackDoAfterEvent args)
     {
+        if (args.Cancelled)
+            return;
+
         if (args.Target == null)
             return;
 
         if (!_accessReader.GetMainAccessReader(args.Target.Value, out var accessReaderEnt))
             return;
 
-        if (TryComp<DoorComponent>(args.Target.Value, out var doorComponent))
-            _audio.PlayPredicted(doorComponent.SparkSound, args.Target.Value, args.User);
+        if (!TryComp<AccessReaderComponent>(accessReaderEnt, out var accessReaderComponent))
+            return;
+
+        var hasAccesses = false;
+
+        foreach (var accessList in accessReaderComponent.AccessLists)
+        {
+            foreach (var access in accessList)
+            {
+                if (!ent.Comp.Access.Any(set => set.Contains(access)))
+                    continue;
+                hasAccesses = true;
+            }
+        }
+        // Skip if door already has the access we're trying to give it
+        if (hasAccesses)
+            return;
 
         _accessReader.TryAddAccesses(accessReaderEnt.Value, ent.Comp.Access);
 
+        if (TryComp<DoorComponent>(args.Target.Value, out var doorComponent))
+            _audio.PlayPredicted(doorComponent.SparkSound, args.Target.Value, args.User);
+
         _sharedCharges.TryUseCharge(ent.Owner);
-
         args.Handled = true;
-
         var insertEvent = new InstalledDoorJackEvent(args.Target.Value);
         RaiseLocalEvent(args.User, insertEvent);
     }

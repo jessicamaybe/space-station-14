@@ -57,7 +57,5 @@ public sealed partial class MachineBugRemoveDoAfterEvent : SimpleDoAfterEvent
 /// Event raised on a user after they install a bug
 /// Normally for tracking install bug objectives
 /// </summary>
-[Serializable, NetSerializable]
-public sealed class AfterMachineBugInsertEvent : EntityEventArgs
-{
-}
+[ByRefEvent]
+public record struct AfterMachineBugInsertEvent(EntityUid Target);
