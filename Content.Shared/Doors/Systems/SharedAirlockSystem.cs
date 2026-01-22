@@ -2,7 +2,6 @@ using Content.Shared.DeviceLinking.Events;
 using Content.Shared.Doors.Components;
 using Content.Shared.Interaction;
 using Robust.Shared.Audio.Systems;
-using Content.Shared.Popups;
 using Content.Shared.Power;
 using Content.Shared.Prying.Components;
 using Content.Shared.Silicons.StationAi;
@@ -15,10 +14,9 @@ namespace Content.Shared.Doors.Systems;
 public abstract class SharedAirlockSystem : EntitySystem
 {
     [Dependency] private   readonly IGameTiming _timing = default!;
-    [Dependency] protected readonly SharedAppearanceSystem Appearance = default!;
-    [Dependency] protected readonly SharedAudioSystem Audio = default!;
-    [Dependency] protected readonly SharedDoorSystem DoorSystem = default!;
-    [Dependency] protected readonly SharedPopupSystem Popup = default!;
+    [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
+    [Dependency] private readonly SharedAudioSystem _audio = default!;
+    [Dependency] private readonly SharedDoorSystem _doorSystem = default!;
     [Dependency] private   readonly SharedWiresSystem _wiresSystem = default!;
     [Dependency] private readonly SharedUserInterfaceSystem _uiSystem = default!;
 
@@ -104,7 +102,7 @@ public abstract class SharedAirlockSystem : EntitySystem
         if (ent.Comp.Powered)
             args.PryTimeModifier *= ent.Comp.PoweredPryModifier;
 
-        if (DoorSystem.IsBolted(ent.Owner))
+        if (_doorSystem.IsBolted(ent.Owner))
             args.PryTimeModifier *= ent.Comp.BoltedPryModifier;
     }
 
@@ -130,7 +128,7 @@ public abstract class SharedAirlockSystem : EntitySystem
         if (autoev.Cancelled)
             return;
 
-        DoorSystem.SetNextStateChange(ent.Owner, ent.Comp.AutoCloseDelay * ent.Comp.AutoCloseDelayModifier);
+        _doorSystem.SetNextStateChange(ent.Owner, ent.Comp.AutoCloseDelay * ent.Comp.AutoCloseDelayModifier);
     }
 
     private void OnBeforePry(Entity<AirlockComponent> ent, ref BeforePryEvent args)
@@ -148,7 +146,7 @@ public abstract class SharedAirlockSystem : EntitySystem
 
     public void UpdateEmergencyLightStatus(Entity<AirlockComponent> ent)
     {
-        Appearance.SetData(ent, DoorVisuals.EmergencyLights, ent.Comp.EmergencyAccess);
+        _appearance.SetData(ent, DoorVisuals.EmergencyLights, ent.Comp.EmergencyAccess);
     }
 
     public void SetEmergencyAccess(Entity<AirlockComponent> ent, bool value, EntityUid? user = null, bool predicted = false)
@@ -165,9 +163,9 @@ public abstract class SharedAirlockSystem : EntitySystem
 
         var sound = ent.Comp.EmergencyAccess ? ent.Comp.EmergencyOnSound : ent.Comp.EmergencyOffSound;
         if (predicted)
-            Audio.PlayPredicted(sound, ent, user: user);
+            _audio.PlayPredicted(sound, ent, user: user);
         else
-            Audio.PlayPvs(sound, ent);
+            _audio.PlayPvs(sound, ent);
     }
 
     public void SetAutoCloseDelayModifier(AirlockComponent component, float value)
@@ -185,7 +183,7 @@ public abstract class SharedAirlockSystem : EntitySystem
 
     public bool CanChangeState(Entity<AirlockComponent> ent)
     {
-        return ent.Comp.Powered && !DoorSystem.IsBolted(ent.Owner);
+        return ent.Comp.Powered && !_doorSystem.IsBolted(ent.Owner);
     }
 
     private void OnSignalReceived(Entity<AirlockComponent> ent, ref SignalReceivedEvent args)
@@ -209,7 +207,7 @@ public abstract class SharedAirlockSystem : EntitySystem
         {
             // stop any scheduled auto-closing
             if (door.State == DoorState.Open)
-                DoorSystem.SetNextStateChange(ent, null);
+                _doorSystem.SetNextStateChange(ent, null);
         }
         else
         {
