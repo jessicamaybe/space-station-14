@@ -1,0 +1,109 @@
+- type: entity
+  name: cocoon
+  id: SpiderCocoonLarge
+  description: Eww
+  components:
+  - type: Sprite
+    sprite: _UM/Objects/cocoon.rsi
+    noRot: true
+    layers:
+    - state: cocoon_large1
+      map: ["random"]
+  - type: RandomSprite
+    available:
+    - random:
+        cocoon_large1: ""
+        cocoon_large2: ""
+        cocoon_large3: ""
+  - type: Clickable
+  - type: InteractionOutline
+  - type: Transform
+    anchored: false
+  - type: Physics
+    bodyType: Dynamic
+  - type: Pullable
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeCircle
+          radius: 0.3
+        density: 250
+        layer:
+        - MobLayer
+        mask:
+        - MobMask
+  - type: Cocoon
+
+- type: entity
+  name: cocoon
+  parent: SpiderCocoonLarge
+  id: SpiderCocoonSmall
+  description: Eww
+  components:
+  - type: Sprite
+    sprite: _UM/Objects/cocoon.rsi
+    noRot: true
+    layers:
+    - state: cocoon1
+      map: ["random"]
+  - type: RandomSprite
+    available:
+    - random:
+        cocoon1: ""
+        cocoon2: ""
+        cocoon3: ""
+  - type: Clickable
+  - type: InteractionOutline
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeCircle
+          radius: 0.3
+        density: 250
+        layer:
+        - MobLayer
+        mask:
+        - MobMask
+  - type: Cocoon
+
+- type: entity
+  name: spider eggs
+  parent: BaseStructure
+  id: BroodmotherEggs
+  description: Eww
+  components:
+  - type: Sprite
+    sprite: _UM/Objects/eggs.rsi
+    noRot: true
+    layers:
+    - state: eggs
+  - type: Clickable
+  - type: InteractionOutline
+  - type: Damageable
+    damageContainer: Biological
+    damageModifierSet: Web
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 12
+      behaviors:
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeCircle
+          radius: 0.3
+        density: 250
+        layer:
+        - MobLayer
+        mask:
+        - MobMask
+  - type: GhostRole
+    name: Spider
+  - type: GhostRoleMobSpawner
+    prototype: MobSpiderUndecided
