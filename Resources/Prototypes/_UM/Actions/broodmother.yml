@@ -15,7 +15,7 @@
     whitelist:
       components:
       - MobState
-    event: !type:OnWrapActionEvent
+    event: !type:OnCocoonWrapActionEvent
 
 - type: entity
   parent: BaseAction

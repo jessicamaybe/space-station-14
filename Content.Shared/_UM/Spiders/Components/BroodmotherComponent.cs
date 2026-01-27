@@ -1,8 +1,11 @@
 using Content.Shared.Actions;
 using Content.Shared.Alert;
+using Content.Shared.DoAfter;
 using Content.Shared.FixedPoint;
+using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Serialization;
 
 namespace Content.Shared._UM.Spiders.Components;
 
@@ -37,6 +40,11 @@ public sealed partial class BroodmotherComponent : Component
     [DataField]
     public EntProtoId EggProto = "BroodmotherEggs";
 
+    /// <summary>
+    /// Sound that should play when laying an egg
+    /// </summary>
+    [DataField]
+    public SoundSpecifier LayEggSound = new SoundPathSpecifier("/Audio/Items/squeezebottle.ogg"); //the glue sound is fucked
 
     /// <summary>
     /// How much energy the Broodmother has. Is spent building webs and laying eggs.
@@ -66,6 +74,12 @@ public sealed partial class OnLayEggActionEvent : InstantActionEvent
 {
 }
 
-public sealed partial class OnWrapActionEvent : EntityTargetActionEvent
+
+public sealed partial class OnCocoonWrapActionEvent : EntityTargetActionEvent
+{
+}
+
+[Serializable, NetSerializable]
+public sealed partial class OnCocoonWrapDoAfterEvent : SimpleDoAfterEvent
 {
 }

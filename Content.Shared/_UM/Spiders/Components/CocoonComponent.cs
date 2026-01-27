@@ -1,7 +1,10 @@
+using Content.Shared.DoAfter;
 using Content.Shared.Tools;
+using Robust.Shared.Audio;
 using Robust.Shared.Containers;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Serialization;
 
 namespace Content.Shared._UM.Spiders.Components;
 
@@ -24,8 +27,32 @@ public sealed partial class CocoonComponent : Component
     public string ContainerId = "contents";
 
     /// <summary>
+    /// Sound that should play when laying an egg
+    /// </summary>
+    [DataField]
+    public SoundSpecifier DestroySound = new SoundPathSpecifier("/Audio/Effects/poster_broken.ogg");
+
+    /// <summary>
     /// Tool quality required to use a tool on this.
     /// </summary>
     [DataField]
     public ProtoId<ToolQualityPrototype> Quality = "Slicing";
+
+    /// <summary>
+    /// Whether or not tha cocoon has been harvested
+    /// </summary>
+    [DataField]
+    [ViewVariables(VVAccess.ReadWrite)]
+    public bool Harvested = false;
+}
+
+
+[Serializable, NetSerializable]
+public sealed partial class OnCocoonDestroyDoAfterEvent : SimpleDoAfterEvent
+{
+}
+
+[Serializable, NetSerializable]
+public sealed partial class OnCocoonEnergyAbsorbDoAfterEvent : SimpleDoAfterEvent
+{
 }
