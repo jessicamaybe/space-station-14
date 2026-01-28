@@ -1,5 +1,5 @@
 - type: entity
-  parent: [ MobAtmosStandard, BaseMob, MobDamageable, MobBloodstream, MobPolymorphable, MobCombat ]
+  parent: [ MobAtmosStandard, BaseMob, MobDamageable, BaseMobHemocyanin, MobBloodstream, MobPolymorphable, MobCombat ]
   id: UMMobSpiderBase
   suffix: SpiderAntag
   abstract: true
@@ -39,8 +39,6 @@
     - id: FoodMeatSpider
       amount: 2
   - type: CombatMode
-  - type: Body
-    prototype: AnimalHemocyanin
   - type: MobThresholds
     thresholds:
       0: Alive
