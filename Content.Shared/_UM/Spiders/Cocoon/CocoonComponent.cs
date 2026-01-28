@@ -1,4 +1,5 @@
 using Content.Shared.DoAfter;
+using Content.Shared.FixedPoint;
 using Content.Shared.Tools;
 using Robust.Shared.Audio;
 using Robust.Shared.Containers;
@@ -6,7 +7,7 @@ using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
 
-namespace Content.Shared._UM.Spiders.Components;
+namespace Content.Shared._UM.Spiders.Cocoon;
 
 /// <summary>
 /// This is used for...
@@ -44,6 +45,13 @@ public sealed partial class CocoonComponent : Component
     [DataField]
     [ViewVariables(VVAccess.ReadWrite)]
     public bool Harvested = false;
+
+    /// <summary>
+    /// Amount of energy this cocoon has
+    /// </summary>
+    [DataField]
+    [ViewVariables(VVAccess.ReadWrite)]
+    public FixedPoint2 Energy = 20;
 }
 
 

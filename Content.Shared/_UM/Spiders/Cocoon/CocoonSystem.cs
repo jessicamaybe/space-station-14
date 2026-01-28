@@ -6,7 +6,7 @@ using Content.Shared.Verbs;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 
-namespace Content.Shared._UM.Spiders;
+namespace Content.Shared._UM.Spiders.Cocoon;
 
 /// <summary>
 /// This handles...
@@ -42,11 +42,11 @@ public sealed class CocoonSystem : EntitySystem
         if (args.Handled || !args.Complex || ent.Comp.Harvested)
             return;
 
-        if (!HasComp<BroodmotherComponent>(args.User))
+        if (!HasComp<CocoonMakerComponent>(args.User))
             return;
 
         args.Handled = true;
-        StartBroodmotherAbsorbEnergy(ent, args.User);
+        StartAbsorbEnergy(ent, args.User);
     }
 
     private void OnGetVerbs(Entity<CocoonComponent> ent, ref GetVerbsEvent<InteractionVerb> args)
@@ -54,25 +54,25 @@ public sealed class CocoonSystem : EntitySystem
         if (!args.CanInteract || !args.CanAccess || ent.Comp.Harvested)
             return;
 
-        if (!HasComp<BroodmotherComponent>(args.User))
+        if (!HasComp<CocoonMakerComponent>(args.User))
             return;
 
         var user = args.User;
 
         InteractionVerb verb = new()
         {
-            Act = () => StartBroodmotherAbsorbEnergy(ent, user),
-            Text = "Abborb"
+            Act = () => StartAbsorbEnergy(ent, user),
+            Text = "Feast"
         };
         args.Verbs.Add(verb);
     }
 
-    private void StartBroodmotherAbsorbEnergy(Entity<CocoonComponent> ent, Entity<BroodmotherComponent?> broodMother)
+    private void StartAbsorbEnergy(Entity<CocoonComponent> ent, Entity<CocoonMakerComponent?> cocoonMaker)
     {
-        if (!Resolve(broodMother, ref broodMother.Comp))
+        if (!Resolve(cocoonMaker, ref cocoonMaker.Comp))
             return;
 
-        _doAfter.TryStartDoAfter(new DoAfterArgs(EntityManager, broodMother, 4f, new OnCocoonEnergyAbsorbDoAfterEvent(), broodMother, ent)
+        _doAfter.TryStartDoAfter(new DoAfterArgs(EntityManager, cocoonMaker, 4f, new OnCocoonEnergyAbsorbDoAfterEvent(), cocoonMaker, ent)
         {
             BreakOnMove = true,
             NeedHand = false,

@@ -1,6 +1,7 @@
 - type: entity
   parent: [ SimpleMobBase, MobCombat ]
   id: UMMobSpiderBase
+  suffix: SpiderAntag
   abstract: true
   components:
   - type: Physics
@@ -66,6 +67,7 @@
       groups:
         Brute: -0.07
         Burn: -0.07
+  - type: SpiderEnergy
 
 - type: entity
   name: Broodmother
@@ -103,8 +105,18 @@
     damage:
       types:
         Piercing: 15
-  - type: Broodmother
-
+  - type: CocoonMaker
+    damage:
+      types:
+        Blunt: 100
+  - type: SpiderEggLayer
+  - type: HiveBuilder
+    buildTypes:
+    - WallWeb
+    - SpiderWeb
+  - type: SpiderEnergy
+    passiveRegen: 0
+    energy: 200
 
 - type: entity
   name: tarantula
@@ -142,3 +154,48 @@
     damage:
       types:
         Piercing: 10
+
+- type: entity
+  name: builder
+  parent: UMMobSpiderBase
+  id: MobSpiderBuilder
+  description: Widely recognized to be the literal worst thing in existence.
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    layers:
+    - map: ["enum.DamageStateVisualLayers.Base", "movement"]
+      state: guard
+      sprite: Mobs/Animals/spider.rsi
+  - type: SpriteMovement
+    movementLayers:
+      movement:
+        state: guard-moving
+    noMovementLayers:
+      movement:
+        state: guard
+  - type: DamageStateVisuals
+    states:
+      Alive:
+        Base: guard
+      Critical:
+        Base: guard
+      Dead:
+        Base: guard
+  - type: MeleeWeapon
+    altDisarm: false
+    angle: 0
+    animation: WeaponArcBite
+    soundHit:
+      path: /Audio/Effects/bite.ogg
+    damage:
+      types:
+        Piercing: 10
+  - type: SpiderEnergy
+    passiveRegen: 1
+    energy: 100
+  - type: HiveBuilder
+    buildTypes:
+      - WallWeb
+      - WebDoor
+      - SpiderWeb

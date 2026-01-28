@@ -1,0 +1,62 @@
+- type: entity
+  parent: BaseAction
+  id: ActionCocoon
+  name: "[color=red]Cocoon[/color]"
+  description: put that bitch into a cocoon
+  components:
+  - type: Action
+    icon: { sprite : _UM/Actions/broodmother.rsi, state: wrap_0 }
+    iconOn: { sprite : _UM/Actions/broodmother.rsi, state: wrap_1 }
+    itemIconStyle: BigAction
+    priority: 1
+  - type: TargetAction
+  - type: EntityTargetAction
+    canTargetSelf: false
+    whitelist:
+      components:
+      - MobState
+    event: !type:OnCocoonWrapActionEvent
+
+- type: entity
+  parent: BaseAction
+  id: ActionLayEggs
+  name: "[color=red]Lay Eggs[/color]"
+  description: Lay your fucked up spider eggs
+  components:
+  - type: Action
+    icon: { sprite : _UM/Actions/broodmother.rsi, state: lay_eggs }
+    itemIconStyle: BigAction
+    priority: 1
+  - type: InstantAction
+    event: !type:OnLayEggActionEvent
+
+- type: entity
+  parent: BaseAction
+  id: ActionSpiderSelectBuild
+  name: "[color=red]Select what you're building[/color]"
+  description: Build your fucked up spider walls
+  components:
+  - type: Action
+    icon: { sprite : _UM/Actions/broodmother.rsi, state: spider_wall }
+    itemIconStyle: BigAction
+    priority: 1
+  - type: InstantAction
+    event: !type:HiveBuilderSelectTypeActionEvent
+
+
+- type: entity
+  parent: BaseAction
+  id: ActionSpiderBuildSelected
+  name: "[color=orange]Build your fucked up shit[/color]"
+  description: Build the thing you selected
+  components:
+  - type: Action
+    # TODO: actual sprite and iconOn
+    icon: { sprite : _UM/Actions/broodmother.rsi, state: spider_mirror }
+    itemIconStyle: BigAction
+    priority: 2
+  - type: TargetAction
+    checkCanAccess: false
+    range: 0
+  - type: WorldTargetAction
+    event: !type:HiveBuilderBuildActionEvent
