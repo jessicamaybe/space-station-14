@@ -42,7 +42,8 @@
   - type: MobThresholds
     thresholds:
       0: Alive
-      90: Dead
+      150: Critical
+      200: Dead
     stateAlertDict:
       Alive: SpiderHealth
       Critical: SpiderCrit
@@ -110,6 +111,11 @@
     noMovementLayers:
       movement:
         state: midwife
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      450: Critical
+      500: Dead
   - type: DamageStateVisuals
     states:
       Alive:
@@ -253,9 +259,14 @@
     noMovementLayers:
       movement:
         state: viper
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      135: Critical
+      150: Dead
   - type: MovementSpeedModifier
-    baseWalkSpeed : 2.5
-    baseSprintSpeed : 5
+    baseWalkSpeed : 3
+    baseSprintSpeed : 6
   - type: SolutionContainerManager
     solutions:
       melee:
@@ -265,7 +276,7 @@
     generated:
       reagents:
       - ReagentId: ChloralHydrate
-        Quantity: 1
+        Quantity: 4
   - type: MeleeChemicalInjector
     transferAmount: 4
     solution: melee
@@ -348,6 +359,14 @@
     noMovementLayers:
       movement:
         state: hunter
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      300: Critical
+      350: Dead
+  - type: MovementSpeedModifier
+    baseWalkSpeed : 2
+    baseSprintSpeed : 4
   - type: DamageStateVisuals
     states:
       Alive:
@@ -364,4 +383,5 @@
       path: /Audio/Effects/bite.ogg
     damage:
       types:
-        Piercing: 10
+        Blunt: 15
+        Slash: 15

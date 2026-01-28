@@ -9,6 +9,9 @@
     layers:
     - state: cocoon_large1
       map: ["random"]
+  - type: ContainerContainer
+    containers:
+      contents: !type:Container
   - type: RandomSprite
     available:
     - random:
