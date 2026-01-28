@@ -1,9 +1,27 @@
 - type: entity
-  parent: [ SimpleMobBase, MobCombat ]
+  parent: [ MobAtmosStandard, BaseMob, MobDamageable, MobBloodstream, MobPolymorphable, MobCombat ]
   id: UMMobSpiderBase
   suffix: SpiderAntag
   abstract: true
   components:
+  - type: Respirator
+    damage:
+      types:
+        Asphyxiation: 2
+    damageRecovery:
+      types:
+        Asphyxiation: -1.0
+  - type: StatusEffects
+    allowed:
+    - Electrocution
+    - TemporaryBlindness
+    - Pacified
+    - Flashed
+    - RadiationProtection
+    - Adrenaline
+  - type: MobPrice
+    price: 150
+  - type: FloatingVisuals
   - type: Physics
   - type: Fixtures
     fixtures:
@@ -27,6 +45,10 @@
     thresholds:
       0: Alive
       90: Dead
+    stateAlertDict:
+      Alive: SpiderHealth
+      Critical: SpiderCrit
+      Dead: SpiderDead
   - type: Puller
     needsHands: false
   - type: NoSlip
@@ -192,8 +214,8 @@
       types:
         Piercing: 10
   - type: SpiderEnergy
-    passiveRegen: 1
-    energy: 100
+    passiveRegen: 2
+    energy: 50
   - type: HiveBuilder
     buildTypes:
       - WallWeb

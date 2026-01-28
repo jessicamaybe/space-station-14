@@ -4,15 +4,14 @@ using Content.Shared.Actions;
 using Content.Shared.DoAfter;
 using Content.Shared.Interaction;
 using Content.Shared.Physics;
+using Content.Shared.Popups;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Physics;
 using Robust.Shared.Physics.Components;
+using Robust.Shared.Prototypes;
 
 namespace Content.Shared._UM.Spiders.Builder;
 
-/// <summary>
-/// This handles...
-/// </summary>
 public sealed class HiveBuilderSystem : EntitySystem
 {
     [Dependency] private readonly SharedUserInterfaceSystem _uiSystem = default!;
@@ -21,6 +20,8 @@ public sealed class HiveBuilderSystem : EntitySystem
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
     [Dependency] private readonly SpiderEnergySystem _energy = default!;
+    [Dependency] private readonly SharedPopupSystem _popup = default!;
+    [Dependency] private readonly IPrototypeManager _prototype = default!;
 
     private const string HiveBuilderBuiXmlGeneratedName = "HiveBuilderSelectTypeBoundUserInterface";
     public override void Initialize()
@@ -77,7 +78,12 @@ public sealed class HiveBuilderSystem : EntitySystem
     private void OnBuildAction(Entity<HiveBuilderComponent> ent, ref HiveBuilderBuildActionEvent args)
     {
         if (!_energy.CanSpendEnergy(ent.Owner, ent.Comp.BuildCost))
+        {
+            var entName = _prototype.Index(ent.Comp.CurrentBuild);
+            var message = Loc.GetString("spider-build-fail-energy", ("build", entName.Name));
+            _popup.PopupClient(message, ent, PopupType.SmallCaution);
             return;
+        }
 
         var xform = Transform(ent);
 

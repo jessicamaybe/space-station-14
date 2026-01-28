@@ -24,7 +24,7 @@ public sealed partial class SpiderEnergyComponent : Component
     /// The alert for your current energy level
     /// </summary>
     [DataField]
-    public ProtoId<AlertPrototype> EnergyAlert = "Essence";
+    public ProtoId<AlertPrototype> EnergyAlert = "SpiderEnergy";
 
     /// <summary>
     /// How much energy should this spider regenerate every update cycle?
