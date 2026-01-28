@@ -33,7 +33,7 @@ public sealed class SpiderEnergySystem : EntitySystem
             if (comp.NextUpdate > curTime)
                 continue;
 
-            if (comp.PassiveRegen != 0 && comp.Energy + comp.PassiveRegen < comp.MaxRegenEnergy)
+            if (comp.PassiveRegen != 0 && comp.Energy < comp.MaxRegenEnergy)
                 TryAddEnergy(uid, comp.PassiveRegen);
 
             comp.NextUpdate += comp.UpdateInterval;

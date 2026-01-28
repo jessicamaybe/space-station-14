@@ -58,6 +58,8 @@
       reagents:
       - ReagentId: CopperBlood
         Quantity: 150
+  - type: NameIdentifier
+    group: GenericNumber
   - type: Speech
     speechVerb: Arachnid
     speechSounds: Arachnid
@@ -176,6 +178,11 @@
     damage:
       types:
         Piercing: 10
+        Structural: 10
+  - type: SpiderEnergy
+    passiveRegen: 1
+    energy: 0
+    maxRegenEnergy: 50
   - type: SpiderEvolution
     evolutionTypes:
     - MobSpiderBuilder
@@ -218,7 +225,8 @@
       path: /Audio/Effects/bite.ogg
     damage:
       types:
-        Piercing: 10
+        Piercing: 6
+        Structural: 35
   - type: SpiderEnergy
     passiveRegen: 2
     energy: 50
@@ -232,7 +240,7 @@
   name: viper
   parent: UMMobSpiderBase
   id: MobSpiderViper
-  description: I don't know what this one does
+  description: Fast, and hard to see. A deadly creature.
   components:
   - type: Sprite
     drawdepth: Mobs
@@ -247,6 +255,27 @@
     noMovementLayers:
       movement:
         state: viper
+  - type: MovementSpeedModifier
+    baseWalkSpeed : 2.5
+    baseSprintSpeed : 5
+  - type: SolutionContainerManager
+    solutions:
+      melee:
+        maxVol: 30
+  - type: SolutionRegeneration
+    solution: melee
+    generated:
+      reagents:
+      - ReagentId: ChloralHydrate
+        Quantity: 1
+  - type: MeleeChemicalInjector
+    transferAmount: 4
+    solution: melee
+  - type: Stealth
+    hadOutline: true
+  - type: StealthOnMove
+    passiveVisibilityRate: -0.10
+    movementVisibilityRate: 0.10
   - type: DamageStateVisuals
     states:
       Alive:
@@ -263,7 +292,7 @@
       path: /Audio/Effects/bite.ogg
     damage:
       types:
-        Piercing: 10
+        Piercing: 4
 
 - type: entity
   name: nurse
@@ -306,7 +335,7 @@
   name: hunter
   parent: UMMobSpiderBase
   id: MobSpiderHunter
-  description: Hunt
+  description: Hunt people to bring back to the mother
   components:
   - type: Sprite
     drawdepth: Mobs

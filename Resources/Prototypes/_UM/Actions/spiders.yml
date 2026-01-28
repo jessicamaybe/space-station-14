@@ -64,7 +64,7 @@
   parent: BaseAction
   id: ActionSpiderEvolve
   name: "[color=red]Evolve[/color]"
-  description: Evolve into something cooler
+  description: Requires 50 energy
   components:
   - type: Action
     icon: { sprite : _UM/Actions/broodmother.rsi, state: defensive_mode }

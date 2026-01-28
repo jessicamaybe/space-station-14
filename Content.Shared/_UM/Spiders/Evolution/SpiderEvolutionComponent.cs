@@ -1,4 +1,5 @@
 using Content.Shared.Actions;
+using Content.Shared.FixedPoint;
 using Content.Shared.Polymorph;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -21,6 +22,9 @@ public sealed partial class SpiderEvolutionComponent : Component
 
     [DataField, AutoNetworkedField]
     public List<EntProtoId> EvolutionTypes = new() { "MobLizard", "MobMonkey", "MobGorilla" };
+
+    [DataField, AutoNetworkedField]
+    public FixedPoint2 EvolutionCost = 50;
 }
 
 [Serializable, NetSerializable]

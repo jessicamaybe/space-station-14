@@ -1,6 +1,8 @@
 using Content.Shared._UM.Spiders.Builder;
+using Content.Shared._UM.Spiders.SpiderEnergy;
 using Content.Shared.Actions;
 using Content.Shared.Mind;
+using Content.Shared.Popups;
 using Robust.Shared.Network;
 using Robust.Shared.Prototypes;
 
@@ -15,6 +17,8 @@ public sealed class SpiderEvolutionSystem : EntitySystem
     [Dependency] private readonly SharedActionsSystem _actionsSystem = default!;
     [Dependency] private readonly SharedMindSystem _mind = default!;
     [Dependency] private readonly INetManager _net = default!;
+    [Dependency] private readonly SpiderEnergySystem _energy = default!;
+    [Dependency] private readonly SharedPopupSystem _popup = default!;
 
     private const string SpiderEvolveBuiXmlGeneratedName = "SpiderEvolutionBoundUserInterface";
     /// <inheritdoc/>
@@ -44,6 +48,13 @@ public sealed class SpiderEvolutionSystem : EntitySystem
     }
     private void OnEvolveAction(Entity<SpiderEvolutionComponent> ent, ref SpiderEvolveActionEvent args)
     {
+        if (!_energy.CanSpendEnergy(ent.Owner, ent.Comp.EvolutionCost))
+        {
+            var message = Loc.GetString("spider-evolve-fail-energy");
+            _popup.PopupClient(message, ent, PopupType.SmallCaution);
+            return;
+        }
+
         if (!TryComp<UserInterfaceComponent>(ent, out var userInterfaceComp))
             return;
 

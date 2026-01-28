@@ -5,3 +5,5 @@ spider-build-fail-energy = You don't have enough energy to build a {$build}!
 
 alerts-spider-energy-name = Energy
 alerts-spider-essence-desc = Spider energy.
+
+spider-evolve-fail-energy = You don't have enough energy to evolve!
