@@ -43,7 +43,6 @@
   - type: InstantAction
     event: !type:HiveBuilderSelectTypeActionEvent
 
-
 - type: entity
   parent: BaseAction
   id: ActionSpiderBuildSelected
@@ -60,3 +59,16 @@
     range: 0
   - type: WorldTargetAction
     event: !type:HiveBuilderBuildActionEvent
+
+- type: entity
+  parent: BaseAction
+  id: ActionSpiderEvolve
+  name: "[color=red]Evolve[/color]"
+  description: Evolve into something cooler
+  components:
+  - type: Action
+    icon: { sprite : _UM/Actions/broodmother.rsi, state: defensive_mode }
+    itemIconStyle: BigAction
+    priority: 1
+  - type: InstantAction
+    event: !type:SpiderEvolveActionEvent

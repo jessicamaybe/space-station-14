@@ -1,0 +1,78 @@
+using Content.Shared._UM.Spiders.Builder;
+using Content.Shared.Actions;
+using Content.Shared.Mind;
+using Robust.Shared.Network;
+using Robust.Shared.Prototypes;
+
+namespace Content.Shared._UM.Spiders.Evolution;
+
+/// <summary>
+/// This handles...
+/// </summary>
+public sealed class SpiderEvolutionSystem : EntitySystem
+{
+    [Dependency] private readonly SharedUserInterfaceSystem _uiSystem = default!;
+    [Dependency] private readonly SharedActionsSystem _actionsSystem = default!;
+    [Dependency] private readonly SharedMindSystem _mind = default!;
+    [Dependency] private readonly INetManager _net = default!;
+
+    private const string SpiderEvolveBuiXmlGeneratedName = "SpiderEvolutionBoundUserInterface";
+    /// <inheritdoc/>
+    public override void Initialize()
+    {
+        base.Initialize();
+        SubscribeLocalEvent<SpiderEvolutionComponent, MapInitEvent>(OnMapInit);
+        SubscribeLocalEvent<SpiderEvolutionComponent, ComponentShutdown>(OnShutdown);
+        SubscribeLocalEvent<SpiderEvolutionComponent, SpiderEvolveActionEvent>(OnEvolveAction);
+        SubscribeLocalEvent<SpiderEvolutionComponent, SpiderEvolutionSelectMessage>(OnEvolutionSelect);
+    }
+
+    private void OnMapInit(Entity<SpiderEvolutionComponent> ent, ref MapInitEvent args)
+    {
+        _actionsSystem.AddAction(ent, ref ent.Comp.RadialActionEntity, ent.Comp.RadialAction);
+        var userInterfaceComp = EnsureComp<UserInterfaceComponent>(ent);
+
+        _uiSystem.SetUi((ent, userInterfaceComp), SpiderEvolveRadialUiKey.Key, new InterfaceData(SpiderEvolveBuiXmlGeneratedName));
+    }
+
+    private void OnShutdown(Entity<SpiderEvolutionComponent> ent, ref ComponentShutdown args)
+    {
+        if (ent.Comp.RadialActionEntity != null)
+        {
+            _actionsSystem.RemoveAction(ent.Owner, ent.Comp.RadialActionEntity);
+        }
+    }
+    private void OnEvolveAction(Entity<SpiderEvolutionComponent> ent, ref SpiderEvolveActionEvent args)
+    {
+        if (!TryComp<UserInterfaceComponent>(ent, out var userInterfaceComp))
+            return;
+
+        _uiSystem.OpenUi((ent, userInterfaceComp), SpiderEvolveRadialUiKey.Key, args.Performer);
+    }
+
+    private void OnEvolutionSelect(Entity<SpiderEvolutionComponent> ent, ref SpiderEvolutionSelectMessage args)
+    {
+        if (!ent.Comp.EvolutionTypes.Contains(args.PrototypeId))
+            return;
+
+        if (_net.IsClient)
+            return;
+
+        Evolve(ent, args.PrototypeId);
+        Del(ent);
+    }
+
+    private void Evolve(Entity<SpiderEvolutionComponent> ent, EntProtoId proto)
+    {
+        if (_net.IsClient)
+            return;
+
+        if (!_mind.TryGetMind(ent, out var mind, out _))
+            return;
+
+        var coords = Transform(ent).Coordinates;
+        var newSpider = PredictedSpawnAtPosition(proto, coords);
+        _mind.TransferTo(mind, newSpider);
+        _mind.UnVisit(mind);
+    }
+}

@@ -1,5 +1,5 @@
 using Content.Client.UserInterface.Controls;
-using Content.Shared._UM.Spiders.Builder;
+using Content.Shared._UM.Spiders.Evolution;
 using JetBrains.Annotations;
 using Robust.Client.UserInterface;
 using Robust.Shared.Prototypes;
@@ -8,7 +8,7 @@ namespace Content.Client._UM.Spiders;
 
 
 [UsedImplicitly]
-public sealed class HiveBuilderSelectTypeBoundUserInterface(EntityUid owner, Enum uiKey) : BoundUserInterface(owner, uiKey)
+public sealed class SpiderEvolutionBoundUserInterface(EntityUid owner, Enum uiKey) : BoundUserInterface(owner, uiKey)
 {
     private SimpleRadialMenu? _menu;
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
@@ -27,10 +27,10 @@ public sealed class HiveBuilderSelectTypeBoundUserInterface(EntityUid owner, Enu
         if (_menu == null)
             return;
 
-        if (!EntMan.TryGetComponent<HiveBuilderComponent>(Owner, out var hiveBuilderComponent))
+        if (!EntMan.TryGetComponent<SpiderEvolutionComponent>(Owner, out var evolutionComponent))
             return;
 
-        var models = ConvertToButtons(hiveBuilderComponent.BuildTypes);
+        var models = ConvertToButtons(evolutionComponent.EvolutionTypes);
 
         _menu.SetButtons(models);
     }
@@ -41,12 +41,16 @@ public sealed class HiveBuilderSelectTypeBoundUserInterface(EntityUid owner, Enu
 
         foreach (var protoId in prototypes)
         {
-            var prototype = _prototypeManager.Index(protoId);
+            if (!_prototypeManager.TryIndex(protoId, out var prototype))
+                continue;
+
+            var entityName = prototype.Name;
+            var entityDescription = prototype.Description;
 
             var option = new RadialMenuActionOption<EntProtoId>(SendIdentitySelect, protoId)
             {
                 IconSpecifier = RadialMenuIconSpecifier.With(prototype),
-                ToolTip = prototype.Description
+                ToolTip = entityName + " : " + entityDescription,
             };
             buttons.Add(option);
         }
@@ -56,7 +60,7 @@ public sealed class HiveBuilderSelectTypeBoundUserInterface(EntityUid owner, Enu
 
     private void SendIdentitySelect(EntProtoId protoId)
     {
-        SendPredictedMessage(new HiveBuilderTypeSelectMessage(protoId));
+        SendPredictedMessage(new SpiderEvolutionSelectMessage(protoId));
     }
 
 }
