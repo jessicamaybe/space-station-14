@@ -50,8 +50,7 @@ public sealed partial class StoreSystem : EntitySystem
         RefreshAllListings(component);
         component.StartingMap = Transform(uid).MapUid;
 
-        var userInterfaceComp = EnsureComp<UserInterfaceComponent>(uid);
-        _uiSystem.SetUi((uid, userInterfaceComp), StoreUiKey.Key, new InterfaceData("StoreBoundUserInterface"));
+        _uiSystem.SetUi(uid, StoreUiKey.Key, new InterfaceData("StoreBoundUserInterface"));
     }
 
     private void OnStartup(EntityUid uid, StoreComponent component, ComponentStartup args)
