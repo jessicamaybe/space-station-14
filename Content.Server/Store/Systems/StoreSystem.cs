@@ -50,7 +50,9 @@ public sealed partial class StoreSystem : EntitySystem
         RefreshAllListings(component);
         component.StartingMap = Transform(uid).MapUid;
 
-        _uiSystem.SetUi(uid, StoreUiKey.Key, new InterfaceData("StoreBoundUserInterface"));
+        // Add the bui key if it does not exist already (the check is needed to make sure that we don't overwrite existing InterfaceData).
+        if (!_uiSystem.HasUi(uid, StoreUiKey.Key))
+            _uiSystem.SetUi(uid, StoreUiKey.Key, new InterfaceData("StoreBoundUserInterface"));
     }
 
     private void OnStartup(EntityUid uid, StoreComponent component, ComponentStartup args)
