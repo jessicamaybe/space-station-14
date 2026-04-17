@@ -185,9 +185,9 @@ public abstract class SharedAirlockSystem : EntitySystem
         }
     }
 
-    public void UpdateEmergencyLightStatus(EntityUid uid, AirlockComponent component)
+    public void UpdateEmergencyLightStatus(Entity<AirlockComponent> ent)
     {
-        Appearance.SetData(uid, DoorVisuals.EmergencyLights, component.EmergencyAccess);
+        Appearance.SetData(ent, DoorVisuals.EmergencyLights, ent.Comp.EmergencyAccess);
     }
 
     public void SetEmergencyAccess(Entity<AirlockComponent> ent, bool value, EntityUid? user = null, bool predicted = false)
@@ -200,7 +200,7 @@ public abstract class SharedAirlockSystem : EntitySystem
 
         ent.Comp.EmergencyAccess = value;
         Dirty(ent, ent.Comp); // This only runs on the server apparently so we need this.
-        UpdateEmergencyLightStatus(ent, ent.Comp);
+        UpdateEmergencyLightStatus(ent);
 
         var sound = ent.Comp.EmergencyAccess ? ent.Comp.EmergencyOnSound : ent.Comp.EmergencyOffSound;
         if (predicted)
