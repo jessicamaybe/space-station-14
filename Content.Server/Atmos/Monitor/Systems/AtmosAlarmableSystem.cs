@@ -65,7 +65,6 @@ public sealed class AtmosAlarmableSystem : EntitySystem
 
             PlayAlertSound(uid, comp.LastAlarmState, comp);
         }
-
     }
 
     private void OnMapInit(EntityUid uid, AtmosAlarmableComponent component, MapInitEvent args)
