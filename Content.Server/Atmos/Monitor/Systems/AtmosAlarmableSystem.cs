@@ -321,7 +321,7 @@ public sealed class AtmosAlarmableSystem : EntitySystem
 
     private void PlayAlertSound(EntityUid uid, AtmosAlarmType alarm, AtmosAlarmableComponent alarmable)
     {
-        if (alarm == AtmosAlarmType.Danger)
+        if (alarm == AtmosAlarmType.Danger && alarmable.NextSound < _timing.CurTime)
         {
             _audioSystem.PlayPvs(alarmable.AlarmSound, uid);
             alarmable.NextSound = _timing.CurTime + alarmable.UpdateInterval;
