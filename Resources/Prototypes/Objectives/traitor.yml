@@ -413,3 +413,23 @@
   - type: ObjectiveLimit
     # There is only one trade station so there should never be more than one of these objectives.
     limit: 1
+
+- type: entity
+  parent: BaseTraitorObjective
+  id: MailFraudObjective
+  name: Commit Mail Fraud
+  description: Steal Mail
+  components:
+  - type: Objective
+    difficulty: 1
+    unique: true
+    icon:
+      sprite: Objects/Specific/Cargo/mail.rsi
+      state: icon
+  - type: NumberObjective
+    min: 10
+    max: 20
+    title: objective-mailfraud-count-title
+    description: objective-mailfraud-count-description
+  - type: MailFraudCondition
+  - type: CounterCondition

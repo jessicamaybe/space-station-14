@@ -128,6 +128,9 @@ public abstract class SharedDeliverySystem : EntitySystem
 
         HandlePenalty(ent);
 
+        var ev = new MailFraudEvent(args.User, ent);
+        RaiseLocalEvent(ent, ev, true);
+
         TryUnlockDelivery(ent, args.User, false, true);
         OpenDelivery(ent, args.User, false, true);
     }

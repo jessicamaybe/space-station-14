@@ -87,3 +87,10 @@ public sealed partial class DeliveryComponent : Component
     [DataField]
     public string Container = "delivery";
 }
+
+/// <summary>
+/// Event raised when a delivery is opened with a knife
+/// </summary>
+/// <param name="User">The entity opening the mail</param>
+/// <param name="Target">The delivery that was opened</param>
+public record struct MailFraudEvent(EntityUid User, EntityUid Target);
