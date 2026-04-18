@@ -67,7 +67,7 @@ public abstract class SharedAirlockSystem : EntitySystem
             _wiresSystem.ChangePanelVisibility(ent, wiresPanel, ent.Comp.OpenPanelVisible || args.State != DoorState.Open);
         }
         // If the door is closed, we should look if the bolt was locked while closing
-        UpdateAutoClose(ent);
+        UpdateAutoClose((ent, ent.Comp));
 
         // Make sure the airlock auto closes again next time it is opened
         if (args.State == DoorState.Closed)
@@ -81,7 +81,7 @@ public abstract class SharedAirlockSystem : EntitySystem
     {
         // If unbolted, reset the auto close timer
         if (!args.BoltsDown)
-            UpdateAutoClose(ent);
+            UpdateAutoClose((ent, ent.Comp));
     }
 
     private void OnBeforeDoorOpened(Entity<AirlockComponent> ent, ref BeforeDoorOpenedEvent args)
@@ -108,18 +108,18 @@ public abstract class SharedAirlockSystem : EntitySystem
     /// <summary>
     /// Updates the auto close timer.
     /// </summary>
-    public void UpdateAutoClose(Entity<AirlockComponent> ent, DoorComponent? door = null)
+    public void UpdateAutoClose(Entity<AirlockComponent?, DoorComponent?> ent)
     {
-        if (!Resolve(ent, ref door))
+        if (!Resolve(ent, ref ent.Comp1, ref ent.Comp2))
             return;
 
-        if (door.State != DoorState.Open)
+        if (ent.Comp2.State != DoorState.Open)
             return;
 
-        if (!ent.Comp.AutoClose)
+        if (!ent.Comp1.AutoClose)
             return;
 
-        if (!CanChangeState((ent.Owner, ent.Comp)))
+        if (!CanChangeState((ent.Owner, ent.Comp1)))
             return;
 
         var autoev = new BeforeDoorAutoCloseEvent();
@@ -127,7 +127,7 @@ public abstract class SharedAirlockSystem : EntitySystem
         if (autoev.Cancelled)
             return;
 
-        DoorSystem.SetNextStateChange(ent, ent.Comp.AutoCloseDelay * ent.Comp.AutoCloseDelayModifier);
+        DoorSystem.SetNextStateChange(ent, ent.Comp1.AutoCloseDelay * ent.Comp1.AutoCloseDelayModifier);
     }
 
     private void OnBeforePry(Entity<AirlockComponent> ent, ref BeforePryEvent args)
@@ -168,7 +168,7 @@ public abstract class SharedAirlockSystem : EntitySystem
         }
         else
         {
-            UpdateAutoClose(ent, door: door);
+            UpdateAutoClose((ent, ent.Comp, door));
         }
     }
 
