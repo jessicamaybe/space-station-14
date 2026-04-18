@@ -153,7 +153,7 @@ public sealed partial class DoorComponent : Component
     /// The sprite states used for the door while it's open.
     /// </summary>
     [ViewVariables(VVAccess.ReadOnly)]
-    public List<(DoorVisualLayers, string)> OpenSpriteStates = default!;
+    public List<(Enum, string)> OpenSpriteStates = default!;
 
     /// <summary>
     /// The sprite state used for the door when it's closed.
@@ -166,7 +166,7 @@ public sealed partial class DoorComponent : Component
     /// The sprite states used for the door while it's closed.
     /// </summary>
     [ViewVariables(VVAccess.ReadOnly)]
-    public List<(DoorVisualLayers, string)> ClosedSpriteStates = default!;
+    public List<(Enum, string)> ClosedSpriteStates = default!;
 
     /// <summary>
     /// The sprite state used for the door when it's opening.
@@ -187,22 +187,22 @@ public sealed partial class DoorComponent : Component
     public string EmaggingSpriteState = "sparks";
 
     /// <summary>
-    /// The sprite state used for the door when it's open.
+    /// The length of the door's opening animation.
     /// </summary>
     [DataField]
-    public float OpeningAnimationTime = 0.8f;
+    public TimeSpan OpeningAnimationTime = TimeSpan.FromSeconds(0.8);
 
     /// <summary>
-    /// The sprite state used for the door when it's open.
+    /// The length of the door's closing animation.
     /// </summary>
     [DataField]
-    public float ClosingAnimationTime = 0.8f;
+    public TimeSpan ClosingAnimationTime = TimeSpan.FromSeconds(0.8);
 
     /// <summary>
-    /// The sprite state used for the door when it's open.
+    /// The length of the door's emagging animation.
     /// </summary>
     [DataField]
-    public float EmaggingAnimationTime = 1.5f;
+    public TimeSpan EmaggingAnimationTime = TimeSpan.FromSeconds(1.5);
 
     /// <summary>
     /// The animation used when the door opens.
@@ -264,8 +264,8 @@ public sealed partial class DoorComponent : Component
     /// <summary>
     /// Default time that the door should take to pry open.
     /// </summary>
-    [DataField, ViewVariables(VVAccess.ReadWrite)]
-    public float PryTime = 1.5f;
+    [DataField]
+    public TimeSpan PryTime = TimeSpan.FromSeconds(1.5f);
 
     [DataField]
     public bool ChangeAirtight = true;
@@ -325,4 +325,5 @@ public enum DoorVisualLayers : byte
     BaseUnlit,
     BaseBolted,
     BaseEmergencyAccess,
+    BaseEmagging,
 }
