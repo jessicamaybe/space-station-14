@@ -13,11 +13,19 @@
   branches:
   - tasks:
     - !type:HTNPrimitiveTask
-      operator: !type:PickNearbyDisposableOperator
+      operator: !type:PickEntityNearMobOperator
         rangeKey: VisionRadius
         targetKey: FlushableTarget
-        disposalTargetKey: DisposalBinTarget
+        nearbyEntityTargetKey: DisposalBinTarget
         targetMoveKey: TargetCoordinates
+        mobState: Critical
+        mobRangeKey: InteractRange
+        whitelist:
+          components:
+          - DisposalUnit
+        blacklist:
+          components:
+          - MailingUnit
 
     - !type:HTNPrimitiveTask
       operator: !type:MoveToOperator

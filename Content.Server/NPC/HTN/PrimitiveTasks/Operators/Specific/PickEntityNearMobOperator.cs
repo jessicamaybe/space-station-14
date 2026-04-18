@@ -2,35 +2,41 @@ using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.NPC.Pathfinding;
 using Content.Shared.Interaction;
-using Content.Shared.Disposal.Components;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Components;
+using Content.Shared.Whitelist;
 using Robust.Server.Containers;
 
 namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Specific;
 
-public sealed partial class PickNearbyDisposableOperator : HTNOperator
+/// <summary>
+/// Queries for nearby entities matching a whitelist/blacklist, and then searches for a mob near to that entity.
+/// </summary>
+public sealed partial class PickEntityNearMobOperator : HTNOperator
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
     private EntityLookupSystem _lookup = default!;
     private PathfindingSystem _pathfinding = default!;
     private ContainerSystem _container = default!;
+    private EntityWhitelistSystem _entityWhitelist = default!;
 
-
+    /// <summary>
+    /// Range to search for entities
+    /// </summary>
     [DataField(required: true)]
     public string RangeKey = default!;
 
     /// <summary>
-    /// Target entity to flush
+    /// Target mob that was found near NearbyEntityTargetKey
     /// </summary>
     [DataField(required: true)]
     public string TargetKey = string.Empty;
 
     /// <summary>
-    /// Target disposal bin entity
+    /// Target entity that was found
     /// </summary>
     [DataField(required: true)]
-    public string DisposalTargetKey = string.Empty;
+    public string NearbyEntityTargetKey = string.Empty;
 
     /// <summary>
     /// Target entitycoordinates to move to.
@@ -38,12 +44,37 @@ public sealed partial class PickNearbyDisposableOperator : HTNOperator
     [DataField(required: true)]
     public string TargetMoveKey = string.Empty;
 
+    /// <summary>
+    /// Whitelist for what entities will get picked
+    /// </summary>
+    [DataField]
+    public EntityWhitelist? Whitelist;
+
+    /// <summary>
+    /// Blacklist for what entities will NOT get picked
+    /// </summary>
+    [DataField]
+    public EntityWhitelist? Blacklist;
+
+    /// <summary>
+    /// Range to search for mobs near the target entity
+    /// </summary>
+    [DataField(required: true)]
+    public string MobRangeKey = default!;
+
+    /// <summary>
+    /// MobState to check for
+    /// </summary>
+    [DataField]
+    public MobState? MobState;
+
     public override void Initialize(IEntitySystemManager sysManager)
     {
         base.Initialize(sysManager);
         _lookup = sysManager.GetEntitySystem<EntityLookupSystem>();
         _pathfinding = sysManager.GetEntitySystem<PathfindingSystem>();
         _container = sysManager.GetEntitySystem<ContainerSystem>();
+        _entityWhitelist = sysManager.GetEntitySystem<EntityWhitelistSystem>();
     }
 
     public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
@@ -54,48 +85,45 @@ public sealed partial class PickNearbyDisposableOperator : HTNOperator
         if (!blackboard.TryGetValue<float>(RangeKey, out var range, _entManager))
             return (false, null);
 
-        var disposalUnitQuery = _entManager.GetEntityQuery<DisposalUnitComponent>();
-        var mailingUnitQuery = _entManager.GetEntityQuery<MailingUnitComponent>();
+        if (!blackboard.TryGetValue<float>(RangeKey, out var mobRange, _entManager))
+            return (false, null);
+
         var mobState = _entManager.GetEntityQuery<MobStateComponent>();
 
         foreach (var entity in _lookup.GetEntitiesInRange(owner, range))
         {
-            if (!disposalUnitQuery.TryGetComponent(entity, out var disposalComp))
-                continue;
-            // dont want the mail boxes
-            if (mailingUnitQuery.TryGetComponent(entity, out var mailingComp))
+            if (!_entityWhitelist.CheckBoth(entity, Blacklist, Whitelist))
                 continue;
 
-            //checking if there is anyone NEAR the bin we found
-            foreach (var flushable in _lookup.GetEntitiesInRange(entity, 1))
+            //checking if there is anyone NEAR the entity we found
+            foreach (var mob in _lookup.GetEntitiesInRange(entity, mobRange))
             {
-                if (flushable == owner)
+                if (mob == owner)
                     continue;
 
-                if (_container.IsEntityInContainer(flushable))
+                if (_container.IsEntityInContainer(mob))
                     continue;
 
-                if (mobState.TryGetComponent(flushable, out var state))
+                if (mobState.TryGetComponent(mob, out var state))
                 {
-                    if (state.CurrentState != MobState.Critical)
+                    if (MobState != null && state.CurrentState != MobState)
                         continue;
 
                     var pathRange = SharedInteractionSystem.InteractionRange;
-                    var path = await _pathfinding.GetPath(owner, flushable, pathRange, cancelToken);
+                    var path = await _pathfinding.GetPath(owner, mob, pathRange, cancelToken);
 
                     if (path.Result == PathResult.NoPath)
                         return (false, null);
 
                     return (true, new Dictionary<string, object>()
                     {
-                        {TargetKey, flushable},
-                        {DisposalTargetKey, entity},
-                        {TargetMoveKey, _entManager.GetComponent<TransformComponent>(flushable).Coordinates},
+                        {TargetKey, mob},
+                        {NearbyEntityTargetKey, entity},
+                        {TargetMoveKey, _entManager.GetComponent<TransformComponent>(mob).Coordinates},
                         {NPCBlackboard.PathfindKey, path},
                     });
                 }
             }
-
         }
 
         return (false, null);
