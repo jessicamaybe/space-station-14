@@ -10,9 +10,9 @@
   - tasks:
     - !type:HTNWeightedRandomCompoundTask
       weights:
-        DropItemNearby: 0.002
-        ActivateInHandCompound: 0.002
-        PickupItemCompound: 0.002
+        DropItemNearby: 0.02
+        ActivateInHandCompound: 0.02
+        PickupItemCompound: 0.02
         IdleCompound: 1
 
 - type: utilityQuery

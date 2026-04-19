@@ -342,6 +342,36 @@ public sealed class HTNSystem : EntitySystem
             return;
         }
 
+        if (task is HTNWeightedRandomCompoundTask randomCompoundTask)
+        {
+            foreach (var compoundProto in randomCompoundTask.Weights)
+            {
+                var compound = _prototypeManager.Index<HTNCompoundPrototype>(compoundProto.Key);
+                level++;
+                text.AppendLine(compound.ID);
+                text.AppendLine("  weight: " + compoundProto.Value);
+                var branches = compound.Branches;
+
+                for (var i = 0; i < branches.Count; i++)
+                {
+                    var branch = branches[i];
+                    btr.Add(i);
+                    text.AppendLine($" branch {string.Join(", ", btr)}:");
+
+                    foreach (var sub in branch.Tasks)
+                    {
+                        AppendDebugText(sub, text, planBtr, btr, ref level);
+                    }
+
+                    btr.RemoveAt(btr.Count - 1);
+                }
+
+                level--;
+            }
+            return;
+
+        }
+
         throw new NotImplementedException();
     }
 
