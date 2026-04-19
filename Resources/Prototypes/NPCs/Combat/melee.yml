@@ -50,6 +50,14 @@
         - !type:HTNCompoundTask
           task: PickupMeleeCompound
 
+    # Activate the held item if its disabled (eswords)
+    - preconditions:
+        - !type:ActiveHandEntityItemTogglePrecondition
+          activated: true
+      tasks:
+        - !type:HTNPrimitiveTask
+          operator: !type:ActivateInHandOperator
+
     # Melee combat (unarmed or otherwise)
     - tasks:
         - !type:HTNCompoundTask

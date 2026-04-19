@@ -6,7 +6,89 @@
       task: DisposalsNearbyCompound
   - tasks:
     - !type:HTNCompoundTask
-      task: SimpleHostileCompound
+      task: MeleeCombatCompound
+  - tasks:
+    - !type:HTNCompoundTask
+      task: PickupItemCompound
+  - tasks:
+    - !type:HTNCompoundTask
+      task: ActivateInHandCompound
+  - tasks:
+    - !type:HTNCompoundTask
+      task: DropItemNearby
+  - tasks:
+    - !type:HTNCompoundTask
+      task: IdleCompound
+
+- type: utilityQuery
+  id: NearbyItems
+  query:
+  - !type:ComponentQuery
+    components:
+    - type: Item
+  - !type:RemoveAnchoredFilter
+  - !type:ComponentFilter
+    retainWithComp: false
+    components:
+    - type: MultiHandedItem
+
+- type: htnCompound
+  id: PickupItemCompound
+  branches:
+  - preconditions:
+    - !type:RandomChancePrecondition
+      chance: 0.0025
+    tasks:
+    - !type:HTNPrimitiveTask
+      operator: !type:UtilityOperator
+        proto: NearbyItems
+    - !type:HTNPrimitiveTask
+      operator: !type:MoveToOperator
+    - !type:HTNPrimitiveTask
+      preconditions:
+      - !type:ActiveHandFreePrecondition
+      - !type:TargetInRangePrecondition
+        targetKey: Target
+        rangeKey: InteractRange
+      operator: !type:InteractWithOperator
+        targetKey: Target
+
+- type: htnCompound
+  id: ActivateInHandCompound
+  branches:
+  - preconditions:
+    - !type:RandomChancePrecondition
+      chance: 0.0025
+    - !type:ActiveHandEntityPrecondition
+    tasks:
+    - !type:HTNPrimitiveTask
+      operator: !type:ActivateInHandOperator
+
+- type: htnCompound
+  id: DropItemNearby
+  branches:
+  - preconditions:
+      - !type:RandomChancePrecondition
+        chance: 0.0025
+      - !type:ActiveHandEntityPrecondition
+    tasks:
+    - !type:HTNPrimitiveTask
+      operator: !type:PickAccessibleOperator
+        # originKey: FollowTarget
+        rangeKey: FollowCloseRange
+        targetCoordinates: FollowIdleTarget
+    - !type:HTNPrimitiveTask
+      operator: !type:MoveToOperator
+        targetKey: FollowIdleTarget
+    - !type:HTNPrimitiveTask
+      operator: !type:RandomOperator
+        targetKey: IdleTime
+        minKey: MinimumIdleTime
+        maxKey: MaximumIdleTime
+    - !type:HTNPrimitiveTask
+      operator: !type:DropOperator
+    - !type:HTNCompoundTask
+      task: IdleCompound
 
 - type: htnCompound
   id: DisposalsNearbyCompound
