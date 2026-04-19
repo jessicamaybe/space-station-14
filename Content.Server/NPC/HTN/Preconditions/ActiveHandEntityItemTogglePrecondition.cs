@@ -5,14 +5,14 @@ namespace Content.Server.NPC.HTN.Preconditions;
 
 
 /// <summary>
-/// Returns true if the item in the entitys hand has the same toggle state as Activated
+/// Returns true if the item in the entity's hand has the same toggle state as Activated
 /// </summary>
 public sealed partial class ActiveHandEntityItemTogglePrecondition : HTNPrecondition
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
 
     /// <summary>
-    /// The desired state of the ItemToggle
+    /// Precondition returns true if this matches ItemToggle activated state
     /// </summary>
     [DataField(required: true)]
     public bool Activated;
@@ -26,6 +26,6 @@ public sealed partial class ActiveHandEntityItemTogglePrecondition : HTNPrecondi
             || !_entManager.TryGetComponent<ItemToggleComponent>(activeItem, out var itemToggleComponent))
             return false;
 
-        return itemToggleComponent.Activated != Activated;
+        return itemToggleComponent.Activated == Activated;
     }
 }

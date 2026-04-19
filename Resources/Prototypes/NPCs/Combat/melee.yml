@@ -53,7 +53,7 @@
     # Activate the held item if its disabled (eswords)
     - preconditions:
         - !type:ActiveHandEntityItemTogglePrecondition
-          activated: true
+          activated: false
       tasks:
         - !type:HTNPrimitiveTask
           operator: !type:ActivateInHandOperator
