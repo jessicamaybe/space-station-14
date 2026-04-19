@@ -1,0 +1,82 @@
+- type: htnCompound
+  id: PullTestingCompound
+  branches:
+  - tasks:
+    - !type:HTNCompoundTask
+      task: PullFoodCompound
+
+
+- type: utilityQuery
+  id: NearbyEdible
+  query:
+  - !type:ComponentQuery
+    components:
+    - type: Item
+    - type: Edible
+  considerations:
+  - !type:TargetDistanceCon
+    curve: !type:PresetCurve
+      preset: TargetDistance
+  - !type:TargetAccessibleCon
+    curve: !type:BoolCurve
+
+- type: utilityQuery
+  id: NearbyFoodStorageTarget
+  query:
+  - !type:ComponentQuery
+    components:
+    - type: DisposalUnit
+
+
+- type: htnCompound
+  id: PullFoodCompound
+  branches:
+  - tasks:
+    #find nearby food
+    - !type:HTNPrimitiveTask
+      operator: !type:UtilityOperator
+        proto: NearbyEdible
+        key: Food
+        keyCoordinates: FoodCoordinates
+
+    # move to food
+    - !type:HTNPrimitiveTask
+      operator: !type:MoveToOperator
+        targetKey: FoodCoordinates
+
+    # pull food
+    - !type:HTNPrimitiveTask
+      preconditions:
+      - !type:IsPullingPrecondition
+        isPulling: false
+      - !type:TargetInRangePrecondition
+        targetKey: Food
+        rangeKey: InteractRange
+      operator: !type:PullEntityOperator
+        targetKey: Food
+        pull: true
+
+
+    # drag to disposal bin
+    - !type:HTNPrimitiveTask
+      operator: !type:UtilityOperator
+        proto: NearbyFoodStorageTarget
+    - !type:HTNPrimitiveTask
+      operator: !type:MoveToOperator
+    - !type:HTNPrimitiveTask
+      operator: !type:PullEntityOperator
+        pull: false
+    - !type:HTNPrimitiveTask
+      operator: !type:DisposalInsertOperator
+        targetKey: Food
+        disposalTargetKey: Target
+    - !type:HTNPrimitiveTask
+      operator: !type:SetFloatOperator
+        targetKey: IdleTime
+        amount: 2
+    - !type:HTNPrimitiveTask
+      operator: !type:WaitOperator
+        key: IdleTime
+      preconditions:
+      - !type:KeyExistsPrecondition
+        key: IdleTime

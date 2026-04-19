@@ -479,11 +479,14 @@ public sealed class PullingSystem : EntitySystem
 
     public bool TogglePull(Entity<PullableComponent?> pullable, EntityUid pullerUid)
     {
+        Log.Debug("toggling pull on: " + pullable);
+
         if (!Resolve(pullable, ref pullable.Comp, false))
             return false;
 
         if (pullable.Comp.Puller == pullerUid)
         {
+            Log.Debug("stopping pull on: " + pullable);
             return TryStopPull(pullable, pullable.Comp);
         }
 

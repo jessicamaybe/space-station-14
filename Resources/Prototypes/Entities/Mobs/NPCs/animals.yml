@@ -1439,7 +1439,8 @@
       - Passive
   - type: HTN
     rootTask:
-      task: MonkeyCompound
+      #task: MonkeyCompound
+      task: PullTestingCompound
     blackboard:
       NavInteract: !type:Bool
         true
