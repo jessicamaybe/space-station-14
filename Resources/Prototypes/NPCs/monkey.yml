@@ -11,7 +11,6 @@
     - !type:HTNWeightedRandomCompoundTask
       weights:
         DropItemNearby: 0.02
-        ActivateInHandCompound: 0.02
         PickupItemCompound: 0.02
         IdleCompound: 1
 
@@ -46,15 +45,6 @@
         rangeKey: InteractRange
       operator: !type:InteractWithOperator
         targetKey: Target
-
-- type: htnCompound
-  id: ActivateInHandCompound
-  branches:
-  - preconditions:
-    - !type:ActiveHandEntityPrecondition
-    tasks:
-    - !type:HTNPrimitiveTask
-      operator: !type:ActivateInHandOperator
 
 - type: htnCompound
   id: DropItemNearby
