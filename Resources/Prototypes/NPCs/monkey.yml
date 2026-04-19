@@ -8,17 +8,12 @@
     - !type:HTNCompoundTask
       task: MeleeCombatCompound
   - tasks:
-    - !type:HTNCompoundTask
-      task: PickupItemCompound
-  - tasks:
-    - !type:HTNCompoundTask
-      task: ActivateInHandCompound
-  - tasks:
-    - !type:HTNCompoundTask
-      task: DropItemNearby
-  - tasks:
-    - !type:HTNCompoundTask
-      task: IdleCompound
+    - !type:HTNWeightedRandomCompoundTask
+      weights:
+        DropItemNearby: 0.002
+        ActivateInHandCompound: 0.002
+        PickupItemCompound: 0.002
+        IdleCompound: 1
 
 - type: utilityQuery
   id: NearbyItems
@@ -36,8 +31,7 @@
   id: PickupItemCompound
   branches:
   - preconditions:
-    - !type:RandomChancePrecondition
-      chance: 0.0025
+    - !type:ActiveHandFreePrecondition
     tasks:
     - !type:HTNPrimitiveTask
       operator: !type:UtilityOperator
@@ -57,8 +51,6 @@
   id: ActivateInHandCompound
   branches:
   - preconditions:
-    - !type:RandomChancePrecondition
-      chance: 0.0025
     - !type:ActiveHandEntityPrecondition
     tasks:
     - !type:HTNPrimitiveTask
@@ -68,8 +60,6 @@
   id: DropItemNearby
   branches:
   - preconditions:
-      - !type:RandomChancePrecondition
-        chance: 0.0025
       - !type:ActiveHandEntityPrecondition
     tasks:
     - !type:HTNPrimitiveTask

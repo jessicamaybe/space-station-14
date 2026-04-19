@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Robust.Shared.CPUJob.JobQueues;
 using Content.Server.NPC.HTN.PrimitiveTasks;
+using Content.Shared.Random.Helpers;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
 
 namespace Content.Server.NPC.HTN;
 
@@ -16,6 +18,7 @@ public sealed class HTNPlanJob : Job<HTNPlan>
     private NPCBlackboard _blackboard;
 
     private IPrototypeManager _protoManager;
+    private IRobustRandom _random;
 
     /// <summary>
     /// Branch traversal of an existing plan (if applicable).
@@ -25,12 +28,14 @@ public sealed class HTNPlanJob : Job<HTNPlan>
     public HTNPlanJob(
         double maxTime,
         IPrototypeManager protoManager,
+        IRobustRandom robustRandom,
         HTNTask rootTask,
         NPCBlackboard blackboard,
         List<int>? branchTraversal,
         CancellationToken cancellationToken = default) : base(maxTime, cancellationToken)
     {
         _protoManager = protoManager;
+        _random = robustRandom;
         _rootTask = rootTask;
         _blackboard = blackboard;
         _branchTraversal = branchTraversal;
@@ -72,6 +77,39 @@ public sealed class HTNPlanJob : Job<HTNPlan>
 
             switch (currentTask)
             {
+                case HTNWeightedRandomCompoundTask weightedRandomCompoundTask:
+                    await SuspendIfOutOfTime();
+                    var task = _random.Pick(weightedRandomCompoundTask.Weights);
+                    var compoundTask = new HTNCompoundTask()
+                    {
+                        Task = task,
+                    };
+
+                    if (TryFindSatisfiedMethod(compoundTask, tasksToProcess, _blackboard, ref btrIndex))
+                    {
+                        decompHistory.Push(new DecompositionState()
+                        {
+                            Blackboard = _blackboard.ShallowClone(),
+                            CompoundTask = compoundTask,
+                            BranchTraversal = btrIndex,
+                            PrimitiveCount = primitiveCount,
+                        });
+
+                        primitiveCount = 0;
+                        // Reset method traversal
+                        btrIndex = 0;
+                    }
+                    else
+                    {
+                        RestoreTolastDecomposedTask(decompHistory,
+                            tasksToProcess,
+                            appliedStates,
+                            finalPlan,
+                            ref primitiveCount,
+                            ref _blackboard,
+                            ref btrIndex);
+                    }
+                    break;
                 case HTNCompoundTask compound:
                     await SuspendIfOutOfTime();
 

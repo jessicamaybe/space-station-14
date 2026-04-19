@@ -12,6 +12,7 @@ using Content.Shared.NPC;
 using JetBrains.Annotations;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
 using Robust.Shared.Utility;
 
 namespace Content.Server.NPC.HTN;
@@ -22,6 +23,7 @@ public sealed class HTNSystem : EntitySystem
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly NPCSystem _npc = default!;
     [Dependency] private readonly NPCUtilitySystem _utility = default!;
+    [Dependency] private readonly IRobustRandom _random = default!;
 
     private readonly JobQueue _planQueue = new(0.004);
 
@@ -111,6 +113,9 @@ public sealed class HTNSystem : EntitySystem
     {
         switch (task)
         {
+            case HTNWeightedRandomCompoundTask:
+                // NOOP, handled elsewhere
+                break;
             case HTNCompoundTask:
                 // NOOP, handled elsewhere
                 break;
@@ -488,6 +493,7 @@ public sealed class HTNSystem : EntitySystem
         var job = new HTNPlanJob(
             0.02,
             _prototypeManager,
+            _random,
             component.RootTask,
             component.Blackboard.ShallowClone(), branchTraversal, cancelToken.Token);
 
