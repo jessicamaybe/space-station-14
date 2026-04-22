@@ -120,7 +120,6 @@ public sealed class HTNSystem : EntitySystem
                 {
                     precon.Initialize(EntityManager.EntitySysManager);
                 }
-
                 primitive.Operator.Initialize(_collection);
                 break;
             default:

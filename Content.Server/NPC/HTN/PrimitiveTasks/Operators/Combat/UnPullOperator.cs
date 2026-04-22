@@ -6,12 +6,20 @@ namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Combat;
 
 public sealed partial class UnPullOperator : HTNOperator
 {
+    [Dependency] private readonly IEntityManager _entManager = default!;
     [Dependency] private readonly PullingSystem _pulling = default!;
     [Dependency] private readonly ActionBlockerSystem _actionBlocker = default!;
-    [Dependency] private readonly EntityQuery<PullableComponent> _pullableQuery = default!;
+
+    private EntityQuery<PullableComponent> _pullableQuery;
 
     [DataField("shutdownState")]
     public HTNPlanState ShutdownState { get; private set; } = HTNPlanState.TaskFinished;
+
+    public override void Initialize(IDependencyCollection deps)
+    {
+        base.Initialize(deps);
+        _pullableQuery = _entManager.GetEntityQuery<PullableComponent>();
+    }
 
     public override void Startup(NPCBlackboard blackboard)
     {
