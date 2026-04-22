@@ -15,9 +15,11 @@ public sealed partial class UtilityOperator : HTNOperator
 {
     [Dependency] private readonly NPCUtilitySystem _npcUtilitySystem = default!;
 
-    [DataField] public string Key = "Target";
+    [DataField]
+    public string Key = "Target";
 
-    [DataField] public ReturnTypeResult ReturnType = ReturnTypeResult.Highest;
+    [DataField]
+    public ReturnTypeResult ReturnType = ReturnTypeResult.Highest;
 
     /// <summary>
     /// The EntityCoordinates of the specified target.

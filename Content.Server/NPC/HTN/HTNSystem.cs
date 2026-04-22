@@ -22,7 +22,6 @@ public sealed class HTNSystem : EntitySystem
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly NPCSystem _npc = default!;
     [Dependency] private readonly NPCUtilitySystem _utility = default!;
-
     [Dependency] private readonly IDependencyCollection _collection = default!;
 
     private readonly JobQueue _planQueue = new(0.004);

@@ -74,11 +74,11 @@ public sealed partial class MoveToOperator : HTNOperator, IHtnConditionalShutdow
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 
         if (!_entManager.TryGetComponent<TransformComponent>(owner, out var xform) ||
-            !_entManager.TryGetComponent<PhysicsComponent>(owner, out var body))
+            !_entManager.HasComponent<PhysicsComponent>(owner))
             return (false, null);
 
-        if (!_entManager.TryGetComponent<MapGridComponent>(xform.GridUid, out var ownerGrid) ||
-            !_entManager.TryGetComponent<MapGridComponent>(_transform.GetGrid(targetCoordinates), out var targetGrid))
+        if (!_entManager.HasComponent<MapGridComponent>(xform.GridUid) ||
+            !_entManager.HasComponent<MapGridComponent>(_transform.GetGrid(targetCoordinates)))
         {
             return (false, null);
         }

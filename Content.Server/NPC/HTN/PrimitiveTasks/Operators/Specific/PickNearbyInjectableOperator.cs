@@ -44,7 +44,7 @@ public sealed partial class PickNearbyInjectableOperator : HTNOperator
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 
-        if (!blackboard.TryGetValue<float>(RangeKey, out var range, _entManager))
+        if (!blackboard.TryGetValue<float>(RangeKey, out _, _entManager))
             return (false, null);
 
         if (!_entManager.TryGetComponent<MedibotComponent>(owner, out var medibot))
@@ -62,7 +62,7 @@ public sealed partial class PickNearbyInjectableOperator : HTNOperator
                 !_recentlyInjected.HasComponent(entity))
             {
                 // no treating dead bodies
-                if (!_medibot.TryGetTreatment(medibot, state.CurrentState, out var treatment))
+                if (!_medibot.TryGetTreatment(medibot, state.CurrentState, out _))
                     continue;
 
                 // Only go towards a target if the bot can actually help them or if the medibot is emagged

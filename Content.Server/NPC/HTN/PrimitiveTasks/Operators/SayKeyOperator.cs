@@ -6,7 +6,6 @@ namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators;
 public sealed partial class SayKeyOperator : HTNOperator
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
-
     [Dependency] private readonly ChatSystem _chat = default!;
 
     [DataField(required: true)]
