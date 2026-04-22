@@ -98,7 +98,7 @@ public sealed class HTNSystem : EntitySystem
 
             foreach (var precon in branch.Preconditions)
             {
-                precon.Initialize(EntityManager.EntitySysManager);
+                precon.Initialize(_collection);
             }
 
             foreach (var task in branch.Tasks)
@@ -118,7 +118,7 @@ public sealed class HTNSystem : EntitySystem
             case HTNPrimitiveTask primitive:
                 foreach (var precon in primitive.Preconditions)
                 {
-                    precon.Initialize(EntityManager.EntitySysManager);
+                    precon.Initialize(_collection);
                 }
                 primitive.Operator.Initialize(_collection);
                 break;

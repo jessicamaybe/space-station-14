@@ -6,7 +6,7 @@ namespace Content.Server.NPC.HTN.Preconditions;
 public sealed partial class TargetInLOSPrecondition : HTNPrecondition
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
-    private InteractionSystem _interaction = default!;
+    [Dependency] private readonly InteractionSystem _interaction = default!;
 
     [DataField("targetKey")]
     public string TargetKey = "Target";
@@ -16,12 +16,6 @@ public sealed partial class TargetInLOSPrecondition : HTNPrecondition
 
     [DataField("opaqueKey")]
     public bool UseOpaqueForLOSChecksKey = true;
-
-    public override void Initialize(IEntitySystemManager sysManager)
-    {
-        base.Initialize(sysManager);
-        _interaction = sysManager.GetEntitySystem<InteractionSystem>();
-    }
 
     public override bool IsMet(NPCBlackboard blackboard)
     {
