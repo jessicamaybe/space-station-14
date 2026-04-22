@@ -16,15 +16,14 @@ namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Specific;
 public sealed partial class PickNearbyInjectableOperator : HTNOperator
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
-    private MedibotSystem _medibot = default!;
-    private PathfindingSystem _pathfinding = default!;
-    private DamageableSystem _damageable = default!;
-
-    private EntityQuery<DamageableComponent> _damageQuery = default!;
-    private EntityQuery<InjectableSolutionComponent> _injectQuery = default!;
-    private EntityQuery<NPCRecentlyInjectedComponent> _recentlyInjected = default!;
-    private EntityQuery<MobStateComponent> _mobState = default!;
-    private EntityQuery<EmaggedComponent> _emaggedQuery = default!;
+    [Dependency] private readonly MedibotSystem _medibot = default!;
+    [Dependency] private readonly PathfindingSystem _pathfinding = default!;
+    [Dependency] private readonly DamageableSystem _damageable = default!;
+    [Dependency] private readonly EntityQuery<DamageableComponent> _damageQuery = default!;
+    [Dependency] private readonly EntityQuery<InjectableSolutionComponent> _injectQuery = default!;
+    [Dependency] private readonly EntityQuery<NPCRecentlyInjectedComponent> _recentlyInjected = default!;
+    [Dependency] private readonly EntityQuery<MobStateComponent> _mobState = default!;
+    [Dependency] private readonly EntityQuery<EmaggedComponent> _emaggedQuery = default!;
 
     [DataField("rangeKey")] public string RangeKey = NPCBlackboard.MedibotInjectRange;
 
@@ -39,20 +38,6 @@ public sealed partial class PickNearbyInjectableOperator : HTNOperator
     /// </summary>
     [DataField("targetMoveKey", required: true)]
     public string TargetMoveKey = string.Empty;
-
-    public override void Initialize(IEntitySystemManager sysManager)
-    {
-        base.Initialize(sysManager);
-        _medibot = sysManager.GetEntitySystem<MedibotSystem>();
-        _pathfinding = sysManager.GetEntitySystem<PathfindingSystem>();
-        _damageable = sysManager.GetEntitySystem<DamageableSystem>();
-
-        _damageQuery = _entManager.GetEntityQuery<DamageableComponent>();
-        _injectQuery = _entManager.GetEntityQuery<InjectableSolutionComponent>();
-        _recentlyInjected = _entManager.GetEntityQuery<NPCRecentlyInjectedComponent>();
-        _mobState = _entManager.GetEntityQuery<MobStateComponent>();
-        _emaggedQuery = _entManager.GetEntityQuery<EmaggedComponent>();
-    }
 
     public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
         CancellationToken cancelToken)

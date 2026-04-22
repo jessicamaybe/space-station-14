@@ -7,7 +7,7 @@ public sealed partial class SayKeyOperator : HTNOperator
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
 
-    private ChatSystem _chat = default!;
+    [Dependency] private readonly ChatSystem _chat = default!;
 
     [DataField(required: true)]
     public string Key = string.Empty;
@@ -17,13 +17,6 @@ public sealed partial class SayKeyOperator : HTNOperator
     /// </summary>
     [DataField]
     public bool Hidden;
-
-    public override void Initialize(IEntitySystemManager sysManager)
-    {
-        base.Initialize(sysManager);
-
-        _chat = sysManager.GetEntitySystem<ChatSystem>();
-    }
 
     public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
     {

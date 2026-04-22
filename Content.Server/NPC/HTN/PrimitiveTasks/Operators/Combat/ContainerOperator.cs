@@ -4,22 +4,14 @@ namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Combat;
 
 public sealed partial class ContainerOperator : HTNOperator
 {
-    [Dependency] private readonly IEntityManager _entManager = default!;
-    private ContainerSystem _container = default!;
-    private EntityQuery<TransformComponent> _transformQuery;
+    [Dependency] private readonly ContainerSystem _container = default!;
+    [Dependency] private readonly EntityQuery<TransformComponent> _transformQuery = default!;
 
     [DataField("shutdownState")]
     public HTNPlanState ShutdownState { get; private set; } = HTNPlanState.TaskFinished;
 
     [DataField("targetKey", required: true)]
     public string TargetKey = default!;
-
-    public override void Initialize(IEntitySystemManager sysManager)
-    {
-        base.Initialize(sysManager);
-        _container = sysManager.GetEntitySystem<ContainerSystem>();
-        _transformQuery = _entManager.GetEntityQuery<TransformComponent>();
-    }
 
     public override void Startup(NPCBlackboard blackboard)
     {

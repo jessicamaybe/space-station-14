@@ -8,13 +8,7 @@ namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Interactions;
 public sealed partial class InteractWithOperator : HTNOperator
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
-    private SharedDoAfterSystem _doAfterSystem = default!;
-
-    public override void Initialize(IEntitySystemManager sysManager)
-    {
-        base.Initialize(sysManager);
-        _doAfterSystem = sysManager.GetEntitySystem<SharedDoAfterSystem>();
-    }
+    [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
 
     /// <summary>
     /// Key that contains the target entity.
@@ -26,7 +20,7 @@ public sealed partial class InteractWithOperator : HTNOperator
     /// Exit with failure if doafter wasn't raised
     /// </summary>
     [DataField]
-    public bool ExpectDoAfter = false;
+    public bool ExpectDoAfter;
 
     public string CurrentDoAfter = "CurrentInteractWithDoAfter";
 
@@ -56,7 +50,7 @@ public sealed partial class InteractWithOperator : HTNOperator
             // if CurrentDoAfter contains something, we have an active doAfter
             if (blackboard.TryGetValue<ushort>(CurrentDoAfter, out var doAfterId, _entManager))
             {
-                var status = _doAfterSystem.GetStatus(owner, doAfterId, null);
+                var status = _doAfterSystem.GetStatus(owner, doAfterId);
                 return status switch
                 {
                     DoAfterStatus.Running => HTNOperatorStatus.Continuing,

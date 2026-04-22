@@ -23,6 +23,8 @@ public sealed class HTNSystem : EntitySystem
     [Dependency] private readonly NPCSystem _npc = default!;
     [Dependency] private readonly NPCUtilitySystem _utility = default!;
 
+    [Dependency] private readonly IDependencyCollection _collection = default!;
+
     private readonly JobQueue _planQueue = new(0.004);
 
     private readonly HashSet<ICommonSession> _subscribers = new();
@@ -120,7 +122,7 @@ public sealed class HTNSystem : EntitySystem
                     precon.Initialize(EntityManager.EntitySysManager);
                 }
 
-                primitive.Operator.Initialize(EntityManager.EntitySysManager);
+                primitive.Operator.Initialize(_collection);
                 break;
             default:
                 throw new NotImplementedException();
