@@ -60,6 +60,6 @@ public sealed partial class MeleeAttackOperator : HTNOperator
     private void ExitCombatMode(NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
-        _entManager.System<SharedCombatModeSystem>().SetInCombatMode(owner, false);
+        _combatModeSystem.SetInCombatMode(owner, false);
     }
 }
