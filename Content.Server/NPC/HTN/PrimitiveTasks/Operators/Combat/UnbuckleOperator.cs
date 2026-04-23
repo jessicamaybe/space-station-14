@@ -1,10 +1,10 @@
-using Content.Server.Buckle.Systems;
+using Content.Shared.Buckle;
 
 namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Combat;
 
 public sealed partial class UnbuckleOperator : HTNOperator
 {
-    [Dependency] private readonly BuckleSystem _buckle = default!;
+    [Dependency] private readonly SharedBuckleSystem _buckle = default!;
 
     [DataField("shutdownState")]
     public HTNPlanState ShutdownState { get; private set; } = HTNPlanState.TaskFinished;

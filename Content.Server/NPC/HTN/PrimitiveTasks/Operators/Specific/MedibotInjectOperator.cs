@@ -1,4 +1,3 @@
-using Content.Server.Chat.Systems;
 using Content.Shared.Chat;
 using Content.Shared.Silicons.Bots;
 
@@ -7,7 +6,7 @@ namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Specific;
 public sealed partial class MedibotInjectOperator : HTNOperator
 {
     [Dependency] private readonly IEntityManager _entMan = default!;
-    [Dependency] private readonly ChatSystem _chat = default!;
+    [Dependency] private readonly SharedChatSystem _chat = default!;
     [Dependency] private readonly MedibotSystem _medibot = default!;
 
     /// <summary>

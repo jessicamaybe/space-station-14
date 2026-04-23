@@ -1,4 +1,4 @@
-using Content.Server.Interaction;
+using Content.Shared.Interaction;
 using Content.Shared.Physics;
 
 namespace Content.Server.NPC.HTN.Preconditions;
@@ -6,7 +6,7 @@ namespace Content.Server.NPC.HTN.Preconditions;
 public sealed partial class TargetInLOSPrecondition : HTNPrecondition
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
-    [Dependency] private readonly InteractionSystem _interaction = default!;
+    [Dependency] private readonly SharedInteractionSystem _interaction = default!;
 
     [DataField("targetKey")]
     public string TargetKey = "Target";

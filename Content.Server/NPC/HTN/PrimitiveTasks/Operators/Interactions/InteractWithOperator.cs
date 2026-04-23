@@ -1,6 +1,6 @@
-using Content.Server.Interaction;
 using Content.Shared.CombatMode;
 using Content.Shared.DoAfter;
+using Content.Shared.Interaction;
 using Content.Shared.Timing;
 
 namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Interactions;
@@ -11,7 +11,7 @@ public sealed partial class InteractWithOperator : HTNOperator
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
     [Dependency] private readonly UseDelaySystem _useDelaySystem = default!;
     [Dependency] private readonly SharedCombatModeSystem _combatModeSystem = default!;
-    [Dependency] private readonly InteractionSystem _interactionSystem = default!;
+    [Dependency] private readonly SharedInteractionSystem _interactionSystem = default!;
 
     /// <summary>
     /// Key that contains the target entity.
