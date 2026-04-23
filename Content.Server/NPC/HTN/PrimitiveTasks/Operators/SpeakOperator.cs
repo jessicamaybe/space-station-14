@@ -1,4 +1,3 @@
-using Content.Server.Chat.Systems;
 using Robust.Shared.Timing;
 using Content.Shared.Chat;
 using Content.Shared.Dataset;
@@ -14,7 +13,7 @@ public sealed partial class SpeakOperator : HTNOperator
 {
     [Dependency] private readonly IEntityManager _entMan = default!;
     [Dependency] private readonly IGameTiming _gameTiming = default!;
-    [Dependency] private readonly ChatSystem _chat = default!;
+    [Dependency] private readonly SharedChatSystem _chat = default!;
     [Dependency] private readonly IPrototypeManager _proto = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
 
