@@ -1,13 +1,4 @@
 ﻿Entries:
-- author: MDuch369
-  changes:
-  - message: Added guidebook entry for gas recycler.
-    type: Add
-  - message: Gas recycler can now be rotated.
-    type: Fix
-  id: 9151
-  time: '2025-10-24T01:07:47.0000000+00:00'
-  url: https://github.com/space-wizards/space-station-14/pull/39212
 - author: Princess_Chzblz, AdmiralObvious, hyphenation, Is-A-Slark, beck
   changes:
   - message: PAIs will no longer get uplinks instead of traitors when a player is
@@ -4051,3 +4042,11 @@
   id: 9662
   time: '2026-04-24T10:07:05.0000000+00:00'
   url: https://github.com/space-wizards/space-station-14/pull/39044
+- author: zHonys
+  changes:
+  - message: Falling asleep while crit will no longer cause you to say whatever is
+      typed in your chatbox.
+    type: Fix
+  id: 9663
+  time: '2026-04-24T10:48:17.0000000+00:00'
+  url: https://github.com/space-wizards/space-station-14/pull/37572
