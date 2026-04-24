@@ -1,11 +1,4 @@
 ﻿Entries:
-- author: TheGrimbeeper
-  changes:
-  - message: Fix artifact radiation trigger not being triggered by ambient radiation.
-    type: Fix
-  id: 9154
-  time: '2025-10-24T09:21:26.0000000+00:00'
-  url: https://github.com/space-wizards/space-station-14/pull/41065
 - author: PicklOH
   changes:
   - message: Space Dragon and Carp are more heat resistant. Carp no longer take fire
@@ -4049,3 +4042,10 @@
   id: 9665
   time: '2026-04-24T15:57:58.0000000+00:00'
   url: https://github.com/space-wizards/space-station-14/pull/43380
+- author: Tuchila-Adi-Bogdan
+  changes:
+  - message: You can no longer eat with the radiation hood on.
+    type: Tweak
+  id: 9666
+  time: '2026-04-24T17:31:12.0000000+00:00'
+  url: https://github.com/space-wizards/space-station-14/pull/43699
