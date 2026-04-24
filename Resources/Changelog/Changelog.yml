@@ -1,11 +1,4 @@
 ﻿Entries:
-- author: Moomoobeef
-  changes:
-  - message: Fixed banana bread being missing from the guidebook.
-    type: Fix
-  id: 9148
-  time: '2025-10-23T07:00:24.0000000+00:00'
-  url: https://github.com/space-wizards/space-station-14/pull/41047
 - author: Absotively
   changes:
   - message: Minor hand labeler UI improvements
@@ -4051,3 +4044,11 @@
   id: 9659
   time: '2026-04-24T08:46:48.0000000+00:00'
   url: https://github.com/space-wizards/space-station-14/pull/43161
+- author: Nox38
+  changes:
+  - message: All military boots (jack, combat, merc) now have the 50% injury slowdown
+      resistance effect.
+    type: Tweak
+  id: 9660
+  time: '2026-04-24T09:01:35.0000000+00:00'
+  url: https://github.com/space-wizards/space-station-14/pull/35653
