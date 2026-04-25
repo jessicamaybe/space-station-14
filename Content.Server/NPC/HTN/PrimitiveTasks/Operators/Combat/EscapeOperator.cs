@@ -1,17 +1,17 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.NPC.Components;
-using Content.Server.Storage.EntitySystems;
 using Content.Shared.CombatMode;
-using Robust.Server.Containers;
+using Content.Shared.Storage.EntitySystems;
+using Robust.Shared.Containers;
 
 namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Combat;
 
 public sealed partial class EscapeOperator : HTNOperator, IHtnConditionalShutdown
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
-    [Dependency] private readonly ContainerSystem _container = default!;
-    [Dependency] private readonly EntityStorageSystem _entityStorage = default!;
+    [Dependency] private readonly SharedContainerSystem _container = default!;
+    [Dependency] private readonly SharedEntityStorageSystem _entityStorage = default!;
     [Dependency] private readonly SharedCombatModeSystem _combatModeSystem = default!;
 
     [DataField("shutdownState")]
