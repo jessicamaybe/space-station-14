@@ -26,7 +26,8 @@ public sealed partial class PickAccessibleOperator : HTNOperator
     public string PathfindKey = NPCBlackboard.PathfindKey;
 
     /// <inheritdoc/>
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         // Very inefficient (should weight each region by its node count) but better than the old system

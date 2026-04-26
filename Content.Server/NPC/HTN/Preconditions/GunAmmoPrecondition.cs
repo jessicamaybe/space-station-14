@@ -18,7 +18,7 @@ public sealed partial class GunAmmoPrecondition : HTNPrecondition
     [DataField]
     public float MaxPercent = 1f;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

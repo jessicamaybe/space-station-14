@@ -10,7 +10,7 @@ public sealed partial class UseItemInHandOperator : HTNOperator
     [Dependency] private readonly IEntityManager _entManager = default!;
     [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

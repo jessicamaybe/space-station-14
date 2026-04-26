@@ -13,7 +13,7 @@ public sealed partial class WaitOperator : HTNOperator
     [DataField("key", required: true)]
     public string Key = string.Empty;
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         if (!blackboard.TryGetValue<float>(Key, out var timer, _entManager))
         {

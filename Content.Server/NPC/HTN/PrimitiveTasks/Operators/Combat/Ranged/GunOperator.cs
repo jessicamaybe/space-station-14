@@ -42,7 +42,8 @@ public sealed partial class GunOperator : HTNOperator, IHtnConditionalShutdown
 
     // Like movement we add a component and pass it off to the dedicated system.
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         // Don't attack if they're already as wounded as we want them.
@@ -87,9 +88,9 @@ public sealed partial class GunOperator : HTNOperator, IHtnConditionalShutdown
         blackboard.Remove<EntityUid>(TargetKey);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
-        base.Update(blackboard, frameTime);
+        base.Update(ent, blackboard, frameTime);
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
         HTNOperatorStatus status;
 

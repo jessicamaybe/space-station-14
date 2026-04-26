@@ -13,7 +13,7 @@ public sealed partial class HasStatusEffectPrecondition : HTNPrecondition
     [DataField(required: true)]
     public EntProtoId StatusEffect;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

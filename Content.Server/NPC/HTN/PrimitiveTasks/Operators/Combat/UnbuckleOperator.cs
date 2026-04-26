@@ -16,7 +16,7 @@ public sealed partial class UnbuckleOperator : HTNOperator
         _buckle.TryUnbuckle(owner, owner, false);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         return HTNOperatorStatus.Finished;
     }

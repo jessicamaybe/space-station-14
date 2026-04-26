@@ -17,12 +17,15 @@ public sealed class HTNPlanJob : Job<HTNPlan>
 
     private IPrototypeManager _protoManager;
 
+    private Entity<HTNComponent> _ent;
+
     /// <summary>
     /// Branch traversal of an existing plan (if applicable).
     /// </summary>
     private List<int>? _branchTraversal;
 
     public HTNPlanJob(
+        Entity<HTNComponent> ent,
         double maxTime,
         IPrototypeManager protoManager,
         HTNTask rootTask,
@@ -30,6 +33,7 @@ public sealed class HTNPlanJob : Job<HTNPlan>
         List<int>? branchTraversal,
         CancellationToken cancellationToken = default) : base(maxTime, cancellationToken)
     {
+        _ent = ent;
         _protoManager = protoManager;
         _rootTask = rootTask;
         _blackboard = blackboard;
@@ -75,7 +79,7 @@ public sealed class HTNPlanJob : Job<HTNPlan>
                 case HTNCompoundTask compound:
                     await SuspendIfOutOfTime();
 
-                    if (TryFindSatisfiedMethod(compound, tasksToProcess, _blackboard, ref btrIndex))
+                    if (TryFindSatisfiedMethod(_ent, compound, tasksToProcess, _blackboard, ref btrIndex))
                     {
                         // Need to copy worldstate to roll it back
                         // Don't need to copy taskstoprocess as we can just clear it and set it to the compound task we roll back to.
@@ -102,7 +106,7 @@ public sealed class HTNPlanJob : Job<HTNPlan>
                     }
                     break;
                 case HTNPrimitiveTask primitive:
-                    if (await WaitAsyncTask(PrimitiveConditionMet(primitive, _blackboard, appliedStates)))
+                    if (await WaitAsyncTask(PrimitiveConditionMet(_ent, primitive, _blackboard, appliedStates)))
                     {
                         primitiveCount++;
                         finalPlan.Add(primitive);
@@ -126,19 +130,19 @@ public sealed class HTNPlanJob : Job<HTNPlan>
         return new HTNPlan(finalPlan, branchTraversalRecord, appliedStates);
     }
 
-    private async Task<bool> PrimitiveConditionMet(HTNPrimitiveTask primitive, NPCBlackboard blackboard, List<Dictionary<string, object>?> appliedStates)
+    private async Task<bool> PrimitiveConditionMet(Entity<HTNComponent> ent, HTNPrimitiveTask primitive, NPCBlackboard blackboard, List<Dictionary<string, object>?> appliedStates)
     {
         blackboard.ReadOnly = true;
 
         foreach (var con in primitive.Preconditions)
         {
-            if (con.IsMet(blackboard))
+            if (con.IsMet(ent, blackboard))
                 continue;
 
             return false;
         }
 
-        var (valid, effects) = await primitive.Operator.Plan(blackboard, Cancellation);
+        var (valid, effects) = await primitive.Operator.Plan(ent, blackboard, Cancellation);
 
         if (!valid)
             return false;
@@ -161,7 +165,7 @@ public sealed class HTNPlanJob : Job<HTNPlan>
     /// <summary>
     /// Goes through each compound task branch and tries to find an appropriate one.
     /// </summary>
-    private bool TryFindSatisfiedMethod(HTNCompoundTask compoundId, Stack<HTNTask> tasksToProcess, NPCBlackboard blackboard, ref int mtrIndex)
+    private bool TryFindSatisfiedMethod(Entity<HTNComponent> ent, HTNCompoundTask compoundId, Stack<HTNTask> tasksToProcess, NPCBlackboard blackboard, ref int mtrIndex)
     {
         var compound = _protoManager.Index<HTNCompoundPrototype>(compoundId.Task);
 
@@ -172,7 +176,7 @@ public sealed class HTNPlanJob : Job<HTNPlan>
 
             foreach (var con in branch.Preconditions)
             {
-                if (con.IsMet(blackboard))
+                if (con.IsMet(ent, blackboard))
                     continue;
 
                 isValid = false;

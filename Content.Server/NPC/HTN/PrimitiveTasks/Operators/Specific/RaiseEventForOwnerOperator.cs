@@ -22,7 +22,7 @@ public sealed partial class RaiseEventForOwnerOperator : HTNOperator
     [DataField(required: true)]
     public EntityEventArgs Args;
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         _entMan.EventBus.RaiseLocalEvent(
             blackboard.GetValue<EntityUid>(NPCBlackboard.Owner),

@@ -63,7 +63,8 @@ public sealed partial class MoveToOperator : HTNOperator, IHtnConditionalShutdow
 
     private const string MovementCancelToken = "MovementCancelToken";
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         if (!blackboard.TryGetValue<EntityCoordinates>(TargetKey, out var targetCoordinates, _entManager))
@@ -71,10 +72,8 @@ public sealed partial class MoveToOperator : HTNOperator, IHtnConditionalShutdow
             return (false, null);
         }
 
-        var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
-
-        if (!_entManager.TryGetComponent<TransformComponent>(owner, out var xform) ||
-            !_entManager.HasComponent<PhysicsComponent>(owner))
+        if (!_entManager.TryGetComponent<TransformComponent>(ent, out var xform) ||
+            !_entManager.HasComponent<PhysicsComponent>(ent))
             return (false, null);
 
         if (!_entManager.HasComponent<MapGridComponent>(xform.GridUid) ||
@@ -155,7 +154,7 @@ public sealed partial class MoveToOperator : HTNOperator, IHtnConditionalShutdow
         }
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

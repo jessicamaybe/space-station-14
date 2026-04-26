@@ -18,7 +18,7 @@ public sealed partial class EnsureComponentOperator : HTNOperator
     [DataField]
     public ComponentRegistry Components = new();
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         if (!blackboard.TryGetValue<EntityUid>(TargetKey, out var target, _entMan))
             return HTNOperatorStatus.Failed;

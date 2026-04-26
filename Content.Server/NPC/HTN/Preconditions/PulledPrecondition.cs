@@ -12,7 +12,7 @@ public sealed partial class PulledPrecondition : HTNPrecondition
     [ViewVariables(VVAccess.ReadWrite)] [DataField("isPulled")]
     public bool IsPulled = true;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

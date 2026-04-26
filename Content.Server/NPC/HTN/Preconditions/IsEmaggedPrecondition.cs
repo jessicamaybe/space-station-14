@@ -17,7 +17,7 @@ public sealed partial class IsEmaggedPrecondition : HTNPrecondition
     [DataField]
     public EmagType EmagType = EmagType.Interaction;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
         return _emag.CheckFlag(owner, EmagType);

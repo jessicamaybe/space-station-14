@@ -14,7 +14,9 @@ public sealed partial class SwapToFreeHandOperator : HTNOperator
     [Dependency] private readonly IEntityManager _entManager = default!;
     [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard, CancellationToken cancelToken)
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
+        CancellationToken cancelToken)
     {
         if (!blackboard.TryGetValue<List<string>>(NPCBlackboard.FreeHands, out var hands, _entManager) ||
             !_entManager.TryGetComponent<HandsComponent>(blackboard.GetValue<EntityUid>(NPCBlackboard.Owner), out var handsComp))
@@ -38,7 +40,7 @@ public sealed partial class SwapToFreeHandOperator : HTNOperator
         return (false, null);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         // TODO: Need interaction cooldown
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);

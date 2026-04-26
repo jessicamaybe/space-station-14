@@ -23,7 +23,7 @@ public sealed partial class RotateToTargetOperator : HTNOperator
         blackboard.Remove<Angle>(TargetKey);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         if (!blackboard.TryGetValue<Angle>(TargetKey, out var rotateTarget, _entityManager))
         {

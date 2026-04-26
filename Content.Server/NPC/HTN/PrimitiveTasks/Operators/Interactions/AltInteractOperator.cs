@@ -21,7 +21,9 @@ public sealed partial class AltInteractOperator : HTNOperator
     [DataField("idleKey")]
     public string IdleKey = "IdleTime";
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard, CancellationToken cancelToken)
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
+        CancellationToken cancelToken)
     {
         return new(true,
             new Dictionary<string, object>()
@@ -30,7 +32,7 @@ public sealed partial class AltInteractOperator : HTNOperator
         });
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
         var target = blackboard.GetValue<EntityUid>(Key);

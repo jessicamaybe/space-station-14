@@ -43,7 +43,8 @@ public sealed partial class MeleeOperator : HTNOperator, IHtnConditionalShutdown
         melee.Target = blackboard.GetValue<EntityUid>(TargetKey);
     }
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         // Don't attack if they're already as wounded as we want them.
@@ -82,9 +83,9 @@ public sealed partial class MeleeOperator : HTNOperator, IHtnConditionalShutdown
         ConditionalShutdown(blackboard);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
-        base.Update(blackboard, frameTime);
+        base.Update(ent, blackboard, frameTime);
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
         HTNOperatorStatus status;
 

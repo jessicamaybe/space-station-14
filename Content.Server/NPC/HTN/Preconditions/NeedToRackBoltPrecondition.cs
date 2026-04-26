@@ -14,7 +14,7 @@ public sealed partial class NeedToRackBoltPrecondition : HTNPrecondition
     [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
     [Dependency] private readonly SharedGunSystem _gunSystem = default!;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

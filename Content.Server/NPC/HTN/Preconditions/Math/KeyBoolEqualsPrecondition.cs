@@ -14,7 +14,7 @@ public sealed partial class KeyBoolEqualsPrecondition : HTNPrecondition
     [DataField(required: true), ViewVariables(VVAccess.ReadWrite)]
     public bool Value;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         if (!blackboard.TryGetValue<bool>(Key, out var value, _entManager))
             return false;

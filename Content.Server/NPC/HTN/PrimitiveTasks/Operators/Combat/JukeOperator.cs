@@ -19,7 +19,7 @@ public sealed partial class JukeOperator : HTNOperator, IHtnConditionalShutdown
         juke.JukeType = JukeType;
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         return HTNOperatorStatus.Finished;
     }

@@ -62,7 +62,7 @@ public sealed class HTNSystem : EntitySystem
         // Clear all NPCs in case they're hanging onto stale tasks
         var query = AllEntityQuery<HTNComponent>();
 
-        while (query.MoveNext(out var comp))
+        while (query.MoveNext(out var owner, out var comp))
         {
             comp.PlanningToken?.Cancel();
             comp.PlanningToken = null;
@@ -73,7 +73,7 @@ public sealed class HTNSystem : EntitySystem
                 ShutdownTask(currentOperator, comp.Blackboard, HTNOperatorStatus.Failed);
                 ShutdownPlan(comp);
                 comp.Plan = null;
-                RequestPlan(comp);
+                RequestPlan((owner, comp));
             }
         }
 
@@ -164,7 +164,7 @@ public sealed class HTNSystem : EntitySystem
         }
 
         if (ent.Comp.Enabled && ent.Comp.PlanAccumulator <= 0)
-            RequestPlan(ent.Comp);
+            RequestPlan(ent);
     }
 
     /// <summary>
@@ -286,7 +286,7 @@ public sealed class HTNSystem : EntitySystem
                 comp.PlanningToken = null;
             }
 
-            Update(comp, frameTime);
+            Update((uid, comp), frameTime);
             count++;
             updates++;
         }
@@ -340,35 +340,35 @@ public sealed class HTNSystem : EntitySystem
         throw new NotImplementedException();
     }
 
-    private void Update(HTNComponent component, float frameTime)
+    private void Update(Entity<HTNComponent> ent, float frameTime)
     {
         // If we're not planning then countdown to next one.
-        if (component.PlanningJob == null)
-            component.PlanAccumulator -= frameTime;
+        if (ent.Comp.PlanningJob == null)
+            ent.Comp.PlanAccumulator -= frameTime;
 
         // We'll still try re-planning occasionally even when we're updating in case new data comes in.
-        if ((component.ConstantlyReplan || component.Plan is null) && component.PlanAccumulator <= 0f)
+        if ((ent.Comp.ConstantlyReplan || ent.Comp.Plan is null) && ent.Comp.PlanAccumulator <= 0f)
         {
-            RequestPlan(component);
+            RequestPlan(ent);
         }
 
         // Getting a new plan so do nothing.
-        if (component.Plan == null)
+        if (ent.Comp.Plan == null)
             return;
 
         // Run the existing plan still
         var status = HTNOperatorStatus.Finished;
 
         // Continuously run operators until we can't anymore.
-        while (status != HTNOperatorStatus.Continuing && component.Plan != null)
+        while (status != HTNOperatorStatus.Continuing && ent.Comp.Plan != null)
         {
             // Run the existing operator
-            var currentOperator = component.Plan.CurrentOperator;
-            var currentTask = component.Plan.CurrentTask;
-            var blackboard = component.Blackboard;
+            var currentOperator = ent.Comp.Plan.CurrentOperator;
+            var currentTask = ent.Comp.Plan.CurrentTask;
+            var blackboard = ent.Comp.Blackboard;
 
             // Service still on cooldown.
-            if (component.CheckServices)
+            if (ent.Comp.CheckServices)
             {
                 foreach (var service in currentTask.Services)
                 {
@@ -376,10 +376,10 @@ public sealed class HTNSystem : EntitySystem
                     blackboard.SetValue(service.Key, serviceResult.GetHighest());
                 }
 
-                component.CheckServices = false;
+                ent.Comp.CheckServices = false;
             }
 
-            status = currentOperator.Update(blackboard, frameTime);
+            status = currentOperator.Update(ent, blackboard, frameTime);
 
             switch (status)
             {
@@ -387,22 +387,22 @@ public sealed class HTNSystem : EntitySystem
                     break;
                 case HTNOperatorStatus.Failed:
                     ShutdownTask(currentOperator, blackboard, status);
-                    ShutdownPlan(component);
+                    ShutdownPlan(ent.Comp);
                     break;
                 // Operator completed so go to the next one.
                 case HTNOperatorStatus.Finished:
                     ShutdownTask(currentOperator, blackboard, status);
-                    component.Plan.Index++;
+                    ent.Comp.Plan.Index++;
 
                     // Plan finished!
-                    if (component.Plan.Tasks.Count <= component.Plan.Index)
+                    if (ent.Comp.Plan.Tasks.Count <= ent.Comp.Plan.Index)
                     {
-                        ShutdownPlan(component);
+                        ShutdownPlan(ent.Comp);
                         break;
                     }
 
-                    ConditionalShutdown(component.Plan, currentOperator, blackboard, HTNPlanState.TaskFinished);
-                    StartupTask(component.Plan.Tasks[component.Plan.Index], component.Blackboard, component.Plan.Effects[component.Plan.Index]);
+                    ConditionalShutdown(ent.Comp.Plan, currentOperator, blackboard, HTNPlanState.TaskFinished);
+                    StartupTask(ent.Comp.Plan.Tasks[ent.Comp.Plan.Index], ent.Comp.Blackboard, ent.Comp.Plan.Effects[ent.Comp.Plan.Index]);
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -476,24 +476,25 @@ public sealed class HTNSystem : EntitySystem
     /// Request a new plan for this component, even if running an existing plan.
     /// </summary>
     /// <param name="component"></param>
-    private void RequestPlan(HTNComponent component)
+    private void RequestPlan(Entity<HTNComponent> ent)
     {
-        if (component.PlanningJob != null)
+        if (ent.Comp.PlanningJob != null)
             return;
 
-        component.PlanAccumulator = component.PlanCooldown;
+        ent.Comp.PlanAccumulator = ent.Comp.PlanCooldown;
         var cancelToken = new CancellationTokenSource();
-        var branchTraversal = component.Plan?.BranchTraversalRecord;
+        var branchTraversal = ent.Comp.Plan?.BranchTraversalRecord;
 
         var job = new HTNPlanJob(
+            ent,
             0.02,
             _prototypeManager,
-            component.RootTask,
-            component.Blackboard.ShallowClone(), branchTraversal, cancelToken.Token);
+            ent.Comp.RootTask,
+            ent.Comp.Blackboard.ShallowClone(), branchTraversal, cancelToken.Token);
 
         _planQueue.EnqueueJob(job);
-        component.PlanningJob = job;
-        component.PlanningToken = cancelToken;
+        ent.Comp.PlanningJob = job;
+        ent.Comp.PlanningToken = cancelToken;
     }
 
     public string GetDomain(HTNCompoundTask compound)

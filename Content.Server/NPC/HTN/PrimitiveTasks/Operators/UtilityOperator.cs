@@ -30,7 +30,8 @@ public sealed partial class UtilityOperator : HTNOperator
     [DataField("proto", required: true, customTypeSerializer:typeof(PrototypeIdSerializer<UtilityQueryPrototype>))]
     public string Prototype = string.Empty;
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         var result = _npcUtilitySystem.GetEntities(blackboard, Prototype);

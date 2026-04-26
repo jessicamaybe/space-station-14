@@ -21,7 +21,7 @@ public sealed partial class WieldedPrecondition : HTNPrecondition
     [DataField]
     public bool Wielded = true;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

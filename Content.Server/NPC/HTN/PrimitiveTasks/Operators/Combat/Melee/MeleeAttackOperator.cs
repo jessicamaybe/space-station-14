@@ -35,7 +35,7 @@ public sealed partial class MeleeAttackOperator : HTNOperator
         ExitCombatMode(blackboard);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

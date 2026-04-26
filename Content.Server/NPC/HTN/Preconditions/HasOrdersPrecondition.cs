@@ -6,7 +6,7 @@ public sealed partial class HasOrdersPrecondition : HTNPrecondition
 
     [DataField("orders", required: true)] public Enum Orders = default!;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         return Equals(blackboard.GetValueOrDefault<Enum>(NPCBlackboard.CurrentOrders, _entManager), Orders);
     }

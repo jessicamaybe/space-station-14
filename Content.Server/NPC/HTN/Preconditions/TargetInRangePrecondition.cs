@@ -18,7 +18,7 @@ public sealed partial class TargetInRangePrecondition : HTNPrecondition
     [DataField]
     public bool Invert;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         if (!blackboard.TryGetValue<EntityCoordinates>(NPCBlackboard.OwnerCoordinates, out var coordinates, _entManager))
             return false;

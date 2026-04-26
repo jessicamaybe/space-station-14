@@ -15,7 +15,8 @@ public sealed partial class SetBoolOperator : HTNOperator
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public bool Value;
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         return (

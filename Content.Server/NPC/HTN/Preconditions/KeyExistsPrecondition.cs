@@ -9,7 +9,7 @@ public sealed partial class KeyExistsPrecondition : HTNPrecondition
     [DataField(required: true), ViewVariables]
     public string Key = string.Empty;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         return blackboard.ContainsKey(Key);
     }

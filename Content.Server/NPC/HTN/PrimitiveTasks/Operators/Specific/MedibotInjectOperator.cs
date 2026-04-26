@@ -21,7 +21,7 @@ public sealed partial class MedibotInjectOperator : HTNOperator
         blackboard.Remove<EntityUid>(TargetKey);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         // TODO: Wat
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);

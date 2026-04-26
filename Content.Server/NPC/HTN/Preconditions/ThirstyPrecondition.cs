@@ -14,7 +14,7 @@ public sealed partial class ThirstyPrecondition : HTNPrecondition
     [DataField(required: true)]
     public ThirstThreshold MinThirstState = ThirstThreshold.Parched;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         if (!blackboard.TryGetValue<EntityUid>(NPCBlackboard.Owner, out var owner, _entManager))
         {

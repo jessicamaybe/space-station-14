@@ -21,11 +21,13 @@ public abstract partial class HTNOperator
     /// <summary>
     /// Called during planning.
     /// </summary>
+    /// <param name="ent"></param>
     /// <param name="blackboard">The blackboard for the NPC.</param>
     /// <param name="cancelToken"></param>
     /// <returns>Whether the plan is still valid and the effects to apply to the blackboard.
     /// These get re-applied during execution and are up to the operator to use or discard.</returns>
-    public virtual async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public virtual async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         return (true, null);
@@ -35,7 +37,7 @@ public abstract partial class HTNOperator
     /// Called during the NPC's regular updates. If the logic requires coordination between NPCs (e.g. steering or combat)
     /// this may be better off using a component and letting an external system handling it.
     /// </summary>
-    public virtual HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public virtual HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         return HTNOperatorStatus.Finished;
     }

@@ -17,5 +17,5 @@ public abstract partial class HTNPrecondition
     /// <summary>
     /// Has this precondition been met for planning purposes?
     /// </summary>
-    public abstract bool IsMet(NPCBlackboard blackboard);
+    public abstract bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard);
 }

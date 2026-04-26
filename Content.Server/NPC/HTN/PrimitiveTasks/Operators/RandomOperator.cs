@@ -27,7 +27,8 @@ public sealed partial class RandomOperator : HTNOperator
     [DataField("maxKey", required: true)]
     public string MaxKey = string.Empty;
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         return (true, new Dictionary<string, object>()

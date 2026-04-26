@@ -14,7 +14,7 @@ public sealed partial class KeyFloatLessPrecondition : HTNPrecondition
     [DataField(required: true), ViewVariables(VVAccess.ReadWrite)]
     public float Value;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         return blackboard.TryGetValue<float>(Key, out var value, _entManager) && value < Value;
     }

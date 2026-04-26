@@ -17,7 +17,7 @@ public sealed partial class ActiveHandComponentPrecondition : HTNPrecondition
     [DataField("components", required: true)]
     public ComponentRegistry Components = new();
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         if (!blackboard.TryGetValue<EntityUid>(NPCBlackboard.Owner, out var owner, _entManager) ||
             !blackboard.TryGetValue<string>(NPCBlackboard.ActiveHand, out var hand, _entManager))

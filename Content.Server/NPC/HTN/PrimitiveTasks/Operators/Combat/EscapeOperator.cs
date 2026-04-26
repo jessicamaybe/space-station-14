@@ -37,7 +37,8 @@ public sealed partial class EscapeOperator : HTNOperator, IHtnConditionalShutdow
         melee.Target = target;
     }
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
@@ -81,9 +82,9 @@ public sealed partial class EscapeOperator : HTNOperator, IHtnConditionalShutdow
         ConditionalShutdown(blackboard);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
-        base.Update(blackboard, frameTime);
+        base.Update(ent, blackboard, frameTime);
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
         HTNOperatorStatus status;
 

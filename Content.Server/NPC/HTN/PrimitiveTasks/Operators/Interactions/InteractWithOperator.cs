@@ -42,7 +42,7 @@ public sealed partial class InteractWithOperator : HTNOperator
         blackboard.Remove<ushort>(CurrentDoAfter);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

@@ -33,7 +33,8 @@ public sealed partial class PickAccessibleComponentOperator : HTNOperator
     public string PathfindKey = NPCBlackboard.PathfindKey;
 
     /// <inheritdoc/>
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         // Check if the component exists

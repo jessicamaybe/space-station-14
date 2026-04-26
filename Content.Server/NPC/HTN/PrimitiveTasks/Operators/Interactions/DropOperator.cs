@@ -10,7 +10,7 @@ public sealed partial class DropOperator : HTNOperator
     [Dependency] private readonly IEntityManager _entManager = default!;
     [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         if (!blackboard.TryGetValue(NPCBlackboard.ActiveHand, out string? _, _entManager))
         {

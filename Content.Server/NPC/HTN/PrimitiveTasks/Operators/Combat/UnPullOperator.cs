@@ -30,7 +30,7 @@ public sealed partial class UnPullOperator : HTNOperator
             _pulling.TryStopPull(owner, _pullableQuery.GetComponent(owner), owner);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         return HTNOperatorStatus.Finished;
     }

@@ -16,7 +16,7 @@ public sealed partial class SayKeyOperator : HTNOperator
     [DataField]
     public bool Hidden;
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         if (!blackboard.TryGetValue<object>(Key, out var value, _entManager))
             return HTNOperatorStatus.Failed;
@@ -28,6 +28,6 @@ public sealed partial class SayKeyOperator : HTNOperator
         var speaker = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
         _chat.TrySendInGameICMessage(speaker, @string, InGameICChatType.Speak, hideChat: Hidden, hideLog: Hidden);
 
-        return base.Update(blackboard, frameTime);
+        return base.Update(ent, blackboard, frameTime);
     }
 }

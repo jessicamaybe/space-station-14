@@ -10,12 +10,12 @@ public sealed partial class PlaySoundOperator : HTNOperator
     [DataField(required: true)]
     public SoundSpecifier? Sound;
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         var uid = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 
         _audio.PlayPvs(Sound, uid);
 
-        return base.Update(blackboard, frameTime);
+        return base.Update(ent, blackboard, frameTime);
     }
 }

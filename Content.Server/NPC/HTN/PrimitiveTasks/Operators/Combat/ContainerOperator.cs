@@ -33,7 +33,7 @@ public sealed partial class ContainerOperator : HTNOperator
         blackboard.SetValue(TargetKey, target);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         return HTNOperatorStatus.Finished;
     }

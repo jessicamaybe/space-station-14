@@ -16,7 +16,7 @@ public sealed partial class CoordinatesInRangePrecondition : HTNPrecondition
     [DataField("rangeKey", required: true)]
     public string RangeKey = default!;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         if (!blackboard.TryGetValue<EntityCoordinates>(NPCBlackboard.OwnerCoordinates, out var coordinates, _entManager))
             return false;

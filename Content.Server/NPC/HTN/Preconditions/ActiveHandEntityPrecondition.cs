@@ -10,7 +10,7 @@ public sealed partial class ActiveHandEntityPrecondition : HTNPrecondition
     [Dependency] private readonly IEntityManager _entManager = default!;
     [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         if (!blackboard.TryGetValue(NPCBlackboard.Owner, out EntityUid owner, _entManager) ||
             !blackboard.TryGetValue(NPCBlackboard.ActiveHand, out string? activeHand, _entManager))

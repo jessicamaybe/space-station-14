@@ -38,12 +38,12 @@ public sealed partial class SpeakOperator : HTNOperator
     [DataField]
     public string CooldownID = string.Empty;
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         if (Cooldown != TimeSpan.Zero && CooldownID != string.Empty)
         {
             if (blackboard.TryGetValue<TimeSpan>(CooldownID, out var nextSpeechTime, _entMan) && _gameTiming.CurTime < nextSpeechTime)
-                return base.Update(blackboard, frameTime);
+                return base.Update(ent, blackboard, frameTime);
 
             blackboard.SetValue(CooldownID, _gameTiming.CurTime + Cooldown);
         }
@@ -72,7 +72,7 @@ public sealed partial class SpeakOperator : HTNOperator
             hideLog: Hidden
         );
 
-        return base.Update(blackboard, frameTime);
+        return base.Update(ent, blackboard, frameTime);
     }
 
     [ImplicitDataDefinitionForInheritors, MeansImplicitUse]

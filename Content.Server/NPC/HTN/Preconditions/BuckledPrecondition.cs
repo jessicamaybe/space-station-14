@@ -12,7 +12,7 @@ public sealed partial class BuckledPrecondition : HTNPrecondition
     [ViewVariables(VVAccess.ReadWrite)] [DataField("isBuckled")]
     public bool IsBuckled = true;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

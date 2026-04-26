@@ -27,7 +27,7 @@ public sealed partial class DisposalInsertOperator : HTNOperator
         blackboard.Remove<EntityUid>(DisposalTargetKey);
     }
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

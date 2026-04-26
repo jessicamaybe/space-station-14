@@ -22,7 +22,8 @@ public sealed partial class SetRandomFloatOperator : HTNOperator
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public float MinAmount;
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         return (

@@ -17,7 +17,7 @@ public sealed partial class TargetInLOSPrecondition : HTNPrecondition
     [DataField("opaqueKey")]
     public bool UseOpaqueForLOSChecksKey = true;
 
-    public override bool IsMet(NPCBlackboard blackboard)
+    public override bool IsMet(Entity<HTNComponent> ent, NPCBlackboard blackboard)
     {
         var owner = blackboard.GetValue<EntityUid>(NPCBlackboard.Owner);
 

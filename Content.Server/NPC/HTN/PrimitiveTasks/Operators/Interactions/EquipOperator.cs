@@ -10,7 +10,7 @@ public sealed partial class EquipOperator : HTNOperator
     [DataField("target")]
     public string Target = "Target";
 
-    public override HTNOperatorStatus Update(NPCBlackboard blackboard, float frameTime)
+    public override HTNOperatorStatus Update(Entity<HTNComponent> ent, NPCBlackboard blackboard, float frameTime)
     {
         if (!blackboard.TryGetValue<EntityUid>(Target, out var target, _entManager))
         {

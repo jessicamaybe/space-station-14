@@ -11,7 +11,8 @@ public sealed partial class PickRandomRotationOperator : HTNOperator
     [DataField("targetKey")]
     public string TargetKey = "RotateTarget";
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         var rotation = _random.NextAngle();

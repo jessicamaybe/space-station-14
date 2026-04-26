@@ -15,7 +15,8 @@ public sealed partial class SetFloatOperator : HTNOperator
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public float Amount;
 
-    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(NPCBlackboard blackboard,
+    public override async Task<(bool Valid, Dictionary<string, object>? Effects)> Plan(Entity<HTNComponent> ent,
+        NPCBlackboard blackboard,
         CancellationToken cancelToken)
     {
         return (
