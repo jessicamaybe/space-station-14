@@ -489,8 +489,7 @@ public sealed class HTNSystem : EntitySystem
             ent,
             0.02,
             _prototypeManager,
-            ent.Comp.RootTask,
-            ent.Comp.Blackboard.ShallowClone(), branchTraversal, cancelToken.Token);
+            ent.Comp.RootTask, branchTraversal, cancelToken.Token);
 
         _planQueue.EnqueueJob(job);
         ent.Comp.PlanningJob = job;
