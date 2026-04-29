@@ -8,12 +8,11 @@ using Content.Shared.Popups;
 
 namespace Content.Server.Objectives.Systems;
 
-public sealed partial class DoorJackObjectiveCondition : EntitySystem
+public sealed partial class DoorJackObjectiveConditionSystem : EntitySystem
 {
     [Dependency] private readonly SharedPopupSystem _popupSystem = default!;
     [Dependency] private readonly SharedMindSystem _mind = default!;
     [Dependency] private readonly CounterConditionSystem _counterCondition = default!;
-
 
     public override void Initialize()
     {
