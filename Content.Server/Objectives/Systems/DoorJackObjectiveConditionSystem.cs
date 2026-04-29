@@ -8,7 +8,7 @@ using Content.Shared.Popups;
 
 namespace Content.Server.Objectives.Systems;
 
-public sealed partial class DoorJackObjectiveConditionSystem : EntitySystem
+public sealed class DoorJackObjectiveConditionSystem : EntitySystem
 {
     [Dependency] private readonly SharedPopupSystem _popupSystem = default!;
     [Dependency] private readonly SharedMindSystem _mind = default!;
