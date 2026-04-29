@@ -26,7 +26,7 @@ public sealed class DoorJackObjectiveConditionSystem : EntitySystem
         if (!HasComp<DoorComponent>(args.Target))
             return;
 
-        if (!_mind.TryGetMind(uid, out _, out var mind))
+        if (!_mind.TryGetMind(uid, out var mindUid, out var mind))
             return;
 
         // this popup is serverside since door emag logic is serverside (power funnies)
@@ -36,12 +36,9 @@ public sealed class DoorJackObjectiveConditionSystem : EntitySystem
             uid,
             PopupType.Medium);
 
-        foreach (var obj in mind.Objectives)
+        foreach (var obj in _mind.EnumerateObjectives<DoorjackConditionComponent>((mindUid, mind)))
         {
-            if (HasComp<DoorjackConditionComponent>(obj))
-            {
                 _counterCondition.IncreaseCount(obj);
-            }
         }
     }
 }
