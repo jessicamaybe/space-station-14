@@ -12,6 +12,7 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
             RobustXamlLoader.Load(this);
 
             Title.Text = name;
+            RoleType.Text = "Free Agent";
             Description.SetMessage(description);
         }
     }

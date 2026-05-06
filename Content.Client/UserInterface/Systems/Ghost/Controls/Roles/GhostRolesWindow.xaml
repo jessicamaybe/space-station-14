@@ -13,4 +13,8 @@
             <!-- Ghost role entries are added here by code -->
         </BoxContainer>
     </ScrollContainer>
+
+    <PanelContainer>
+        <TextureButton Name="Help" StyleClasses="HelpButton" SetSize="21 21" ToolTip="these the rules" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+    </PanelContainer>
 </DefaultWindow>
