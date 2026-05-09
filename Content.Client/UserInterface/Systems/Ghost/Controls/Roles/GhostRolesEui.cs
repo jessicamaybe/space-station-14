@@ -101,8 +101,7 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
                     role.Rules,
                     //  Check the prototypes for role requirements and bans
                     requirementsManager.IsAllowed(role.RolePrototypes.Item1, role.RolePrototypes.Item2, null, out var reason),
-                    reason,
-                    role.RoleType));
+                    reason));
 
             // Add a new entry for each role group
             foreach (var group in groupedRoles)
@@ -111,10 +110,10 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
                 var name = group.Key.Name;
                 var description = group.Key.Description;
                 var prototypesAllowed = group.Key.Item4;
-                var roleType = group.Key.Item6;
+                var rules = group.Key.Item3;
 
                 // Adding a new role
-                _window.AddEntry(name, description, roleType, prototypesAllowed, reason, group, spriteSystem);
+                _window.AddEntry(name, description, rules, prototypesAllowed, reason, group, spriteSystem);
             }
 
             // Restore the Collapsible box state if it is saved

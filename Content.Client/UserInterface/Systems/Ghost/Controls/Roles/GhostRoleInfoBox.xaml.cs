@@ -8,13 +8,13 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
     [GenerateTypedNameReferences]
     public sealed partial class GhostRoleInfoBox : BoxContainer
     {
-        public GhostRoleInfoBox(string name, string description, string roleType)
+        public GhostRoleInfoBox(string name, string description, string rules)
         {
             RobustXamlLoader.Load(this);
 
             Title.Text = name;
-            Log.Debug("type: " + roleType);
-            RoleType.SetMessage(FormattedMessage.FromMarkupPermissive(roleType));
+            Log.Debug("type: " + rules);
+            RoleType.SetMessage(FormattedMessage.FromMarkupPermissive(rules));
             Description.SetMessage(description);
         }
     }
