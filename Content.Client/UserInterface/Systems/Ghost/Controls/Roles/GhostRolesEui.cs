@@ -5,12 +5,15 @@ using Content.Shared.Eui;
 using Content.Shared.Ghost.Roles;
 using JetBrains.Annotations;
 using Robust.Client.GameObjects;
+using Robust.Shared.Prototypes;
 
 namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
 {
     [UsedImplicitly]
-    public sealed class GhostRolesEui : BaseEui
+    public sealed partial class GhostRolesEui : BaseEui
     {
+        [Dependency] private IPrototypeManager _prototype = default!;
+
         private readonly GhostRolesWindow _window;
         private GhostRoleRulesWindow? _windowRules = null;
         private uint _windowRulesId = 0;
@@ -95,9 +98,11 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
                 role => (
                     role.Name,
                     role.Description,
+                    role.Rules,
                     //  Check the prototypes for role requirements and bans
                     requirementsManager.IsAllowed(role.RolePrototypes.Item1, role.RolePrototypes.Item2, null, out var reason),
-                    reason));
+                    reason,
+                    role.RoleType));
 
             // Add a new entry for each role group
             foreach (var group in groupedRoles)
@@ -105,10 +110,11 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
                 var reason = group.Key.reason;
                 var name = group.Key.Name;
                 var description = group.Key.Description;
-                var prototypesAllowed = group.Key.Item3;
+                var prototypesAllowed = group.Key.Item4;
+                var roleType = group.Key.Item6;
 
                 // Adding a new role
-                _window.AddEntry(name, description, prototypesAllowed, reason, group, spriteSystem);
+                _window.AddEntry(name, description, roleType, prototypesAllowed, reason, group, spriteSystem);
             }
 
             // Restore the Collapsible box state if it is saved

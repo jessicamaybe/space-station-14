@@ -50,14 +50,14 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
             }
         }
 
-        public void AddEntry(string name, string description, bool hasAccess, FormattedMessage? reason, IEnumerable<GhostRoleInfo> roles, SpriteSystem spriteSystem)
+        public void AddEntry(string name, string description, string roleType, bool hasAccess, FormattedMessage? reason, IEnumerable<GhostRoleInfo> roles, SpriteSystem spriteSystem)
         {
             NoRolesMessage.Visible = false;
 
             var ghostRoleInfos = roles.ToList();
             var rolesCount = ghostRoleInfos.Count;
 
-            var info = new GhostRoleInfoBox(name, description);
+            var info = new GhostRoleInfoBox(name, description, roleType);
             var buttons = new GhostRoleButtonsBox(hasAccess, reason, ghostRoleInfos, spriteSystem);
             buttons.OnRoleSelected += OnRoleRequestButtonClicked;
             buttons.OnRoleFollow += OnRoleFollow;

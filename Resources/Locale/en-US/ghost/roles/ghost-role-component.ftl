@@ -29,6 +29,8 @@ ghost-role-information-silicon-rules = You are a [color={role-type-silicon-color
                                        You are allowed to remember knowledge about the game in general, such as how to cook, how to use objects, etc.
                                        You are absolutely [color=red]NOT[/color] allowed to remember, say, the name, appearance, etc. of your previous character.
 
+ghost-role-information-freeagent-type = [color={role-type-free-agent-color}][bold]{role-type-free-agent-name}[/bold][/color]
+
 ghost-role-information-mouse-name = Mouse
 ghost-role-information-mouse-description = A hungry and mischievous mouse.
 
