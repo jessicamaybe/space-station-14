@@ -13,7 +13,6 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
             RobustXamlLoader.Load(this);
 
             Title.Text = name;
-            Log.Debug("type: " + rules);
             RoleType.SetMessage(FormattedMessage.FromMarkupPermissive(rules));
             Description.SetMessage(description);
         }
