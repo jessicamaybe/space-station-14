@@ -4,7 +4,7 @@
             <Label Name="Title"
                    StyleClasses="LabelKeyText"/>
             <BoxContainer Align="End">
-                <RichTextLabel Name="RoleType" StyleClasses="LabelKeyText" Margin="0 0 0 0"/>
+                <RichTextLabel Name="RoleType" StyleClasses="LabelKeyText" Margin="4 0 8 0"/>
             </BoxContainer>
         </PanelContainer>
     <PanelContainer StyleClasses="HighDivider" />

@@ -7,6 +7,7 @@ ghost-role-information-nonantagonist-rules = [color={role-type-crew-aligned-alte
 ghost-role-information-freeagent-rules = [color={role-type-free-agent-color}][bold]{role-type-free-agent-name}[/bold][/color]
 ghost-role-information-antagonist-rules = [color={role-type-solo-antagonist-color}][bold]{role-type-solo-antagonist-name}[/bold][/color]
 ghost-role-information-rules-team-antagonist = [color={role-type-team-antagonist-color}][bold]{role-type-team-antagonist-name}[/bold][/color]
+ghost-role-information-rules-default-team-antagonist = [color={role-type-team-antagonist-color}][bold]{role-type-team-antagonist-name}[/bold][/color]
 ghost-role-information-familiar-rules = [color={role-type-familiar-color}][bold]{role-type-familiar-name}[/bold][/color]
 ghost-role-information-silicon-rules = [color={role-type-silicon-color}][bold]{role-type-silicon-name}[/bold][/color]
 
