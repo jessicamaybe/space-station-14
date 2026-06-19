@@ -3,7 +3,7 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.EntityConditions.Conditions.Generic;
 
 /// <summary>
-/// Returns true if entity is in range of a specified number of entities with specific components.
+/// Checks if an entity is in range of a specified number of entities with specific components.
 /// </summary>
 public sealed partial class NearbyComponentsConditionSystem : EntityConditionSystem<TransformComponent, NearbyComponentsCondition>
 {

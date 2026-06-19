@@ -7,7 +7,7 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.EntityConditions.Conditions.Generic;
 
 /// <summary>
-/// This handles...
+/// Checks if a percentage of the tiles we are nearby match
 /// </summary>
 public sealed partial class NearbyTilesPercentConditionSystem : EntityConditionSystem<TransformComponent, NearbyTilesPercentCondition>
 {
