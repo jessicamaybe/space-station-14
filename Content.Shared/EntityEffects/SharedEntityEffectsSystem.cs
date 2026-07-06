@@ -27,8 +27,9 @@ public sealed partial class SharedEntityEffectsSystem : EntitySystem
     [Dependency] private ISharedAdminLogManager _adminLog = default!;
     [Dependency] private SharedEntityConditionsSystem _condition = default!;
 
-    private Dictionary<Type, EntityEffectHandler> _handlers = new();
+    private readonly Dictionary<Type, EntityEffectHandler> _handlers = [];
 
+    [Access(typeof(EntityEffectHandler))]
     public void RegisterHandler(EntityEffectHandler handler)
     {
         _handlers[handler.EffectType] = handler;
@@ -187,8 +188,10 @@ public abstract partial class EntityEffectSystem<T, TEffect> : EntityEffectHandl
     {
         if (args.Effect is not TEffect typed)
             return;
+
         if (!_query.TryGetComponent(target, out var comp))
             return;
+
         Effect((target, comp), typed, args);
     }
 }

@@ -9,8 +9,10 @@ namespace Content.Shared.EntityConditions;
 /// </summary>
 public sealed partial class SharedEntityConditionsSystem : EntitySystem
 {
-    private Dictionary<Type, EntityConditionHandler> _handlers = new();
+    private readonly Dictionary<Type, EntityConditionHandler> _handlers = [];
 
+
+    [Access(typeof(EntityConditionHandler))]
     public void RegisterHandler(EntityConditionHandler handler)
     {
         _handlers[handler.ConditionType] = handler;
@@ -120,10 +122,14 @@ public abstract partial class EntityConditionSystem<T, TCon> : EntityConditionHa
     {
         if (condition is not TCon typed)
             return false;
+
         if (!_query.TryGetComponent(target, out var comp))
             return false;
+
         var result = false;
+
         Condition((target, comp), typed, sourceEnt, ref result);
+
         return result;
     }
 }
