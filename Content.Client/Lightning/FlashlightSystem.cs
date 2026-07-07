@@ -1,48 +1,37 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Content.Client.Gameplay;
 using Content.Client.Ghost;
 using Content.Client.Hands.Systems;
 using Content.Client.Inventory;
 using Content.Client.Popups;
-using Content.Shared.Ghost;
 using Content.Shared.Input;
 using Content.Shared.Light;
 using Content.Shared.Light.Components;
 using Content.Shared.Popups;
-using JetBrains.Annotations;
 using Robust.Client.GameObjects;
 using Robust.Client.Player;
-using Robust.Client.UserInterface;
-using Robust.Client.UserInterface.Controllers;
 using Robust.Shared.Input.Binding;
 using Robust.Shared.Utility;
 
-namespace Content.Client.Lightning.UI;
+namespace Content.Client.Lightning;
 
 /// <summary>
-/// UI controller that handles toggling flashlights.
+/// This handles...
 /// </summary>
-[UsedImplicitly]
-public sealed partial class FlashlightUIController : UIController, IOnStateChanged<GameplayState>
+public sealed partial class FlashlightSystem : EntitySystem
 {
     [Dependency] private IPlayerManager _player = default!;
+    [Dependency] private HandsSystem _hands = default!;
+    [Dependency] private ClientInventorySystem _inventory = default!;
+    [Dependency] private PopupSystem _popup = default!;
+    [Dependency] private GhostSystem _ghost = default!;
 
-    [UISystemDependency] private readonly HandsSystem _hands = default!;
-    [UISystemDependency] private readonly ClientInventorySystem _inventory = default!;
-    [UISystemDependency] private readonly PopupSystem _popup = default!;
-    [UISystemDependency] private readonly GhostSystem _ghost = default!;
-
-    public void OnStateEntered(GameplayState state)
+    /// <inheritdoc/>
+    public override void Initialize()
     {
         CommandBinds.Builder
             .Bind(ContentKeyFunctions.ToggleFlashlight, new PointerInputCmdHandler(OnToggleFlashlightPressed, outsidePrediction: true))
-            .Register<FlashlightUIController>();
-    }
-
-    public void OnStateExited(GameplayState state)
-    {
-        CommandBinds.Unregister<FlashlightUIController>();
+            .Register<FlashlightSystem>();
     }
 
     private bool OnToggleFlashlightPressed(in PointerInputCmdHandler.PointerInputCmdArgs args)
@@ -62,7 +51,7 @@ public sealed partial class FlashlightUIController : UIController, IOnStateChang
         }
         else
         {
-            _popup.PopupPredictedCursor(Loc.GetString("flashlight-popup-no-flashlight"), player, PopupType.Medium);
+            _popup.PopupCursor(Loc.GetString("flashlight-popup-no-flashlight"), player, PopupType.Medium);
         }
         return true;
     }
@@ -82,11 +71,11 @@ public sealed partial class FlashlightUIController : UIController, IOnStateChang
                 continue;
 
             // CHECK BOTH FLASHLIGHTS, FOR SOME REASON
-            if (EntityManager.TryGetComponent<HandheldLightComponent>(entity, out var handheld))
+            if (TryComp<HandheldLightComponent>(entity, out var handheld))
             {
                 lights.Add((entity, handheld.Activated));
             }
-            else if (EntityManager.TryGetComponent<UnpoweredFlashlightComponent>(entity, out var flashlight))
+            else if (TryComp<UnpoweredFlashlightComponent>(entity, out var flashlight))
             {
                 lights.Add((entity, flashlight.LightOn));
             }
@@ -98,22 +87,22 @@ public sealed partial class FlashlightUIController : UIController, IOnStateChang
                 continue;
 
             // CHECK BOTH FLASHLIGHTS, FOR SOME REASON
-            if (EntityManager.TryGetComponent<HandheldLightComponent>(held, out var handheld))
+            if (TryComp<HandheldLightComponent>(held, out var handheld))
             {
                 lights.Add((held.Value, handheld.Activated));
             }
-            else if (EntityManager.TryGetComponent<UnpoweredFlashlightComponent>(held, out var flashlight))
+            else if (TryComp<UnpoweredFlashlightComponent>(held, out var flashlight))
             {
                 lights.Add((held.Value, flashlight.LightOn));
             }
         }
 
         {
-            if (EntityManager.TryGetComponent<HandheldLightComponent>(player, out var handheld))
+            if (TryComp<HandheldLightComponent>(player, out var handheld))
             {
                 lights.Add((player, handheld.Activated));
             }
-            else if (EntityManager.TryGetComponent<UnpoweredFlashlightComponent>(player, out var flashlight))
+            else if (TryComp<UnpoweredFlashlightComponent>(player, out var flashlight))
             {
                 lights.Add((player, flashlight.LightOn));
             }
@@ -134,7 +123,7 @@ public sealed partial class FlashlightUIController : UIController, IOnStateChang
 
     private void SendToggleMessage(EntityUid uid)
     {
-        var netEnt = EntityManager.GetNetEntity(uid);
-        EntityManager.RaisePredictiveEvent(new ToggleFlashlightEvent(netEnt));
+        var netEnt = GetNetEntity(uid);
+        RaisePredictiveEvent(new ToggleFlashlightEvent(netEnt));
     }
 }
