@@ -1,9 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Content.Client.Gameplay;
+using Content.Client.Ghost;
 using Content.Client.Hands.Systems;
 using Content.Client.Inventory;
 using Content.Client.Popups;
+using Content.Shared.Ghost;
 using Content.Shared.Input;
 using Content.Shared.Light;
 using Content.Shared.Light.Components;
@@ -22,13 +24,14 @@ namespace Content.Client.Lightning.UI;
 /// UI controller that handles toggling flashlights.
 /// </summary>
 [UsedImplicitly]
-public sealed class FlashlightUIController : UIController, IOnStateChanged<GameplayState>
+public sealed partial class FlashlightUIController : UIController, IOnStateChanged<GameplayState>
 {
-    [Dependency] private readonly IPlayerManager _player = default!;
+    [Dependency] private IPlayerManager _player = default!;
 
     [UISystemDependency] private readonly HandsSystem _hands = default!;
     [UISystemDependency] private readonly ClientInventorySystem _inventory = default!;
     [UISystemDependency] private readonly PopupSystem _popup = default!;
+    [UISystemDependency] private readonly GhostSystem _ghost = default!;
 
     public void OnStateEntered(GameplayState state)
     {
@@ -46,6 +49,12 @@ public sealed class FlashlightUIController : UIController, IOnStateChanged<Gamep
     {
         if (_player.LocalEntity is not { } player)
             return false;
+
+        if (_ghost.IsGhost)
+        {
+            _ghost.ToggleGhostLight(player);
+            return true;
+        }
 
         if (TryGetFlashlight(out var light))
         {
