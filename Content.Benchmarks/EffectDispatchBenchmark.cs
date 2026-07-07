@@ -28,13 +28,19 @@ public partial class EffectDispatchBenchmark
         ProgramShared.PathOffset = "../../../../";
         PoolManager.Startup(typeof(BenchSystem).Assembly);
         _pair = PoolManager.GetServerClient(testContext: new ExternalTestContext("Benchmark", StreamWriter.Null)).GetAwaiter().GetResult();
+
         var entMan = _pair.Server.EntMan;
         _sys = entMan.System<BenchSystem>();
 
         _pair.Server.WaitPost(() =>
         {
-            var uid = entMan.Spawn();
-            _sys.Target = new(uid, entMan.GetComponent<TransformComponent>(uid));
+            var hitUid = entMan.Spawn();
+            entMan.AddComponent<DummyComponent>(hitUid);
+            _sys.HitTarget = new(hitUid, entMan.GetComponent<TransformComponent>(hitUid));
+
+            var missUid = entMan.Spawn();
+            _sys.MissTarget = new(missUid, entMan.GetComponent<TransformComponent>(missUid));
+
         })
             .GetAwaiter()
             .GetResult();
@@ -48,49 +54,70 @@ public partial class EffectDispatchBenchmark
     }
 
     [Benchmark(Baseline = true)]
-    public int EventBusDispatch()
+    public int EventBusDispatch_Hit()
     {
-        return _sys.RaiseViaEventBus();
+        return _sys.RaiseViaEventBusHit();
     }
 
     [Benchmark]
-    public int StaticHandlerDispatch()
+    public int EventBusDispatch_Miss()
     {
-        return _sys.RaiseViaStaticHandler();
+        return _sys.RaiseViaEventBusMiss();
     }
 
     [Benchmark]
-    public int CSharpEventDispatch()
+    public int StaticHandlerDispatch_Hit()
     {
-        return _sys.RaiseViaCSharpEvent();
+        return _sys.RaiseViaStaticHandlerHit();
+    }
+
+    [Benchmark]
+    public int StaticHandlerDispatch_Miss()
+    {
+        return _sys.RaiseViaStaticHandlerMiss();
+    }
+
+    [Benchmark]
+    public int CSharpEventDispatch_Hit()
+    {
+        return _sys.RaiseViaCSharpEventHit();
+    }
+
+    [Benchmark]
+    public int CSharpEventDispatch_Miss()
+    {
+        return _sys.RaiseViaCSharpEventHit();
     }
 
     public sealed partial class BenchSystem : EntitySystem
     {
         private SharedEntityEffectsSystem _effectsSystem = default!;
 
-        public Entity<TransformComponent> Target;
+        public Entity<TransformComponent> HitTarget;
+        public Entity<TransformComponent> MissTarget;
 
         private EntityEffect _effect = new TestEffect();
 
         private int _counter;
 
         public delegate void EffectHandler(EntityUid uid);
+
         public event EffectHandler OnEffect;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            SubscribeLocalEvent<TransformComponent, TestEffectEvent>(OnEventBus);
+            SubscribeLocalEvent<DummyComponent, TestEffectEvent>(OnEventBus);
 
             OnEffect += OnCSharpEvent;
 
             _effectsSystem = EntityManager.System<SharedEntityEffectsSystem>();
+
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void OnEventBus(Entity<TransformComponent> entity, ref TestEffectEvent args)
+        private void OnEventBus(Entity<DummyComponent> entity, ref TestEffectEvent args)
         {
             _counter++;
         }
@@ -98,28 +125,51 @@ public partial class EffectDispatchBenchmark
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void OnCSharpEvent(EntityUid uid)
         {
+            TryComp<DummyComponent>(uid, out _);
             _counter++;
         }
 
-        public int RaiseViaEventBus()
+        public int RaiseViaEventBusHit()
         {
             _counter = 0;
             var ev = new TestEffectEvent();
-            RaiseLocalEvent(Target.Owner, ref ev);
+            RaiseLocalEvent(HitTarget.Owner, ref ev);
             return _counter;
         }
 
-        public int RaiseViaStaticHandler()
+        public int RaiseViaEventBusMiss()
         {
             _counter = 0;
-            _effectsSystem.ApplyEffect(Target, _effect);
+            var ev = new TestEffectEvent();
+            RaiseLocalEvent(MissTarget.Owner, ref ev);
             return _counter;
         }
 
-        public int RaiseViaCSharpEvent()
+        public int RaiseViaStaticHandlerHit()
         {
             _counter = 0;
-            OnEffect?.Invoke(Target.Owner);
+            _effectsSystem.ApplyEffect(HitTarget, _effect);
+            return _counter;
+        }
+
+        public int RaiseViaStaticHandlerMiss()
+        {
+            _counter = 0;
+            _effectsSystem.ApplyEffect(MissTarget, _effect);
+            return _counter;
+        }
+
+        public int RaiseViaCSharpEventHit()
+        {
+            _counter = 0;
+            OnEffect?.Invoke(HitTarget.Owner);
+            return _counter;
+        }
+
+        public int RaiseViaCSharpEventMiss()
+        {
+            _counter = 0;
+            OnEffect?.Invoke(MissTarget.Owner);
             return _counter;
         }
     }
@@ -129,22 +179,19 @@ public partial class EffectDispatchBenchmark
     {
     }
 
-
+    public sealed partial class TestEffectSystem : EntityEffectSystem<DummyComponent, TestEffect>
+    {
+        protected override void Effect(Entity<DummyComponent> entity, TestEffect effect, EntityEffectData data)
+        {
+        }
+    }
     public sealed partial class TestEffect : EntityEffect
     {
 
     }
 
-    public interface ITestHandler
+    [RegisterComponent]
+    public sealed partial class DummyComponent : Component
     {
-        void Handle(Entity<TransformComponent> target);
-    }
-
-    public sealed class TestHandler : ITestHandler
-    {
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public void Handle(Entity<TransformComponent> target)
-        {
-        }
     }
 }
