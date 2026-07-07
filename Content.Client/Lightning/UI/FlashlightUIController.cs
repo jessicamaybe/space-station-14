@@ -4,7 +4,6 @@ using Content.Client.Gameplay;
 using Content.Client.Hands.Systems;
 using Content.Client.Inventory;
 using Content.Client.Popups;
-using Content.Client.UserInterface.Controls;
 using Content.Shared.Input;
 using Content.Shared.Light;
 using Content.Shared.Light.Components;
@@ -31,12 +30,8 @@ public sealed class FlashlightUIController : UIController, IOnStateChanged<Gamep
     [UISystemDependency] private readonly ClientInventorySystem _inventory = default!;
     [UISystemDependency] private readonly PopupSystem _popup = default!;
 
-    private SimpleRadialMenu? _menu;
-
     public void OnStateEntered(GameplayState state)
     {
-        _menu = new SimpleRadialMenu();
-
         CommandBinds.Builder
             .Bind(ContentKeyFunctions.ToggleFlashlight, new PointerInputCmdHandler(OnToggleFlashlightPressed, outsidePrediction: true))
             .Register<FlashlightUIController>();
@@ -44,17 +39,11 @@ public sealed class FlashlightUIController : UIController, IOnStateChanged<Gamep
 
     public void OnStateExited(GameplayState state)
     {
-        _menu = null;
-
         CommandBinds.Unregister<FlashlightUIController>();
     }
 
     private bool OnToggleFlashlightPressed(in PointerInputCmdHandler.PointerInputCmdArgs args)
     {
-        // Do not deal with input when they are picking shit out of the radial
-        if (_menu?.IsOpen == true)
-            return false;
-
         if (_player.LocalEntity is not { } player)
             return false;
 
@@ -64,7 +53,7 @@ public sealed class FlashlightUIController : UIController, IOnStateChanged<Gamep
         }
         else
         {
-            _popup.PopupPredictedCursor(Loc.GetString("es-flashlight-popup-no-flashlight"), player, PopupType.Medium);
+            _popup.PopupPredictedCursor(Loc.GetString("flashlight-popup-no-flashlight"), player, PopupType.Medium);
         }
         return true;
     }
