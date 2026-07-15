@@ -1,8 +1,6 @@
-using Content.Shared.Random;
-using Content.Shared.Random.Rules;
+using Content.Shared.EntityConditions;
 using Robust.Shared.Audio;
 using Robust.Shared.Prototypes;
-using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototype;
 
 namespace Content.Shared.Audio;
 
@@ -26,6 +24,10 @@ public sealed partial class AmbientMusicPrototype : IPrototype
     [ViewVariables(VVAccess.ReadWrite), DataField("interruptable")]
     public bool Interruptable = false;
 
+    //Whether this ambience is allowed to play twice in a row
+    [ViewVariables(VVAccess.ReadWrite), DataField]
+    public bool AllowRepeat = true;
+
     /// <summary>
     /// Do we fade-in. Useful for songs.
     /// </summary>
@@ -35,6 +37,6 @@ public sealed partial class AmbientMusicPrototype : IPrototype
     [ViewVariables(VVAccess.ReadWrite), DataField("sound", required: true)]
     public SoundSpecifier Sound = default!;
 
-    [ViewVariables(VVAccess.ReadWrite), DataField("rules", required: true, customTypeSerializer:typeof(PrototypeIdSerializer<RulesPrototype>))]
-    public string Rules = string.Empty;
+    [DataField]
+    public EntityCondition[]? Conditions;
 }
