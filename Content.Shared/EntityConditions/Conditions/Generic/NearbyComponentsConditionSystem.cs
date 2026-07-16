@@ -31,23 +31,15 @@ public sealed partial class NearbyComponentsConditionSystem : EntityConditionSys
                 }
                 count++;
 
-                if (count < args.Condition.Count)
-                    continue;
-
-                found = true;
-                break;
+                if (count >= args.Condition.Count)
+                {
+                    found = true;
+                    break;
+                }
             }
-            if (found)
-                break;
         }
 
-        if (!found)
-        {
-            args.Result = false;
-            return;
-        }
-
-        args.Result = true;
+        args.Result = found;
     }
 }
 

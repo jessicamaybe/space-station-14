@@ -40,14 +40,12 @@ public sealed partial class NearbyTilesPercentConditionSystem : EntityConditionS
 
                 while (gridEnum.MoveNext(out var ancUid))
                 {
-                    if (!_physicsQuery.TryGetComponent(ancUid, out var physics) ||
-                        !physics.CanCollide)
+                    if (_physicsQuery.TryGetComponent(ancUid, out var physics) &&
+                        physics.CanCollide)
                     {
-                        continue;
+                        found = true;
+                        break;
                     }
-
-                    found = true;
-                    break;
                 }
 
                 if (found)
@@ -62,13 +60,7 @@ public sealed partial class NearbyTilesPercentConditionSystem : EntityConditionS
             matchingTileCount++;
         }
 
-        if (tileCount == 0 || matchingTileCount / (float) tileCount < args.Condition.Percent)
-        {
-            args.Result = false;
-            return;
-        }
-
-        args.Result = true;
+        args.Result = tileCount > 0 && matchingTileCount / (float) tileCount >= args.Condition.Percent;
     }
 }
 

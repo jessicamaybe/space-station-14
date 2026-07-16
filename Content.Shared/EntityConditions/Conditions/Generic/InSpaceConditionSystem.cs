@@ -9,13 +9,7 @@ public sealed class InSpaceConditionSystem : EntityConditionSystem<TransformComp
 {
     protected override void Condition(Entity<TransformComponent> entity, ref EntityConditionEvent<InSpaceCondition> args)
     {
-        if (entity.Comp.GridUid != null)
-        {
-            args.Result = false;
-            return;
-        }
-
-        args.Result = true;
+        args.Result = entity.Comp.GridUid == null;
     }
 }
 

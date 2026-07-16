@@ -28,13 +28,7 @@ public sealed partial class GridInRangeConditionSystem : EntityConditionSystem<T
 
         _map.FindGridsIntersecting(entity.Comp.MapID, new Box2(worldPos - gridRange, worldPos + gridRange), ref grids);
 
-        if (grids.Count > 0)
-        {
-            args.Result = true;
-            return;
-        }
-
-        args.Result = false;
+        args.Result = grids.Count > 0;
     }
 }
 

@@ -9,13 +9,7 @@ public sealed class OnMapGridConditionSystem : EntityConditionSystem<TransformCo
 {
     protected override void Condition(Entity<TransformComponent> entity, ref EntityConditionEvent<OnMapGridCondition> args)
     {
-        if (entity.Comp.GridUid != entity.Comp.MapUid || entity.Comp.MapUid == null)
-        {
-            args.Result = false;
-            return;
-        }
-
-        args.Result = true;
+        args.Result = entity.Comp.GridUid == entity.Comp.MapUid && entity.Comp.MapUid != null;
     }
 }
 

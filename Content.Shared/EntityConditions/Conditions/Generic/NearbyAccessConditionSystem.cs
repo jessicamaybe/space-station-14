@@ -6,7 +6,7 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.EntityConditions.Conditions.Generic;
 
 /// <summary>
-/// Checks for an entity nearby with the specified access.
+/// Checks for a number of entities nearby with the specified accesses.
 /// </summary>
 public sealed partial class NearbyAccessConditionSystem : EntityConditionSystem<TransformComponent, NearbyAccessCondition>
 {
@@ -34,20 +34,14 @@ public sealed partial class NearbyAccessConditionSystem : EntityConditionSystem<
 
             count++;
 
-            if (count < args.Condition.Count)
-                continue;
-
-            found = true;
-            break;
+            if (count >= args.Condition.Count)
+            {
+                found = true;
+                break;
+            }
         }
 
-        if (!found)
-        {
-            args.Result = false;
-            return;
-        }
-
-        args.Result = true;
+        args.Result = found;
     }
 }
 

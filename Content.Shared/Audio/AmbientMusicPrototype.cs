@@ -15,26 +15,26 @@ public sealed partial class AmbientMusicPrototype : IPrototype
     /// <summary>
     /// Traditionally you'd prioritise most rules to least as priority but in our case we'll just be explicit.
     /// </summary>
-    [ViewVariables(VVAccess.ReadWrite), DataField("priority")]
+    [DataField]
     public int Priority = 0;
 
     /// <summary>
     /// Can we interrupt this ambience for a better prototype if possible?
     /// </summary>
-    [ViewVariables(VVAccess.ReadWrite), DataField("interruptable")]
+    [DataField]
     public bool Interruptable = false;
 
     //Whether this ambience is allowed to play twice in a row
-    [ViewVariables(VVAccess.ReadWrite), DataField]
+    [DataField]
     public bool AllowRepeat = true;
 
     /// <summary>
     /// Do we fade-in. Useful for songs.
     /// </summary>
-    [ViewVariables(VVAccess.ReadWrite), DataField("fadeIn")]
+    [DataField]
     public bool FadeIn;
 
-    [ViewVariables(VVAccess.ReadWrite), DataField("sound", required: true)]
+    [DataField(required: true)]
     public SoundSpecifier Sound = default!;
 
     [DataField]
