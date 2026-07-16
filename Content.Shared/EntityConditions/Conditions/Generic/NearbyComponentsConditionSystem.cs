@@ -1,3 +1,4 @@
+using System.Numerics;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared.EntityConditions.Conditions.Generic;
@@ -12,31 +13,32 @@ public sealed partial class NearbyComponentsConditionSystem : EntityConditionSys
 
     protected override void Condition(Entity<TransformComponent> entity, ref EntityConditionEvent<NearbyComponentsCondition> args)
     {
-        var inRange = new HashSet<Entity<IComponent>>();
-
-        var found = false;
         var worldPos = _transform.GetWorldPosition(entity.Comp);
         var count = 0;
 
-        foreach (var compType in args.Condition.Components.Values)
+        var box = Box2.CenteredAround(worldPos, new Vector2(args.Condition.Range));
+
+        foreach (var ent in _lookup.GetEntitiesIntersecting(entity.Comp.MapID, box))
         {
-            _lookup.GetEntitiesInRange(compType.Component.GetType(), entity.Comp.MapID, worldPos, args.Condition.Range, inRange);
-            foreach (var ent in inRange)
+            if (args.Condition.Anchored && !Transform(ent).Anchored)
+                continue;
+
+            foreach (var compType in args.Condition.Components.Values)
             {
-                if (args.Condition.Anchored && !Transform(ent).Anchored)
+                if (!HasComp(ent, compType.Component.GetType()))
                     continue;
 
                 count++;
 
                 if (count >= args.Condition.Count)
                 {
-                    found = true;
-                    break;
+                    args.Result = true;
+                    return;
                 }
             }
         }
 
-        args.Result = found;
+        args.Result = false;
     }
 }
 

@@ -14,8 +14,8 @@ public sealed partial class NearbyTilesPercentConditionSystem : EntityConditionS
     [Dependency] private SharedTransformSystem _transform = default!;
     [Dependency] private SharedMapSystem _map = default!;
     [Dependency] private ITileDefinitionManager _tileDef = default!;
-    [Dependency] private EntityQuery<PhysicsComponent> _physicsQuery = default!;
 
+    [Dependency] private EntityQuery<PhysicsComponent> _physicsQuery = default!;
 
     protected override void Condition(Entity<TransformComponent> entity, ref EntityConditionEvent<NearbyTilesPercentCondition> args)
     {
@@ -28,9 +28,11 @@ public sealed partial class NearbyTilesPercentConditionSystem : EntityConditionS
         var tileCount = 0;
         var matchingTileCount = 0;
 
-        foreach (var tile in _map.GetTilesIntersecting(entity.Comp.GridUid.Value,
-                     grid,
-                     new Circle(_transform.GetWorldPosition(entity.Comp), args.Condition.Range)))
+        var tiles = _map.GetTilesIntersecting(entity.Comp.GridUid.Value,
+            grid,
+            new Circle(_transform.GetWorldPosition(entity.Comp), args.Condition.Range));
+
+        foreach (var tile in tiles)
         {
             // Only consider collidable anchored (for reasons some subfloor stuff has physics but non-collidable)
             if (args.Condition.IgnoreAnchored)
