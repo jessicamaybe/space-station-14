@@ -41,9 +41,9 @@
           sprite: Objects/Tools/jaws_of_life.rsi
           state: jaws_pry
         useSound: !type:SoundPathSpecifier
-          path: /Audio/Items/change_jaws.ogg
+          path: /Audio/Items/jaws_pry.ogg
           params:
-            volume: -5
+            volume: -2
         changeSound: !type:SoundPathSpecifier
           path: /Audio/Items/change_jaws.ogg
           params:
@@ -94,9 +94,9 @@
           sprite: Objects/Tools/jaws_of_life.rsi
           state: syn_jaws_pry
         useSound: !type:SoundPathSpecifier
-          path: /Audio/Items/change_jaws.ogg
+          path: /Audio/Items/jaws_pry.ogg
           params:
-            volume: -5
+            volume: -2
         changeSound: !type:SoundPathSpecifier
           path: /Audio/Items/change_jaws.ogg
           params:
