@@ -27,10 +27,8 @@ public sealed partial class NearbyAccessConditionSystem : EntityConditionSystem<
         foreach (var (ent, comp) in _lookup.GetEntitiesInRange<AccessReaderComponent>(entity.Comp.Coordinates, args.Condition.Range))
         {
             if (!_reader.AreAccessTagsAllowed(args.Condition.Access, comp) ||
-                args.Condition.Anchored && Transform(ent).Anchored)
-            {
+                args.Condition.Anchored && !Transform(ent).Anchored)
                 continue;
-            }
 
             count++;
 

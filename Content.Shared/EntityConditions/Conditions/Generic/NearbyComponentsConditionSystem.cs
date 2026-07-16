@@ -21,14 +21,11 @@ public sealed partial class NearbyComponentsConditionSystem : EntityConditionSys
         foreach (var compType in args.Condition.Components.Values)
         {
             _lookup.GetEntitiesInRange(compType.Component.GetType(), entity.Comp.MapID, worldPos, args.Condition.Range, inRange);
-            foreach (var comp in inRange)
+            foreach (var ent in inRange)
             {
-                var compXform = Transform(comp);
-
-                if (args.Condition.Anchored || !compXform.Anchored)
-                {
+                if (args.Condition.Anchored && !Transform(ent).Anchored)
                     continue;
-                }
+
                 count++;
 
                 if (count >= args.Condition.Count)
