@@ -1913,6 +1913,7 @@
       map: ["enum.WiresVisualLayers.MaintenancePanel"]
   - type: AccessReader
     access: [["Detective"]]
+  - type: AmbientMusicMarkerDetective
 
 - type: entity
   parent: VendingMachine

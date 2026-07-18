@@ -13,6 +13,12 @@
     - /Audio/Ambience/ambitech3.ogg
 
 - type: soundCollection
+  id: AmbienceDetective
+  files:
+  - /Audio/Ambience/Detective/ambidet1.ogg
+  - /Audio/Ambience/Detective/ambidet2.ogg
+
+- type: soundCollection
   id: AmbienceGeneral
   files:
     - /Audio/Ambience/ambigen1.ogg

@@ -26,3 +26,20 @@
     - type: AmbientMusicMarkerEngineering
     count: 3
     range: 5
+
+- type: ambientMusic
+  id: Detective
+  sound:
+    params:
+      volume: -11
+    collection: AmbienceDetective
+  priority: 4
+  fadeIn: true
+  interruptable: true
+  allowRepeat: false
+  conditions:
+  - !type:NearbyComponentsCondition
+    components:
+    - type: AmbientMusicMarkerDetective
+    count: 3
+    range: 5
