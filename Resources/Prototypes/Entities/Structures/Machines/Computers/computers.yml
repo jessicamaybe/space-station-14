@@ -395,6 +395,7 @@
   - type: GuideHelp
     guides:
     - CriminalRecords
+  - type: AmbientMusicMarkerDetective
 
 - type: entity
   parent: BaseComputerAiAccess
