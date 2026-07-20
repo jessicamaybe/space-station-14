@@ -850,8 +850,15 @@
       - state: base
         map: ["enum.GunVisualLayers.Base"]
       - state: mag-unshaded-4
-        map: ["enum.GunVisualLayers.MagUnshaded"]
+        map: ["color", "enum.GunVisualLayers.MagUnshaded"]
         shader: unshaded
+  - type: GenericVisualizer
+    visuals:
+      enum.BatteryWeaponFireModeVisuals.State:
+        color:
+          BulletLaserSpreadNarrow: { color: "#ff0006"}
+          BulletDisablerSmgSpread: { color: "#5fcde4" }
+  - type: ItemVisualizer
   - type: MagazineVisuals
     magState: mag
     steps: 5
@@ -877,6 +884,17 @@
     size: Large
     sprite: Objects/Weapons/Guns/Battery/inhands_64x.rsi
     heldPrefix: energy
+    inhandVisuals:
+      left:
+      - state: energy-inhand-left
+        map: [ "wielded" ]
+      - state: energy-inhand-left-color
+        map: [ "color"]
+      right:
+      - state: energy-inhand-right
+        map: [ "wielded" ]
+      - state: energy-inhand-right-color
+        map: [ "color" ]
   - type: GunRequiresWield #remove when inaccuracy on spreads is fixed
   - type: Battery
     maxCharge: 480

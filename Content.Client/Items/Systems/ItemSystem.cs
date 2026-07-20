@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Content.Shared.Hands;
+using Content.Shared.Hands.Components;
 using Content.Shared.Inventory.Events;
 using Content.Shared.Item;
 using Robust.Client.GameObjects;
@@ -37,6 +38,15 @@ public sealed partial class ItemSystem : SharedItemSystem
     }
 
     #region InhandVisuals
+
+    public bool TryGetLayers(Entity<ItemComponent> ent, HandLocation location, [NotNullWhen(true)] out List<PrototypeLayerData>? layers)
+    {
+        if (ent.Comp.InhandVisuals.TryGetValue(location, out layers))
+        {
+            return true;
+        }
+        return false;
+    }
 
     /// <summary>
     ///     When an items visual state changes, notify and entities that are holding this item that their sprite may need updating.
