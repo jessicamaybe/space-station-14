@@ -31,18 +31,16 @@ public sealed partial class ItemVisualizerSystem : EntitySystem
         if (!TryComp<ItemComponent>(ent, out var itemComp))
             return;
 
-        if (!_item.TryGetLayers((ent, itemComp), args.Location, out var layers))
+        if (!ent.Comp.InhandVisuals.TryGetValue(args.Location, out var layers))
             return;
 
-        // if (TryComp<WieldableComponent>(ent, out var wieldableComponent)
-        //     && wieldableComponent.Wielded
-        //     && ent.Comp.WieldedInhandVisuals.TryGetValue(args.Location, out var wieldedLayers))
-        //     layers = wieldedLayers;
-
+        if (TryComp<WieldableComponent>(ent, out var wieldableComponent)
+            && wieldableComponent.Wielded
+            && ent.Comp.WieldedInhandVisuals.TryGetValue(args.Location, out var wieldedLayers))
+            layers = wieldedLayers;
 
         var defaultKey = $"inhand-visualizer-{args.Location.ToString().ToLowerInvariant()}";
         var newLayers = GetLayers((ent, ent.Comp, appearance), layers, defaultKey);
-
         args.Layers.AddRange(newLayers);
     }
 
@@ -118,6 +116,7 @@ public sealed partial class ItemVisualizerSystem : EntitySystem
         merged.Offset = overrideData.Offset ?? baseLayer.Offset;
         merged.Visible = overrideData.Visible ?? baseLayer.Visible;
         merged.Color = overrideData.Color ?? baseLayer.Color;
+        merged.MapKeys = null;
         return merged;
     }
 }
