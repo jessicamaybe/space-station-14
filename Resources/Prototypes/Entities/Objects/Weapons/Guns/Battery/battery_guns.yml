@@ -873,6 +873,13 @@
       right:
       - state: wielded-inhand-right-color
         map: [ "color"]
+    clothingVisuals:
+      back:
+      - state: equipped-BACKPACK-color
+        map: [ "color" ]
+      suitstorage:
+      - state: equipped-SUITSTORAGE-color
+        map: [ "color" ]
   - type: MagazineVisuals
     magState: mag
     steps: 5

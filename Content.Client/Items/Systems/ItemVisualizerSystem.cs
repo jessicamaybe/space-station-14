@@ -1,5 +1,8 @@
 using System.Linq;
+using Content.Client.Clothing;
+using Content.Shared.Clothing;
 using Content.Shared.Hands;
+using Content.Shared.Inventory;
 using Content.Shared.Item;
 using Content.Shared.Wieldable.Components;
 using Robust.Client.GameObjects;
@@ -16,19 +19,25 @@ public sealed partial class ItemVisualizerSystem : EntitySystem
     [Dependency] private ItemSystem _item = default!;
     [Dependency] private IReflectionManager _reflection = default!;
 
+    public override void Initialize()
+    {
+        base.Initialize();
+        SubscribeLocalEvent<ItemVisualizerComponent, GetInhandVisualsEvent>(OnGetHeldVisuals, after: [typeof(ItemSystem)]);
+        SubscribeLocalEvent<ItemVisualizerComponent, GetEquipmentVisualsEvent>(OnGetEquipmentVisuals, after: [typeof(ClientClothingSystem)]);
+    }
+
     [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<ItemVisualizerComponent> ent, ref AppearanceChangeEvent args)
     {
         _item.VisualsChanged(ent);
     }
 
-    [SubscribeLocalEvent]
     private void OnGetHeldVisuals(Entity<ItemVisualizerComponent> ent, ref GetInhandVisualsEvent args)
     {
         if (!TryComp(ent, out AppearanceComponent? appearance))
             return;
 
-        if (!TryComp<ItemComponent>(ent, out var itemComp))
+        if (!HasComp<ItemComponent>(ent))
             return;
 
         if (!ent.Comp.InhandVisuals.TryGetValue(args.Location, out var layers))
@@ -40,11 +49,38 @@ public sealed partial class ItemVisualizerSystem : EntitySystem
             layers = wieldedLayers;
 
         var defaultKey = $"inhand-visualizer-{args.Location.ToString().ToLowerInvariant()}";
-        var newLayers = GetLayers((ent, ent.Comp, appearance), layers, defaultKey);
+
+        var newLayers = GetNewLayers((ent, ent.Comp, appearance), layers, defaultKey);
+
         args.Layers.AddRange(newLayers);
     }
 
-    private List<(string, PrototypeLayerData)> GetLayers(Entity<ItemVisualizerComponent, AppearanceComponent> ent, List<PrototypeLayerData> layers, string defaultKey)
+    private void OnGetEquipmentVisuals(Entity<ItemVisualizerComponent> ent, ref GetEquipmentVisualsEvent args)
+    {
+        if (!TryComp(ent.Owner, out AppearanceComponent? appearance))
+            return;
+
+        if (!TryComp(args.Equipee, out InventoryComponent? inventory))
+            return;
+
+        List<PrototypeLayerData>? layers = null;
+
+        // attempt to get species specific data
+        if (inventory.SpeciesId != null)
+            ent.Comp.ClothingVisuals.TryGetValue($"{args.Slot}-{inventory.SpeciesId}", out layers);
+
+        // No species specific data.  Try to default to generic data.
+        if (layers == null && !ent.Comp.ClothingVisuals.TryGetValue(args.Slot, out layers))
+            return;
+
+        var defaultKey = $"equipment-visualizer-{args.Slot.ToLowerInvariant()}";
+
+        var newLayers = GetNewLayers((ent, ent.Comp, appearance), layers, defaultKey);
+
+        args.Layers.AddRange(newLayers);
+    }
+
+    private List<(string, PrototypeLayerData)> GetNewLayers(Entity<ItemVisualizerComponent, AppearanceComponent> ent, List<PrototypeLayerData> layers, string defaultKey)
     {
         List<(string, PrototypeLayerData)> addedLayers = new();
 
@@ -67,6 +103,9 @@ public sealed partial class ItemVisualizerSystem : EntitySystem
         return addedLayers;
     }
 
+    /// <summary>
+    /// Gets the layer data from generic visualizer, and applies it to our new layer
+    /// </summary>
     private PrototypeLayerData GetGenericLayerData(Entity<ItemVisualizerComponent> ent, AppearanceComponent appearance, PrototypeLayerData baseLayer)
     {
         if (!TryComp<GenericVisualizerComponent>(ent, out var genericVisuals) || baseLayer.MapKeys == null)
