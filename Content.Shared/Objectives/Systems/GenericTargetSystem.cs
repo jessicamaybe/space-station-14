@@ -10,7 +10,7 @@ public abstract partial class GenericTargetSystem : EntitySystem
 {
     [Dependency] private SharedEntityConditionsSystem _conditions = default!;
 
-    protected bool ValidEntity(EntityUid uid, EntityUid? exclude = null, params EntityCondition[] conditions)
+    protected bool ValidEntity(EntityUid uid, EntityUid? exclude = null, params EntityCondition[]? conditions)
     {
         return exclude != uid && _conditions.TryConditions(uid, conditions, exclude);
     }

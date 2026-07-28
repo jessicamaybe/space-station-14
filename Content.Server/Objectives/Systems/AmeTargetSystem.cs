@@ -13,3 +13,5 @@ public sealed partial class AmeTargetSystem : EntityTargetSystem<AmeControllerCo
         return true;
     }
 }
+
+public sealed partial class AmePool : EntityPool<AmeTargetSystem>;

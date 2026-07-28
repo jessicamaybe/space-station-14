@@ -15,13 +15,13 @@ public abstract partial class EntityTargetSystem : GenericTargetSystem
         return entities;
     }
 
-    public abstract void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[] conditions);
+    public abstract void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[]? conditions);
 }
 
 /// <inheritdoc cref="EntityTargetSystem"/>
 public abstract partial class EntityTargetSystem<T> : EntityTargetSystem where T : IComponent
 {
-    public override void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[] conditions)
+    public override void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[]? conditions)
     {
         var query = EntityQueryEnumerator<T>();
         while (query.MoveNext(out var uid, out var comp))
@@ -41,7 +41,7 @@ public abstract partial class EntityTargetSystem<T1, T2> : EntityTargetSystem
     where T1 : IComponent
     where T2 : IComponent
 {
-    public override void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[] conditions)
+    public override void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[]? conditions)
     {
         var query = EntityQueryEnumerator<T1, T2>();
         while (query.MoveNext(out var uid, out var comp1, out var comp2))
@@ -62,7 +62,7 @@ public abstract partial class EntityTargetSystem<T1, T2, T3> : EntityTargetSyste
     where T2 : IComponent
     where T3 : IComponent
 {
-    public override void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[] conditions)
+    public override void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[]? conditions)
     {
         var query = EntityQueryEnumerator<T1, T2, T3>();
         while (query.MoveNext(out var uid, out var comp1, out var comp2, out var comp3))
@@ -84,7 +84,7 @@ public abstract partial class EntityTargetSystem<T1, T2, T3, T4> : EntityTargetS
     where T3 : IComponent
     where T4 : IComponent
 {
-    public override void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[] conditions)
+    public override void AddEntities(HashSet<EntityUid> entities, EntityUid? exclude = null, params EntityCondition[]? conditions)
     {
         var query = EntityQueryEnumerator<T1, T2, T3, T4>();
         while (query.MoveNext(out var uid, out var comp1, out var comp2, out var comp3, out var comp4))
@@ -97,4 +97,30 @@ public abstract partial class EntityTargetSystem<T1, T2, T3, T4> : EntityTargetS
     }
 
     protected abstract bool ValidateEntity(Entity<T1, T2, T3, T4> entity);
+}
+
+/// <summary>
+/// An entity pool that can find entities to use for objectives
+/// Can be filtered with <see cref="EntityConditions"/>.
+/// </summary>
+[ImplicitDataDefinitionForInheritors]
+public partial interface IEntityPool
+{
+    void FindEntities(HashSet<EntityUid> entities, IDependencyCollection dependency, EntityUid? exclude = null, params EntityCondition[]? conditions);
+}
+
+/// <summary>
+/// An entity pool that can find entities to use for objectives etc.
+/// Searches for entities using the corresponding <see cref="EntityTargetSystem"/>
+/// </summary>
+[ImplicitDataDefinitionForInheritors]
+public abstract partial class EntityPool<T> : IEntityPool where T : EntityTargetSystem
+{
+    protected T TargetSystem = default!;
+
+    public void FindEntities(HashSet<EntityUid> entities, IDependencyCollection dependency, EntityUid? exclude = null, params EntityCondition[]? conditions)
+    {
+        dependency.Resolve(ref TargetSystem);
+        TargetSystem.AddEntities(entities, exclude, conditions);
+    }
 }

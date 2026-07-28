@@ -384,7 +384,7 @@
       sprite: Structures/Power/Generation/ame.rsi
       state: control
     unique: true
-  - type: AmeExistsRequirement
+  - type: TargetExistsRequirement
   - type: OverloadAmeCondition
   - type: CodeCondition
     failOnEvac: true
