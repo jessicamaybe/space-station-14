@@ -4,9 +4,9 @@ using Content.Shared.Whitelist;
 
 namespace Content.Server.Objectives.Systems;
 
-public sealed class EntityExistsRequirementSystem : EntitySystem
+public sealed partial class EntityExistsRequirementSystem : EntitySystem
 {
-    [Dependency] private readonly EntityWhitelistSystem _whitelist = default!;
+    [Dependency] private EntityWhitelistSystem _whitelist = default!;
 
     public override void Initialize()
     {

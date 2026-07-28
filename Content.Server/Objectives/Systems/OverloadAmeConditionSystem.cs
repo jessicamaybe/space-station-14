@@ -4,9 +4,9 @@ using Content.Shared.Objectives.Components;
 
 namespace Content.Server.Objectives.Systems;
 
-public sealed class OverloadAmeConditionSystem : EntitySystem
+public sealed partial class OverloadAmeConditionSystem : EntitySystem
 {
-    [Dependency] private readonly CodeConditionSystem _codeCondition = default!;
+    [Dependency] private CodeConditionSystem _codeCondition = default!;
 
     public override void Initialize()
     {
