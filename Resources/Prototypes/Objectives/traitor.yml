@@ -385,13 +385,9 @@
       state: control
     unique: true
   - type: OverloadAmeCondition
-  - type: EntityExistsRequirement
-    whitelist:
-      components:
-      - AmeController
   - type: CodeCondition
     failOnEvac: true
- 
+
 - type: entity
   parent: BaseTraitorObjective
   id: SupercritAnomaliesObjective
