@@ -1,11 +1,11 @@
 using System.Numerics;
-using Content.Client.Chat.Managers;
 using Content.Shared.CCVar;
 using Content.Shared.Chat;
 using Content.Shared.Speech;
 using Robust.Client.Graphics;
 using Robust.Client.UserInterface;
 using Robust.Client.UserInterface.Controls;
+using Robust.Client.UserInterface.RichText;
 using Robust.Shared.Configuration;
 using Robust.Shared.Timing;
 using Robust.Shared.Utility;
@@ -245,10 +245,12 @@ namespace Content.Client.Chat.UI
                 var label = new RichTextLabel
                 {
                     MaxWidth = SpeechMaxWidth,
+                    Align = RichTextLabel.AlignMode.Center,
                     OutlineColorOverride = TextOutline.Default.Color,
                 };
 
-                label.SetMessage(ExtractAndFormatSpeechSubstring(message, "BubbleContent", fontColor));
+                label.SetMessage(ExtractAndFormatSpeechSubstring(message, "BubbleContent", fontColor),
+                    tagsAllowed: [ typeof(FontTag), typeof(ColorTag), typeof(BoldTag) ]);
 
                 var unfanciedPanel = new PanelContainer
                 {
@@ -262,6 +264,7 @@ namespace Content.Client.Chat.UI
             var bubbleHeader = new RichTextLabel
             {
                 ModulateSelfOverride = Color.White.WithAlpha(ConfigManager.GetCVar(CCVars.SpeechBubbleSpeakerOpacity)),
+                Align = RichTextLabel.AlignMode.Right,
                 Margin = new Thickness(2, 0, 2, 0),
                 OutlineColorOverride = TextOutline.Default.Color,
             };
@@ -270,6 +273,7 @@ namespace Content.Client.Chat.UI
             {
                 ModulateSelfOverride = Color.White.WithAlpha(ConfigManager.GetCVar(CCVars.SpeechBubbleTextOpacity)),
                 MaxWidth = SpeechMaxWidth,
+                Align = RichTextLabel.AlignMode.Right,
                 Margin = new Thickness(2, 0, 2, 0),
                 StyleClasses = { "bubbleContent" },
                 OutlineColorOverride = TextOutline.Default.Color,
