@@ -1,10 +1,12 @@
 using System.Numerics;
 using Content.Client.Examine;
 using Content.Shared.IdentityManagement;
+using Content.Shared.Interaction;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Components;
 using Robust.Client.GameObjects;
 using Robust.Client.Graphics;
+using Robust.Client.Input;
 using Robust.Client.Player;
 using Robust.Client.ResourceManagement;
 using Robust.Client.UserInterface;
@@ -26,6 +28,7 @@ public sealed partial class NamePeekOverlay : Overlay
 
     [Dependency] private IEntityManager _entityManager = default!;
     [Dependency] private IPlayerManager _playerManager = default!;
+    [Dependency] private IInputManager _inputManager = default!;
     [Dependency] private IConfigurationManager _configManager = default!;
     [Dependency] private IUserInterfaceManager _uiManager = default!;
     [Dependency] private IPrototypeManager _prototypeManager = default!;
@@ -48,6 +51,7 @@ public sealed partial class NamePeekOverlay : Overlay
 
     private readonly Font _font;
 
+    //TODO: Change to WorldSpace if DrawString gets added to WorldHandle
     public override OverlaySpace Space => OverlaySpace.ScreenSpace;
 
     public NamePeekOverlay(
@@ -107,6 +111,7 @@ public sealed partial class NamePeekOverlay : Overlay
 
         args.DrawingHandle.SetTransform(Matrix3x2.Identity);
         args.DrawingHandle.UseShader(_shader);
+
         var scale = _configManager.GetCVar(CVars.DisplayUIScale);
 
         if (scale == 0f)
@@ -117,7 +122,17 @@ public sealed partial class NamePeekOverlay : Overlay
         var matrix = args.ViewportControl.GetWorldToScreenMatrix();
 
         _nearbyEntities.Clear();
-        _lookup.GetEntitiesIntersecting(args.MapId, args.WorldAABB, _nearbyEntities, LookupFlags.Uncontained);
+
+        if (eye.DrawFov)
+        {
+            //Lookup near mouse when we have FOV on
+            var mousePos = args.ViewportControl.PixelToMap(_inputManager.MouseScreenPosition.Position);
+            _lookup.GetEntitiesInRange(mousePos, SharedInteractionSystem.InteractionRange / 2, _nearbyEntities, LookupFlags.Uncontained);
+        }
+        else
+        {
+            _lookup.GetEntitiesIntersecting(args.MapId, args.WorldAABB, _nearbyEntities, LookupFlags.Uncontained);
+        }
 
         foreach (var ent in _nearbyEntities)
         {
@@ -130,7 +145,7 @@ public sealed partial class NamePeekOverlay : Overlay
             var mapPos = _transform.GetMapCoordinates((ent, xform));
 
             var lightLevel = 1f;
-            if (eye.DrawLight)
+            if (eye.DrawLight && eye.DrawFov)
                 _lightLevel.TryCalculateLightLevel(mapPos, out lightLevel);
 
             if (lightLevel < 0.35)
