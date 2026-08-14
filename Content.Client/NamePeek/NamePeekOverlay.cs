@@ -142,22 +142,21 @@ public sealed partial class NamePeekOverlay : Overlay
             if (!_transformQuery.TryComp(ent, out var xform))
                 continue;
 
+            if (!_spriteQuery.TryComp(ent, out var sprite) || !sprite.Visible)
+                continue;
+
             var mapPos = _transform.GetMapCoordinates((ent, xform));
 
             var lightLevel = 1f;
             if (eye.DrawLight && eye.DrawFov)
                 _lightLevel.TryCalculateLightLevel(mapPos, out lightLevel);
 
+            //Don't show nametag if it's too dark
             if (lightLevel < 0.35)
-                continue;
-
-            if (!_spriteQuery.TryComp(ent, out var sprite))
                 continue;
 
             if (eye.DrawFov && !_examineSystem.InRangeUnOccluded(playerEnt, ent))
                 continue;
-
-            var pos = Vector2.Transform(mapPos.Position, matrix);
 
             var text = Identity.Name(ent, _entityManager, playerEnt);
 
@@ -165,17 +164,20 @@ public sealed partial class NamePeekOverlay : Overlay
             var dimensions = handle.GetDimensions(_font, text, scale);
 
             //Get sprite bounding box so we can draw at the bottom.
-            //Probably a better way to do this but I want it drawing at the bottom of entity sprites if possible.
-            //Seems to work with every mob I've tried.
+            //Probably a better way to do this, but I want it drawing at the bottom of entity sprites if possible.
             var (worldPos, worldRot) = _transform.GetWorldPositionRotation(xform);
             var bounds = _sprite.CalculateBounds((ent, sprite),
                 worldPos,
                 worldRot,
-                args.Viewport.Eye?.Rotation ?? default);
+                eye.Rotation);
 
-            var drawPosition = (pos - dimensions / 2f) + new Vector2(0, bounds.Box.Extents.Y * matrix.M11);
+            var offset = (-eye.Rotation).ToWorldVec() * (-bounds.Box.Extents.Y);
+            var offsetWorldPos = worldPos - offset;
 
-            handle.DrawString(_font, drawPosition, text, scale, Color.LightGray.WithAlpha(200), _outline);
+            var pos = Vector2.Transform(offsetWorldPos, matrix);
+            var drawPosition = (pos - dimensions / 2f);
+
+            handle.DrawString(_font, drawPosition, text, scale, Color.LightGray.WithAlpha(sprite.Color.A), _outline);
         }
 
         args.DrawingHandle.UseShader(null);
