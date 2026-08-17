@@ -68,6 +68,7 @@
       enum.WiresUiKey.Key:
         type: WiresBoundUserInterface
   - type: Airtight
+    noAirWhenFullyAirBlocked: false # Remove this when door gas duping is fixed
   - type: RadiationBlocker
     resistance: 2
   - type: DoorSignalControl
