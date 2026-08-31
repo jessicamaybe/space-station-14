@@ -14,11 +14,15 @@ public sealed partial class ProcGenSystem : EntitySystem
     [Dependency] private SharedTransformSystem _transform = default!;
 
 
-    private const int RoomTries = 175;
+    private const int RoomTries = 75;
     private const int RoomExtraSize = 0;
 
     private const int DungeonHeight = 96;
     private const int DungeonWidth = 96;
+
+    private const int ExtraConnectorChance = 20;
+
+    private Dictionary<Vector2i, int> _regions = new();
 
     private List<Box2i> _rooms = new();
 
@@ -63,6 +67,164 @@ public sealed partial class ProcGenSystem : EntitySystem
             }
         }
 
+        ConnectRegions(grid);
+        RemoveDeadEnds(grid);
+
+
+
+        foreach (var pos in GetBounds(DungeonHeight, DungeonWidth))
+        {
+            if (_mapSystem.TryGetTile(grid, pos, out Tile tile) && tile.TypeId != 1)
+                continue;
+
+            var coords = _mapSystem.ToCoordinates(grid, pos);
+
+            Spawn("WallSolid", coords);
+        }
+
+    }
+
+    private void ConnectRegions(Entity<MapGridComponent> grid)
+    {
+        var connectorRegions = new Dictionary<Vector2i, HashSet<int>>();
+
+        foreach (var pos in GetBounds(DungeonHeight - 1, DungeonHeight - 1))
+        {
+            if (_mapSystem.TryGetTile(grid, pos, out Tile tile) && !TileAvailable(tile))
+                continue;
+
+            var adjacentRegions = new HashSet<int>();
+
+            foreach (var dir in CardinalDirections)
+            {
+                if (_regions.TryGetValue(pos + dir, out var region))
+                    adjacentRegions.Add(region);
+            }
+
+            if (adjacentRegions.Count < 2)
+                continue;
+
+            connectorRegions[pos] = adjacentRegions;
+        }
+
+        var connectors = connectorRegions.Keys.ToList();
+
+        // 2. Initialize disjoint-set/region merge mappings.
+        var merged = new Dictionary<int, int>();
+        var openRegions = new HashSet<int>();
+
+        for (var i = 0; i <= _currentRegion; i++)
+        {
+            merged[i] = i;
+            openRegions.Add(i);
+        }
+
+        // 3. Connect regions until all areas are unified.
+        while (openRegions.Count > 1 && connectors.Count > 0)
+        {
+            var connector = _random.Pick(connectors);
+
+            AddJunction(grid, connector);
+
+            var connected= connectorRegions[connector]
+                .Select(r => merged[r])
+                .Distinct()
+                .ToList();
+
+            var dest = connected.First();
+            var sources = connected.Skip(1).ToHashSet();
+
+            // Check every region, since some may have already been merged
+            // into one of the sources we're merging now.
+            for (var i = 0; i <= _currentRegion; i++)
+            {
+                if (sources.Contains(merged[i]))
+                    merged[i] = dest;
+            }
+
+            openRegions.ExceptWith(sources);
+
+            // Prune obsolete or neighboring connectors
+            connectors.RemoveAll(pos =>
+            {
+                // Prevent two adjacent connectors from forming 2x2 holes
+                if ((pos - connector).Length <= 1)
+                    return true;
+
+                var regions = connectorRegions[pos]
+                    .Select(r => merged[r])
+                    .ToHashSet();
+
+                // If the connector spans distinct regions, keep it
+                if (regions.Count > 1)
+                    return false;
+
+                // Optional extra connections to create loops
+                if (_random.Prob(1f / ExtraConnectorChance))
+                    AddJunction(grid, pos);
+
+                return true;
+            });
+        }
+    }
+
+    private void RemoveDeadEnds(Entity<MapGridComponent> grid)
+    {
+        var done = false;
+
+        while (!done)
+        {
+            done = true;
+
+            foreach (var pos in GetBounds(DungeonHeight - 1, DungeonHeight - 1))
+            {
+                if (_mapSystem.TryGetTile(grid, pos, out var tile) && tile.TypeId == 1)
+                    continue;
+
+                var exits = 0;
+
+                foreach (var dir in CardinalDirections)
+                {
+                    if (_mapSystem.TryGetTile(grid, pos + dir, out var neightborTile) && neightborTile.TypeId != 1)
+                        exits++;
+                }
+
+                if (exits != 1)
+                    continue;
+
+                done = false;
+                _mapSystem.SetTile(grid, pos, new Tile(1));
+            }
+
+        }
+    }
+
+    private void AddJunction(Entity<MapGridComponent> grid, Vector2i pos)
+    {
+        // Set floor (Tile 2) or custom door tile
+        _mapSystem.SetTile(grid, pos, new Tile(2));
+
+        var coords = _mapSystem.ToCoordinates(grid, pos);
+        Spawn("WoodDoor", coords);
+    }
+
+    private static readonly Vector2i[] CardinalDirections =
+    {
+        new(0, 1),   // North
+        new(0, -1),  // South
+        new(1, 0),   // East
+        new(-1, 0)   // West
+    };
+
+    private IEnumerable<Vector2i> GetBounds(int height, int width)
+    {
+        for (var y = 1; y < height; y++)
+        {
+            for (var x = 1; x < width; x++)
+            {
+                yield return new Vector2i(x, y);
+            }
+        }
     }
 
     private bool TileAvailable(Tile tile)
@@ -79,6 +241,7 @@ public sealed partial class ProcGenSystem : EntitySystem
     private void GrowMaze(EntityUid map, Entity<MapGridComponent> grid, Vector2i vec)
     {
         _currentRegion++;
+        Carve(grid, vec, new Tile(2));
 
         var cells = new List<Vector2i>();
 
@@ -111,8 +274,8 @@ public sealed partial class ProcGenSystem : EntitySystem
                     carveDir = unmadeCells[_random.Next(unmadeCells.Count)];
                 }
 
-                _mapSystem.SetTile(grid, cell + carveDir.ToIntVec(), new Tile(2));
-                _mapSystem.SetTile(grid, cell + (carveDir.ToIntVec() * 2), new Tile(2));
+                Carve(grid, cell + carveDir.ToIntVec(), new Tile(2));
+                Carve(grid, cell + (carveDir.ToIntVec() * 2), new Tile(2));
 
                 cells.Add(cell + carveDir.ToIntVec() * 2);
 
@@ -146,6 +309,12 @@ public sealed partial class ProcGenSystem : EntitySystem
             return false;
 
         return true;
+    }
+
+    private void Carve(Entity<MapGridComponent> grid, Vector2i pos, Tile tile)
+    {
+        _mapSystem.SetTile(grid, pos, tile);
+        _regions[pos] = _currentRegion;
     }
 
     private void CreateRooms(EntityUid map, Entity<MapGridComponent> grid)
@@ -187,12 +356,14 @@ public sealed partial class ProcGenSystem : EntitySystem
 
             _rooms.Add(room);
 
+
+            _currentRegion++;
             for (var tileX = room.Left; tileX < room.Right; tileX++)
             {
                 for (var tileY = room.Bottom; tileY < room.Top; tileY++)
                 {
                     var point = new Vector2i(tileX, tileY);
-                    _mapSystem.SetTile(grid, point, new Tile(2));
+                    Carve(grid, point, new Tile(2));
                 }
             }
 
